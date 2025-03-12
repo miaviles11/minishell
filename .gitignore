@@ -1,0 +1,45 @@
+# 📌 Archivos de compilación
+*.o
+*.a
+*.so
+*.out
+*.dSYM/
+*.gcda
+*.gcno
+*.gcov
+vgcore.*
+
+# 📌 Ejecutables
+minishell
+minishell.dSYM/
+
+# 📌 Librerías externas (Libft)
+libft/libft.a
+libft/*.o
+
+# 📌 Archivos temporales y logs
+*.swp
+*.swo
+*~
+*.tmp
+*.log
+
+# 📌 Makefile intermedios
+Makefile~
+Makefile.in
+.deps/
+build/
+obj/
+
+# 📌 Debugging y análisis de memoria
+gmon.out
+valgrind-log*
+callgrind.out.*
+cachegrind.out.*
+
+# 📌 Archivos generados por Readline
+.history
+inputrc
+
+# 📌 Directorios ocultos de Git y sistemas
+.git/
