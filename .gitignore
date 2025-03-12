@@ -43,3 +43,4 @@ inputrc
 
 # 📌 Directorios ocultos de Git y sistemas
 .git/
+.vscode
