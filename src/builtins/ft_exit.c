@@ -1,38 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_echo.c                                          :+:      :+:    :+:   */
+/*   ft_exit.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/13 17:17:45 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/13 17:46:52 by miaviles         ###   ########.fr       */
+/*   Created: 2025/03/13 18:40:51 by miaviles          #+#    #+#             */
+/*   Updated: 2025/03/13 18:44:21 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "minihell.h"
 
-int	minishell_echo(char **argv)
+int	minishell_exit(char **argv)
 {
-	int	i;
-	int	no_newline;
-
-	i = 1;
-	no_newline = 0;
-	
-	if (argv[1] && ft_strcmp(argv[1], "-n") == 0)
+	if (argv[1]) 
 	{
-		no_newline = 1;
-		i = 2;
+		int status = atoi(argv[1]);
+		exit(status);
 	}
-	while (argv[i] != NULL)
-	{
-		ft_printf("%s", argv[i]);
-		if (argv[i + 1])
-			ft_printf(" ");
-		i++;
-	}
-	if (!no_newline)
-		ft_printf("\n");
+	else
+		exit(0);
 	return (0);
 }
