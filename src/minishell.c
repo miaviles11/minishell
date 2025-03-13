@@ -1,4 +1,5 @@
 #include "minishell.h"
+
 void	run_shell_loop(t_msh *shell)
 {
 	char	*input_line;
@@ -13,15 +14,18 @@ void	run_shell_loop(t_msh *shell)
 		if (is_line_empty(input_line))
 		{
 			free(input_line);
-			continue;
+			continue ;
 		}
 		add_history(input_line);
 		/* Se parsea la entrada y se verifican las comillas */
-		if (parse_input_line(shell, &shell->cmd, input_line) && shell->flags->quote != 0)
+		if (parse_input_line(shell, &shell->cmd, input_line)
+			&& shell->flags->quote != 0)
 		{
 			/* Ejecuta el comando de forma individual o en pipeline según corresponda */
-			if (is_builtin_no_pipeline(shell->cmd, str_noquotes(shell->cmd->cmd)))
-				execute_single_command(shell->cmd, str_noquotes(shell->cmd->cmd));
+			if (is_builtin_no_pipeline(shell->cmd,
+					str_noquotes(shell->cmd->cmd)))
+				execute_single_command(shell->cmd,
+					str_noquotes(shell->cmd->cmd));
 			else
 				execute_pipeline(&(shell->cmd), initialize_pipes(), 1);
 		}
@@ -30,7 +34,7 @@ void	run_shell_loop(t_msh *shell)
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_msh	*shell;
+	t_msh *shell;
 
 	if (argc != 1)
 		handle_extra_arguments(argv);

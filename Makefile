@@ -6,7 +6,8 @@ CFLAGS		= -Wall -Wextra -Werror
 LIBFT_DIR	= libft
 LIBFT		= $(LIBFT_DIR)/libft.a
 
-SRCS		=	src/main.c \
+SRCS		=	src/minishell.c \
+				src/utils_1.c \
 
 OBJS		= $(SRCS:.c=.o)
 

@@ -1,28 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_pwd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/12 19:19:16 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/13 17:19:18 by miaviles         ###   ########.fr       */
+/*   Created: 2025/03/13 16:28:09 by miaviles          #+#    #+#             */
+/*   Updated: 2025/03/13 17:16:49 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "minishell.h"
 
-# include ../libft/libft.h
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
+int	minishell_pwd(char **argv)
+{
+	void(argv);
+	char	cwd[1024];
 
-int	minishell_cd(char **argv);
-int	minishell_pwd(char **argv);
-
-int	is_line_empty(char *s);
-void	run_shell_loop(t_msh *shell);
-int	main(int argc, char **argv, char **envp);
-
-#endif
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
+	{
+		perror("pwd");
+		return (1);
+	}
+	ft_print("%s\n", cwd);
+	return (0);
+}

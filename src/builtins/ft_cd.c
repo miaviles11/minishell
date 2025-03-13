@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:16:24 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/12 19:39:23 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/13 16:26:52 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,8 @@ int	minishell_cd(char **argv)
 		perror ("cd");
 		return (1);
 	}
-	
+	char cwd[1024];
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
+		setenv("PWD", cwd, 1);
+	return (0);
 }
