@@ -16,17 +16,18 @@
 int		update_existing_env_var(t_msh *msh, const char *name, const char *value);
 int		add_new_env_var(t_msh *msh, const char *name, const char *value);
 int		set_env_var(t_msh *msh, const char *name, const char *value);
-int		minishell_cd(char **argv);
+int		minishell_cd(t_msh *msh, char **argv);
 
-int		minishell_pwd(char **argv);
+void	print_arguments(t_cmd *cmd, int i);
+int		handle_no_newline(t_cmd *cmd, int *no_newline);
+int		minishell_echo(t_msh *msh);
 
-void	print_arguments(char **argv, int i);
-int		handle_no_newline(char **argv, int *no_newline);
-int		minishell_echo(char **argv);
+int		minishell_pwd(t_msh *msh);
 
-int		minishell_exit(char **argv);
+int		is_numeric(const char *str);
+int		minishell_exit(t_msh *msh);
 
-int		minishell_env(char **argv);
+int		minishell_env(t_msh *msh);
 
 int		minishell_export(char **argv);
 
