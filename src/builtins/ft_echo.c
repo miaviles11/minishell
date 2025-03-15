@@ -12,26 +12,40 @@
 
 #include "minishell.h"
 
-int	minishell_echo(char **argv)
+int	handle_no_newline(t_cmd *cmd, int *no_newline)
 {
 	int	i;
-	int	no_newline;
 
 	i = 1;
-	no_newline = 0;
-	
-	if (argv[1] && ft_strcmp(argv[1], "-n") == 0)
+	*no_newline = 0;
+	if (cmd->arg[1] && ft_strcmp(cmd->arg[1], "-n") == 0)
 	{
-		no_newline = 1;
+		*no_newline = 1;
 		i = 2;
 	}
-	while (argv[i] != NULL)
+	return (i);
+}
+
+void	print_arguments(t_cmd *cmd, int i)
+{
+	while (cmd->arg[i] != NULL)
 	{
-		ft_printf("%s", argv[i]);
-		if (argv[i + 1])
+		ft_printf("%s", cmd->arg[i]);
+		if (cmd->arg[i + 1])
 			ft_printf(" ");
 		i++;
 	}
+}
+
+int	minishell_echo(t_msh *msh)
+{
+	int	i;
+	int	no_newline;
+	t_cmd *cmd;
+
+	cmd = msh->cmd;
+	i = handle_no_newline(cmd, &no_newline);
+	print_arguments(cmd, i);
 	if (!no_newline)
 		ft_printf("\n");
 	return (0);
