@@ -1,27 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_exit.c                                          :+:      :+:    :+:   */
+/*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/13 18:40:51 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/13 18:44:21 by miaviles         ###   ########.fr       */
+/*   Created: 2025/03/15 13:10:52 by miaviles          #+#    #+#             */
+/*   Updated: 2025/03/15 13:10:52 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minihell.h"
-
-int	minishell_exit(char **argv)
-{
-	int	status;
-	
-	if (argv[1]) 
-	{
-		status = atoi(argv[1]);
-		exit(status);
-	}
-	else
-		exit(0);
-	return (0);
-}

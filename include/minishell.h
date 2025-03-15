@@ -14,19 +14,18 @@
 # define MINISHELL_H
 
 # include "../libft/libft.h"
+# include "builtins.h"
+# include "env.h"
+# include "executor.h"
+# include "parser.h"
+# include "redirections.h"
+# include "signals.h"
+
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-
-int	minishell_cd(char **argv);
-int	minishell_pwd(char **argv);
-int	minishell_echo(char **argv);
-int	minishell_exit(char **argv);
-int	minishell_env(char **argv);
-int	minishell_export(char **argv);
-int	minishell_unset(char **argv);
 
 int	is_line_empty(char *s);
 int is_builtin_no_pipeline(t_cmd *cmd, char *cmd_name);

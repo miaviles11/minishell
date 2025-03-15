@@ -1,27 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_exit.c                                          :+:      :+:    :+:   */
+/*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/13 18:40:51 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/13 18:44:21 by miaviles         ###   ########.fr       */
+/*   Created: 2025/03/15 12:41:28 by miaviles          #+#    #+#             */
+/*   Updated: 2025/03/15 12:41:28 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minihell.h"
+#ifndef PARSER_H
+# define PARSER_H
 
-int	minishell_exit(char **argv)
-{
-	int	status;
-	
-	if (argv[1]) 
-	{
-		status = atoi(argv[1]);
-		exit(status);
-	}
-	else
-		exit(0);
-	return (0);
-}
+
+
+#endif
