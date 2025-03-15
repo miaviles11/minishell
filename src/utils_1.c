@@ -44,3 +44,36 @@ int is_builtin_no_pipeline(t_cmd *cmd, char *cmd_name)
        pueden ejecutarse en un pipeline */
     return 0;
 }
+
+char	*str_noquotes(char *str)
+{
+	int		i;          // índice para recorrer la cadena original
+	int		j;          // índice para la cadena resultante
+	char	*temp;      // cadena sin comillas
+	int		in_dquote;  // bandera: 1 si estamos dentro de comillas dobles
+	int		in_squote;  // bandera: 1 si estamos dentro de comillas simples
+
+	i = 0;
+	j = 0;
+	in_dquote = 0;
+	in_squote = 0;
+	// Reserva memoria para la cadena resultante
+	temp = ft_calloc(ft_strlen(str) + 1, sizeof(char));
+	if (!temp)
+		exit_error("Error malloc", 11);
+	// Recorre cada carácter de la cadena original
+	while (str[i])
+	{
+		// Si encontramos una comilla doble y no estamos en comillas simples, alterna in_dquote
+		if (str[i] == '"' && !in_squote)
+			in_dquote = !in_dquote;
+		// Si encontramos una comilla simple y no estamos en comillas dobles, alterna in_squote
+		else if (str[i] == '\'' && !in_dquote)
+			in_squote = !in_squote;
+		// Si no es una comilla delimitadora, copia el carácter
+		else
+			temp[j++] = str[i];
+		i++;
+	}
+	return (temp);
+}

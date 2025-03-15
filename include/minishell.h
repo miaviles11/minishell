@@ -29,6 +29,8 @@ int	minishell_export(char **argv);
 int	minishell_unset(char **argv);
 
 int	is_line_empty(char *s);
+int is_builtin_no_pipeline(t_cmd *cmd, char *cmd_name);
+char	*str_noquotes(char *str);
 void	run_shell_loop(t_msh *shell);
 int	main(int argc, char **argv, char **envp);
 
