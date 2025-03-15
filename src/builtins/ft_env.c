@@ -12,16 +12,15 @@
 
 #include "minishell.h"
 
-int	minishell_env(char **argv)
+int	minishell_env(t_msh *msh)
 {
-	int	i;
+    int	i;
 
-	(void)argv;
-	i = 0;
-	while (environ[i] != NULL)
-	{
-		ft_printf("%s\n", environ[i]);
-		i++;
-	}
-	return (0);
+    i = 0;
+    while (msh->env[i] != NULL)
+    {
+        ft_printf("%s\n", msh->env[i]);
+        i++;
+    }
+    return (0);
 }

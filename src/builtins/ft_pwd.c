@@ -12,16 +12,16 @@
 
 #include "minishell.h"
 
-int	minishell_pwd(char **argv)
+int	minishell_pwd(t_msh *msh)
 {
-	void(argv);
-	char	cwd[1024];
+    char	cwd[1024];
 
-	if (getcwd(cwd, sizeof(cwd)) == NULL)
-	{
-		perror("pwd");
-		return (1);
-	}
-	ft_print("%s\n", cwd);
-	return (0);
+    (void)msh;
+    if (getcwd(cwd, sizeof(cwd)) == NULL)
+    {
+        perror("pwd");
+        return (1);
+    }
+    ft_printf("%s\n", cwd);
+    return (0);
 }
