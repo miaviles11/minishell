@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
+/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/15 13:17:01 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/15 13:17:01 by miaviles         ###   ########.fr       */
+/*   Created: 2025/03/15 13:14:06 by carlsanc          #+#    #+#             */
+/*   Updated: 2025/03/15 13:14:06 by carlsanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
