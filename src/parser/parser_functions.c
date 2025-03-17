@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
 int	validate_and_split_input(t_msh *shell, char *inputLine, char ***segments)
 {

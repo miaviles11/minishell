@@ -10,7 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../includes/minishell.h"
+
+void	exit_error(char *str, int n)
+{
+	printf("%s\n", str);
+	exit(n);
+}
 
 void	put_error(char *bash, char *file, char *error)
 {

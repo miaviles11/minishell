@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* 
 ** count_valid_pipes:
@@ -75,4 +75,30 @@ static int	skip_quoted_segment(const char *s, int i, char quote)
 	if (s[i] == quote)
 		i++;  // Salta la comilla de cierre
 	return (i);
+}
+
+char	**split_pipes(char *inputLine)
+{
+	char	**segments;
+	int		i;
+
+	segments = ft_calloc(count_pipes(inputLine) + 2, sizeof(char *));
+	if (!segments)
+		exit_error("Error malloc", 54);
+	segments = extract_pipe_segments(inputLine, segments);
+	i = 0;
+	while (segments[i])
+	{
+		if (validate_pipe_segment(segments[i]) == -1 ||
+		    validate_redirection_syntax(segments, i) == -1)
+		{
+			g_error = 258;
+			while (i >= 0)
+				free(segments[i--]);
+			free(segments);
+			return (NULL);
+		}
+		i++;
+	}
+	return (segments);
 }

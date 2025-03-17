@@ -70,10 +70,18 @@ typedef struct s_msh
 }				t_msh;
 
 # include "../libft/libft.h"
+# include "env.h"
+# include "parser.h"
+# include "redirections.h"
+# include "signals.h"
+# include "executor.h"
+
 # include "builtins.h"nv[i]
 int is_builtin_no_pipeline(t_cmd *cmd, char *cmd_name);
 char	*str_noquotes(char *str);
 void	run_shell_loop(t_msh *shell);
+void	put_error(char *bash, char *file, char *error);
+void	exit_error(char *str, int n);
 //int	main(int argc, char **argv, char **envp);
 
 #endif

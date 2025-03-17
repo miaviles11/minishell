@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
 int	parse_input_line(t_msh *shell, t_cmd **commandList, char *inputLine)
 {
