@@ -8,20 +8,36 @@ LIBFT		= $(LIBFT_DIR)/libft.a
 
 SRCS		=	src/minishell.c \
 				src/utils_1.c \
+				src/builtins/builtins_utils.c \
+				src/builtins/ft_cd.c \
+				src/builtins/ft_echo.c \
+				src/builtins/ft_env.c \
+				src/builtins/ft_exit.c \
+				src/builtins/ft_export.c \
+				src/builtins/ft_pwd.c \
+				src/builtins/ft_unset.c \
+				src/executor/exec_builtin.c \
+				src/executor/executor.c \
+				src/parser/parse.c \
+				src/parser/parse_functions.c \
+				src/parser/utils/parse_pipes.c \
+				src/parser/utils/parse_quotes.c \
 
 OBJS		= $(SRCS:.c=.o)
 
 RM			= rm -f
 
+INCLUDES	= -I includes
+
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@make -C $(LIBFT_DIR)          # Compilamos primero la libft
+	@make -C $(LIBFT_DIR)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)
 	@echo "Minishell compilado con éxito."
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+%.o: %.c includes/minishell.h
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
 	$(RM) $(OBJS)

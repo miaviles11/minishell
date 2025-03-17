@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:19:16 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/15 15:39:20 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:01:17 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,13 @@ typedef struct s_pipe
 */
 typedef struct s_cmd
 {
-	struct s_cmd	*next;
-	char			*cmd;
-	char			**arg;
-	int				num_arg;
-}				t_cmd;
+	char *cmd;
+	char **arg;
+	char *input_file;
+	char *output_file;
+	int background;
+	struct s_cmd *next;
+}	t_cmd;
 
 /*
 ** t_msh: Estructura principal del shell.
