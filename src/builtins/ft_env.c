@@ -6,11 +6,11 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:48:18 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/13 18:54:06 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/17 18:52:23 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
 int	minishell_env(t_msh *msh)
 {

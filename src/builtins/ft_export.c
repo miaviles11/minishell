@@ -6,11 +6,11 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 13:10:52 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/17 12:52:13 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/17 19:25:14 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
 // Función auxiliar para actualizar o añadir una variable de entorno
 void	update_env(t_msh *msh, const char *arg)

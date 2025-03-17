@@ -6,11 +6,11 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 12:45:01 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/17 12:51:35 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/17 18:51:58 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
 /* ************************************************** */
 /*            Manejo de variables de entorno          */
