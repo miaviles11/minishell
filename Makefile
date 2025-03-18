@@ -6,9 +6,7 @@ CFLAGS		= -Wall -Wextra -Werror
 LIBFT_DIR	= libft
 LIBFT		= $(LIBFT_DIR)/libft.a
 
-SRCS		=	src/minishell.c \
-				src/utils_1.c \
-				src/builtins/builtins_utils.c \
+SRCS		=	src/builtins/builtins_utils.c \
 				src/builtins/ft_cd.c \
 				src/builtins/ft_echo.c \
 				src/builtins/ft_env.c \
@@ -22,6 +20,11 @@ SRCS		=	src/minishell.c \
 				src/parser/parse_functions.c \
 				src/parser/utils/parse_pipes.c \
 				src/parser/utils/parse_quotes.c \
+				src/signals/signals.c \
+				src/ft_error.c \
+				src/minishell.c \
+				src/utils/utils_1.c \
+				src/utils/redir_utils.c \
 
 OBJS		= $(SRCS:.c=.o)
 

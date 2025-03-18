@@ -6,11 +6,22 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:16:24 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/18 18:56:07 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/18 19:09:50 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+static void print_error(const char *message)
+{
+    int stdout_fd;
+	
+	stdout_fd = dup(STDOUT_FILENO);
+    dup2(STDERR_FILENO, STDOUT_FILENO);
+    ft_printf("%s\n", message);
+    dup2(stdout_fd, STDOUT_FILENO);
+    close(stdout_fd);
+}
 
 int	minishell_cd(t_msh *msh, char **argv)
 {
@@ -23,7 +34,7 @@ int	minishell_cd(t_msh *msh, char **argv)
 		path = getenv("HOME");
 		if (!path)
 		{
-			ft_printf(stderr, "cd: HOME not set\n");
+			print_error("cd: HOME not set");
 			return (1);
 		}
 	}

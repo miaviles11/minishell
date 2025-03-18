@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 13:10:56 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/18 18:56:18 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/18 19:10:03 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	remove_env_var(t_msh *msh, const char *key)
 	int key_len;
 
 	i = 0;
-	key_len = ft_strlen(key)
+	key_len = ft_strlen(key);
 	while (msh->env[i])
 	{
 		if (!ft_strncmp(msh->env[i], key, key_len) && msh->env[i][key_len] == '=')
