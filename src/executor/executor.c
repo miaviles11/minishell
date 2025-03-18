@@ -6,11 +6,11 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:39:20 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/17 17:23:33 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/18 18:25:44 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../includes/minishell.h"
 
 // Busca el ejecutable del comando en los directorios del PATH
 char	*find_executable(char *cmd)

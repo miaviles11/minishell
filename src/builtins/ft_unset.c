@@ -6,11 +6,11 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 13:10:56 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/17 14:55:29 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/18 18:25:35 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../includes/minishell.h"
 
 // Función auxiliar para eliminar una variable de entorno
 void	remove_env_var(t_msh *msh, const char *key)

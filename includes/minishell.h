@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:19:16 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/17 18:54:32 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/18 17:19:51 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,9 @@ typedef struct s_msh
 # include "signals.h"
 # include "executor.h"
 
-# include "builtins.h"nv[i]
-int is_builtin_no_pipeline(t_cmd *cmd, char *cmd_name);
+# include "builtins.h"
+
+int 	is_builtin_no_pipeline(t_cmd *cmd, char *cmd_name);
 char	*str_noquotes(char *str);
 void	run_shell_loop(t_msh *shell);
 void	put_error(char *bash, char *file, char *error);

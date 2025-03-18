@@ -6,11 +6,11 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:40:51 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/13 18:44:21 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/18 18:25:25 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minihell.h"
+#include "../includes/minishell.h"
 
 int	is_numeric(const char *str)
 {
