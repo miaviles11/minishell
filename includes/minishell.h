@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:19:16 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/18 17:19:51 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/18 18:53:56 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 # include <unistd.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+
+# define WHITE_T "\033[1;37m"
+# define RESET_COLOR "\033[0m"
 
 /*
 ** t_pipe: Estructura para el manejo de pipes.

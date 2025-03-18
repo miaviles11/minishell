@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
+/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 13:14:06 by carlsanc          #+#    #+#             */
-/*   Updated: 2025/03/15 13:14:06 by carlsanc         ###   ########.fr       */
+/*   Updated: 2025/03/18 18:52:34 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	run_shell_loop(t_msh *shell)
 			else
 				execute_pipeline(&(shell->cmd), initialize_pipes(), 1);
 		}
+		free (input_line);
 	}
 }
 
@@ -52,6 +53,7 @@ int	main(int argc, char **argv, char **envp)
 		handle_extra_arguments(argv);
 	g_error = 0;
 	shell = initialize_shell(envp);
+	setup_signals();
 	setup_signal_handlers(1);
 	run_shell_loop(shell);
 	return (0);
