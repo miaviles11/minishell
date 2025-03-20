@@ -61,3 +61,10 @@ static int	both_quotes_exist(const char *s, int *i, char quote)
 	(*i)++;
 	return (pairing);
 }
+
+int	get_next_quote(int i, char *str, char c)
+{
+	while (str[i] && str[i] != c)
+		i++;
+	return (i);
+}
