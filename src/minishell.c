@@ -57,5 +57,3 @@ int	main(int argc, char **argv, char **envp)
 	run_shell_loop(shell);
 	return (0);
 }
-
-/* esto es una prueba*/

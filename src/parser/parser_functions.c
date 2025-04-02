@@ -66,10 +66,42 @@ static t_cmd	*create_command_node(t_msh *shell, char *segment)
 	node->arg = extract_arguments(shell, segment + shell->total_chars, node);
 	return (node);
 }
+
+/*
+** perform_expansion:
+**   Recorre el nombre del comando y sus argumentos para expandir variables de entorno
+**   y el directorio home. Es decir, sustituye:
+**     - Variables indicadas con '$' por su valor (utilizando substitute_variables)
+**     - La expansión de '~' o similar por el directorio HOME (utilizando expand_home_directory)
+**
+** Parámetros:
+**   command : Puntero doble al nodo de comando (t_cmd) a procesar.
+*/
+void	perform_expansion(t_cmd **command)
+{
+	int	i;
+
+	// Procesa el nombre del comando.
+	if (has_variable((*command)->cmd))
+		(*command)->cmd = substitute_variables(*command, (*command)->cmd, NULL);
+	if (needs_home_expansion((*command)->cmd))
+		(*command)->cmd = expand_home_directory((*command)->cmd);
+	// Si no hay argumentos, terminamos.
+	if (!(*command)->arg)
+		return;
+	i = 0;
+	// Procesa cada argumento del comando.
+	while ((*command)->arg[i])
+	{
+		if (has_variable((*command)->arg[i]))
+			(*command)->arg[i] = substitute_variables(*command, (*command)->arg[i], NULL);
+		if (needs_home_expansion((*command)->arg[i]))
+			(*command)->arg[i] = expand_home_directory((*command)->arg[i]);
+		i++;
+	}
+}
 /*
 funciones por añadir a este archivo:
-
-perform_expansion
 
 get_last_command_node
 
