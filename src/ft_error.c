@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_error.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
+/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 13:14:06 by carlsanc          #+#    #+#             */
-/*   Updated: 2025/03/15 13:14:06 by carlsanc         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:46:17 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	exit_error(char *str, int n)
 {
-	printf("%s\n", str);
+	ft_printf("%s\n", str);
 	exit(n);
 }
 

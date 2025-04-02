@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:39:20 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/18 18:55:48 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:44:57 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void	execute_command(t_cmd *cmd)
 		return ;
 	// Ejecuta el comando si es un comando interno
 	if (is_builtin(cmd->cmd))
-		return (execute_builtin(cmd));
+		return (execute_builtin(msh, cmd));
 	// Busca el ejecutable del comando
 	executable = find_executable(cmd->cmd);
 	if (!executable)

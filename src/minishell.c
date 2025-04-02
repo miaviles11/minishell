@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 13:14:06 by carlsanc          #+#    #+#             */
-/*   Updated: 2025/03/18 18:52:34 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:59:54 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ int	main(int argc, char **argv, char **envp)
 	g_error = 0;
 	shell = initialize_shell(envp);
 	setup_signals();
-	setup_signal_handlers(1);
 	run_shell_loop(shell);
 	return (0);
 }
