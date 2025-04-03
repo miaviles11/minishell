@@ -101,8 +101,16 @@ void	perform_expansion(t_cmd **command)
 	}
 }
 /*
-funciones por añadir a este archivo:
-
-get_last_command_node
-
+** get_last_command_node:
+**   Recorre la lista de comandos a partir del nodo apuntado por *cmd
+**   y retorna el último nodo de la lista.
 */
+t_cmd	*get_last_command_node(t_cmd **cmd)
+{
+	t_cmd	*current;
+
+	current = *cmd;
+	while (current && current->next)
+		current = current->next;
+	return (current);
+}
