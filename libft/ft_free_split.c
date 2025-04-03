@@ -1,27 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   executor.h                                         :+:      :+:    :+:   */
+/*   ft_free_split.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/17 17:23:48 by miaviles          #+#    #+#             */
-/*   Updated: 2025/04/02 11:20:44 by miaviles         ###   ########.fr       */
+/*   Created: 2025/04/02 11:25:50 by miaviles          #+#    #+#             */
+/*   Updated: 2025/04/02 11:26:22 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EXECUTOR_H
-# define EXECUTOR_H
+#include "libft.h"
 
-#include <sys/wait.h>
+void	ft_free_split(char **arr)
+{
+	int	i;
 
-char	*find_executable(char *cmd);
-void	handle_redirection(t_cmd *cmd);
-void	execute_command(t_msh *msh, t_cmd *cmd);
-void	execute_commands(t_msh *msh);
-
-int		exec_builtin(t_msh *msh, char **argv);
-int 	is_builtin(char *cmd);
-void	execute_builtin(t_msh *msh, t_cmd *cmd);
-
-#endif
+	if (!arr)
+		return ;
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
+}

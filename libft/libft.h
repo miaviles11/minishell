@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 19:45:01 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/12 16:24:24 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/04/02 11:26:32 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,5 +88,6 @@ void	ft_bubblesort(int *array, int count);
 void	ft_error_clean(char *str, t_bool e, void *to_free);
 void	ft_error(char *str, t_bool e);
 int		ft_sqrt(int nmb);
+void	ft_free_split(char **arr);
 
 #endif
