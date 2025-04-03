@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:39:20 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/20 16:44:57 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/04/02 11:22:43 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void	handle_redirection(t_cmd *cmd)
 }
 
 // Ejecuta un comando específico
-void	execute_command(t_cmd *cmd)
+void	execute_command(t_msh *msh, t_cmd *cmd)
 {
 	char	*executable;
 	pid_t	pid;
@@ -92,7 +92,10 @@ void	execute_command(t_cmd *cmd)
 	// Busca el ejecutable del comando
 	executable = find_executable(cmd->cmd);
 	if (!executable)
-		return (ft_printf(stderr, "Command not found: %s\n", cmd->cmd));
+	{
+		ft_printf("Command not found: %s\n", cmd->cmd);
+		return ;
+	}
 	// Crea un proceso hijo para ejecutar el comando
 	pid = fork();
 	if (pid == 0)
@@ -117,7 +120,7 @@ void	execute_commands(t_msh *msh)
 	current = msh->cmd;
 	while (current)
 	{
-		execute_command(current); // Ejecuta cada comando en la lista
+		execute_command(msh, current); // Ejecuta cada comando en la lista
 		current = current->next;
 	}
 }
