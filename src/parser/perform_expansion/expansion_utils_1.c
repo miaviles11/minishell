@@ -1,3 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expansion_utils_1.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/03 16:31:25 by miaviles          #+#    #+#             */
+/*   Updated: 2025/04/03 16:32:24 by miaviles         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../../includes/minishell.h"
+
 /*
 ** has_variable:
 **   Recorre la cadena 's' y retorna 1 si detecta la presencia de un
