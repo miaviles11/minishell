@@ -26,7 +26,7 @@
 ** Retorna:
 **   Una cadena con el nombre del comando extraído.
 */
-static char	*extract_command(t_msh *shell, char *segment)
+char	*extract_command(t_msh *shell, char *segment)
 {
 	int		i;
 	int		start;

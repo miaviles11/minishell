@@ -12,6 +12,50 @@
 
 #include "../../../includes/minishell.h"
 
+/*
+** split_arguments:
+**   Divide la cadena 's' en argumentos, separándolos por espacios (y caracteres de control)
+**   y respetando las comillas (utilizando get_next_quote para saltar el contenido entre comillas).
+**
+**   Cuando se detecta el final de un argumento (el siguiente carácter es un espacio, fin de cadena,
+**   o una comilla), se extrae la subcadena con ft_substr y se almacena en el arreglo 'arg'.
+**
+** Retorna:
+**   El número total de caracteres procesados (útil para actualizar contadores globales).
+*/
+static int	split_arguments(char *s, char **arg)
+{
+	int	pos;
+	int	start;
+	int	i;
+
+	start = 0;
+	pos = 0;
+	i = 0;
+	while (s[i])
+	{
+		// Actualiza el inicio del siguiente argumento al encontrar delimitadores.
+		if ((s[i] == ' ' || (s[i] >= 9 && s[i] <= 13)) &&
+		    s[i + 1] && s[i + 1] != ' ')
+			start = i + 1;
+		// Si se encuentra una comilla, salta el contenido entre comillas.
+		if (s[i] == '"' || s[i] == '\'')
+			i = get_next_quote(i + 1, s, s[i]);
+		// Si se detecta el final de un argumento, extrae el argumento.
+		if (s[i] != ' ' && !(s[i] >= 9 && s[i] <= 13) &&
+		    (s[i + 1] == ' ' || s[i + 1] == '\0'))
+		{
+			arg[pos] = ft_substr(s, start, i - start + 1);
+			if (!arg[pos])
+				exit_error("Error malloc", 14);
+			pos++;
+		}
+		i++;
+	}
+	arg[pos] = NULL;
+	return (i);
+}
+
 static char	**extract_arguments(t_msh *shell, char *segment, t_cmd *command)
 {
 	char	**args;
@@ -105,46 +149,3 @@ char	*change_null_args(char *s, t_cmd *cmd)
 	return (s);
 }
 
-/*
-** split_arguments:
-**   Divide la cadena 's' en argumentos, separándolos por espacios (y caracteres de control)
-**   y respetando las comillas (utilizando get_next_quote para saltar el contenido entre comillas).
-**
-**   Cuando se detecta el final de un argumento (el siguiente carácter es un espacio, fin de cadena,
-**   o una comilla), se extrae la subcadena con ft_substr y se almacena en el arreglo 'arg'.
-**
-** Retorna:
-**   El número total de caracteres procesados (útil para actualizar contadores globales).
-*/
-static int	split_arguments(char *s, char **arg)
-{
-	int	pos;
-	int	start;
-	int	i;
-
-	start = 0;
-	pos = 0;
-	i = 0;
-	while (s[i])
-	{
-		// Actualiza el inicio del siguiente argumento al encontrar delimitadores.
-		if ((s[i] == ' ' || (s[i] >= 9 && s[i] <= 13)) &&
-		    s[i + 1] && s[i + 1] != ' ')
-			start = i + 1;
-		// Si se encuentra una comilla, salta el contenido entre comillas.
-		if (s[i] == '"' || s[i] == '\'')
-			i = get_next_quote(i + 1, s, s[i]);
-		// Si se detecta el final de un argumento, extrae el argumento.
-		if (s[i] != ' ' && !(s[i] >= 9 && s[i] <= 13) &&
-		    (s[i + 1] == ' ' || s[i + 1] == '\0'))
-		{
-			arg[pos] = ft_substr(s, start, i - start + 1);
-			if (!arg[pos])
-				exit_error("Error malloc", 14);
-			pos++;
-		}
-		i++;
-	}
-	arg[pos] = NULL;
-	return (i);
-}

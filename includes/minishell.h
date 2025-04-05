@@ -44,12 +44,13 @@ typedef struct s_pipe
 */
 typedef struct s_cmd
 {
-	char *cmd;
-	char **arg;
-	char *input_file;
-	char *output_file;
-	int background;
-	struct s_cmd *next;
+	char 	*cmd;
+	char 	**arg;
+	int 	num_arg;
+	char 	*input_file;
+	char 	*output_file;
+	int 	background;
+	struct 	s_cmd *next;
 }	t_cmd;
 
 /*

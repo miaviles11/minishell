@@ -16,11 +16,16 @@
 # include "minishell.h"
 
 /*process_arguments_1.c*/
+char	*extract_command(t_msh *shell, char *segment);
 int		count_arguments(char *s);
 
 /*process_arguments_2.c*/
-int		check_null_args(char *s)
-char	*change_null_args(char *s, t_cmd *cmd)
+int		check_null_args(char *s);
+char	*change_null_args(char *s, t_cmd *cmd);
+
+/*process_arguments_utils.c*/
+char	*quit_null_space(char *s, int index);
+char	*quit_null(char *s, int index);
 
 /*expansion_utils_1.c*/
 int		has_variable(const char *s);
@@ -60,6 +65,7 @@ char	**split_pipes(char *inputLine);
 
 /*parse_quotes.c*/
 int		check_quotes_balance(const char *s, t_msh *shell);
+int		get_next_quote(int i, char *str, char c);
 
 /*parser_functions.c*/
 int		validate_and_split_input(t_msh *shell, char *inputLine, char ***segments);
