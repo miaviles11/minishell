@@ -77,13 +77,13 @@ static t_cmd	*create_command_node(t_msh *shell, char *segment)
 ** Parámetros:
 **   command : Puntero doble al nodo de comando (t_cmd) a procesar.
 */
-void	perform_expansion(t_cmd **command)
+void	perform_expansion(t_msh *msh, t_cmd **command)
 {
 	int	i;
 
 	// Procesa el nombre del comando.
 	if (has_variable((*command)->cmd))
-		(*command)->cmd = substitute_variables(*command, (*command)->cmd, NULL);
+		(*command)->cmd = substitute_variables(msh, *command, (*command)->cmd, NULL);
 	if (needs_home_expansion((*command)->cmd))
 		(*command)->cmd = expand_home_directory((*command)->cmd);
 	// Si no hay argumentos, terminamos.
@@ -94,7 +94,7 @@ void	perform_expansion(t_cmd **command)
 	while ((*command)->arg[i])
 	{
 		if (has_variable((*command)->arg[i]))
-			(*command)->arg[i] = substitute_variables(*command, (*command)->arg[i], NULL);
+			(*command)->arg[i] = substitute_variables(msh, *command, (*command)->arg[i], NULL);
 		if (needs_home_expansion((*command)->arg[i]))
 			(*command)->arg[i] = expand_home_directory((*command)->arg[i]);
 		i++;

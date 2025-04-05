@@ -30,7 +30,7 @@ char	*quit_null(char *s, int index);
 
 /*expansion_utils_1.c*/
 int		has_variable(const char *s);
-char	*substitute_variables(t_cmd *cmd, char *s, char **varReminder);
+char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder);
 char	*join_special(const char *s1, const char *s2);
 int		needs_home_expansion(const char *s);
 char	*expand_home_directory(char *s);
@@ -39,7 +39,7 @@ char	*expand_home_directory(char *s);
 int		check_variable_and_digit(const char *s);
 char	*quit_variable_and_digit(char *s);
 int		is_digit_special(int c);
-char	*substitute_variable_value(t_cmd *cmd, char *line, char **varReminder);
+char	*substitute_variable_value(t_msh *msh, t_cmd *cmd, char *line, char **varReminder);
 
 /*expansion_utils_3.c*/
 char	*replace_special_value(char *s, int error_value);
@@ -50,7 +50,7 @@ char	*split_variable_reminder(char *line, int index, t_cmd *cmd);
 
 /*expansion_utils_4.c*/
 int		special_char_check(char c);
-char	*compare_variable_name(t_cmd *cmd, char *line, char *nameVar);
+char	*compare_variable_name(t_msh *msh, char *line, char *nameVar);
 int		compare_env_variable_name(const char *s1, const char *s2);
 char	*extract_env_value(const char *envVar);
 char	*replace_variable_in_line(char *line, char *var);
@@ -70,10 +70,10 @@ int		get_next_quote(int i, char *str, char c);
 
 /*parser_functions.c*/
 int		validate_and_split_input(t_msh *shell, char *inputLine, char ***segments);
-void	perform_expansion(t_cmd **command);
+void	perform_expansion(t_msh *msh, t_cmd **command);
 t_cmd	*get_last_command_node(t_cmd **cmd);
 
 /*parser.c*/
-int	parse_input_line(t_msh *shell, t_cmd **commandList, char *inputLine);
+int		parse_input_line(t_msh *shell, t_cmd **commandList, char *inputLine);
 
 #endif

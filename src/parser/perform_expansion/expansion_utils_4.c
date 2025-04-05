@@ -29,7 +29,7 @@ int	special_char_check(char c)
 /*
 ** compare_variable_name:
 **   Compara el nombre extraído de la variable (nameVar) con cada variable
-**   de entorno almacenada en cmd->env->env. Se utiliza var_strcmp para comparar
+**   de entorno almacenada en msh->env. Se utiliza var_strcmp para comparar
 **   el nombre extraído con la parte del nombre de cada variable de entorno.
 **
 **   Si se encuentra una coincidencia, se libera nameVar, se extrae el valor de
@@ -42,23 +42,24 @@ int	special_char_check(char c)
 ** Retorna:
 **   La línea modificada con la variable sustituida, o el resultado de change_line_value.
 */
-char	*compare_variable_name(t_cmd *cmd, char *line, char *nameVar)
+char	*compare_variable_name(t_msh *msh, char *line, char *nameVar)
 {
-	int		envIndex;
-	char	*varValue;
+    int		envIndex;
+    char	*varValue;
 
-	for (envIndex = 0; envIndex < cmd->env->num_env; envIndex++)
-	{
-		if (compare_env_variable_name(nameVar, cmd->env->env[envIndex]) == 0)
-		{
-			free(nameVar);
-			varValue = extract_env_value(cmd->env->env[envIndex]);
-			return (change_line_value(line, varValue));
-		}
-	}
-	// Si ninguna variable coincide, libera nameVar y sustituye por cadena vacía.
-	free(nameVar);
-	return (change_line_value(line, ft_strdup("")));
+    envIndex = 0;
+    while (envIndex < msh->num_env)
+    {
+        if (compare_env_variable_name(nameVar, msh->env[envIndex]) == 0)
+        {
+            free(nameVar);
+            varValue = extract_env_value(msh->env[envIndex]);
+            return (change_line_value(line, varValue));
+        }
+        envIndex++;
+    }
+    free(nameVar);
+    return (change_line_value(line, ft_strdup("")));
 }
 /*
 ** compare_env_variable_name:

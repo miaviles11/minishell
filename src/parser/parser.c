@@ -28,7 +28,7 @@ int	parse_input_line(t_msh *shell, t_cmd **commandList, char *inputLine)
 	/* Crea el primer nodo de comando a partir del primer segmento */
 	*commandList = create_command_node(shell, splitSegments[0]);
 	/* Realiza la expansión (por ejemplo, variables y eliminación de comillas) sobre el comando */
-	perform_expansion(commandList);
+	perform_expansion(shell, commandList);
 	currentCommand = *commandList;
 	i = 1;
 	/* Recorre cada segmento adicional para formar el pipeline */
@@ -36,7 +36,7 @@ int	parse_input_line(t_msh *shell, t_cmd **commandList, char *inputLine)
 	{
 		shell->total_chars = 0;
 		newCommand = create_command_node(shell, splitSegments[i]);
-		perform_expansion(&newCommand);
+		perform_expansion(shell, &newCommand);
 		get_last_command_node(commandList)->next = newCommand;
 		currentCommand = newCommand;
 		i++;

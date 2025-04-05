@@ -105,7 +105,7 @@ int	is_digit_special(int c)
 ** Retorna:
 **   La cadena 'line' con la variable sustituida por su valor.
 */
-char	*substitute_variable_value(t_cmd *cmd, char *line, char **varReminder)
+char	*substitute_variable_value(t_msh *msh, t_cmd *cmd, char *line, char **varReminder)
 {
     char	*varName;
     char	*temp; // Puntero temporal para manejar el resultado de split_variable_reminder
@@ -144,5 +144,5 @@ char	*substitute_variable_value(t_cmd *cmd, char *line, char **varReminder)
     if (!varName[0])
         return (ft_strchr(line, '$') + 1);
     // Compara el nombre extraído con las variables de entorno y realiza la sustitución.
-    return (compare_variable_name(cmd, line, varName));
+    return (compare_variable_name(msh, line, varName));
 }

@@ -41,7 +41,7 @@ int	has_variable(const char *s)
 	}
 	return (0);
 }
-char	*substitute_variables(t_cmd *cmd, char *s, char **varReminder)
+char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder)
 {
 	char	*temp;
 
@@ -51,7 +51,7 @@ char	*substitute_variables(t_cmd *cmd, char *s, char **varReminder)
 	while (has_variable(s))
 	{
 		cmd->flags->dollar_special = 0;
-		s = substitute_variable_value(cmd, s, varReminder);
+		s = substitute_variable_value(msh, cmd, s, varReminder);
 		// Si se activó un caso especial, concatena varReminder.
 		if (cmd->flags->dollar_special == 1)
 		{
