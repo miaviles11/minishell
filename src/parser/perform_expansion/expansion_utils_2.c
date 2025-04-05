@@ -105,7 +105,7 @@ int	is_digit_special(int c)
 ** Retorna:
 **   La cadena 'line' con la variable sustituida por su valor.
 */
-char	*substitute_variable_value(t_cmd *cmd, char *line, char *varReminder)
+char	*substitute_variable_value(t_cmd *cmd, char *line, char **varReminder)
 {
 	char	*varName;
 	int		i;

@@ -36,21 +36,32 @@ typedef struct s_pipe
 	int	out_error;
 }				t_pipe;
 
+
+typedef struct s_flags
+{
+	int	quote;          // Indica si hay error en el balance de comillas
+	int	pipe;           // Número de pipes detectados en la línea
+	int	redic;          // Indicador de redirecciones
+	int	dollar_special; // Indicador para casos especiales con $
+}	t_flags;
+
 /*
 ** t_cmd: Nodo de comando.
 ** Cada nodo contiene el nombre del comando, su arreglo de argumentos y
 ** el número de argumentos. La información global (entorno, flags, pipes)
 ** se encuentra en la estructura principal y se pasa como argumento a las funciones.
 */
+
 typedef struct s_cmd
 {
-	char 	*cmd;
-	char 	**arg;
-	int 	num_arg;
-	char 	*input_file;
-	char 	*output_file;
-	int 	background;
-	struct 	s_cmd *next;
+	char 		*cmd;
+	char 		**arg;
+	int 		num_arg;
+	char 		*input_file;
+	char 		*output_file;
+	int 		background;
+	t_flags		*flags; // Agregar los flags aquí
+	struct 		s_cmd *next;
 }	t_cmd;
 
 /*
@@ -66,11 +77,6 @@ typedef struct s_msh
 	char	**env;      // Array de variables de entorno (cada cadena "VAR=VAL")
 	char	*path;      // Contenido de la variable PATH, extraído del env
 	int		num_env;    // Número de variables en env
-	/* Banderas globales */
-	int		quote;          // Indica si hay error en el balance de comillas
-	int		pipe;           // Número de pipes detectados en la línea
-	int		redic;          // Indicador de redirecciones
-	int		dollar_special; // Indicador para casos especiales con $
 }				t_msh;
 
 # include "../libft/libft.h"

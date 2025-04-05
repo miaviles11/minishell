@@ -56,7 +56,7 @@ static int	split_arguments(char *s, char **arg)
 	return (i);
 }
 
-static char	**extract_arguments(t_msh *shell, char *segment, t_cmd *command)
+char	**extract_arguments(t_msh *shell, char *segment, t_cmd *command)
 {
 	char	**args;
 	char	*processedSegment;

@@ -22,6 +22,7 @@ int		count_arguments(char *s);
 /*process_arguments_2.c*/
 int		check_null_args(char *s);
 char	*change_null_args(char *s, t_cmd *cmd);
+char	**extract_arguments(t_msh *shell, char *segment, t_cmd *command);
 
 /*process_arguments_utils.c*/
 char	*quit_null_space(char *s, int index);
@@ -29,7 +30,7 @@ char	*quit_null(char *s, int index);
 
 /*expansion_utils_1.c*/
 int		has_variable(const char *s);
-char	*substitute_variables(t_cmd *cmd, char *s, char *varReminder);
+char	*substitute_variables(t_cmd *cmd, char *s, char **varReminder);
 char	*join_special(const char *s1, const char *s2);
 int		needs_home_expansion(const char *s);
 char	*expand_home_directory(char *s);
@@ -38,7 +39,7 @@ char	*expand_home_directory(char *s);
 int		check_variable_and_digit(const char *s);
 char	*quit_variable_and_digit(char *s, int dummy1, int dummy2);
 int		is_digit_special(int c);
-char	*substitute_variable_value(t_cmd *cmd, char *line, char *varReminder);
+char	*substitute_variable_value(t_cmd *cmd, char *line, char **varReminder);
 
 /*expansion_utils_3.c*/
 char	*replace_special_value(char *s);
