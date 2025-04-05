@@ -41,25 +41,34 @@ RM			= rm -f
 
 INCLUDES	= -I includes
 
+GREEN		= \033[0;32m
+YELLOW		= \033[0;33m
+RED			= \033[0;31m
+BLUE		= \033[0;34m
+RESET		= \033[0m
+
 all: $(NAME)
 
 $(NAME): $(OBJS)
+	@echo "$(YELLOW)Compilando libft...$(RESET)"
 	@make -C $(LIBFT_DIR)
+	@echo "$(BLUE)Compilando Minishell...$(RESET)"
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -lreadline -o $(NAME)
-	@echo "Minishell compilado con éxito."
+	@echo "$(GREEN)Minishell compilado con éxito.$(RESET)"
 
 %.o: %.c includes/minishell.h
+	@echo "$(BLUE)Compilando $<...$(RESET)"
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
+	@echo "$(RED)Eliminando archivos objeto...$(RESET)"
 	$(RM) $(OBJS)
 	@make clean -C $(LIBFT_DIR)
-	@echo "Archivos objeto eliminados."
 
 fclean: clean
+	@echo "$(RED)Eliminando binario y librería...$(RESET)"
 	$(RM) $(NAME)
 	@make fclean -C $(LIBFT_DIR)
-	@echo "Binario y librería eliminados."
 
 re: fclean all
 
