@@ -22,35 +22,41 @@ static void	handle_extra_arguments(char **argv)
     exit(1);
 }
 
-void	run_shell_loop(t_msh *shell)
+void run_shell_loop(t_msh *shell)
 {
-	char	*input_line;
+    char *input_line;
+    t_cmd *old_cmd;
 
-	while (1)
-	{
-		/* Se muestra el prompt simple y se lee la línea de comando */
-		input_line = readline(WHITE_T "minishell-> " RESET_COLOR);
-		if (!input_line)
-			exit_error("exit", shell->error_value);
-		/* Si la línea está vacía o solo contiene espacios, se descarta */
-		if (is_line_empty(input_line))
-		{
-			free(input_line);
-			continue ;
-		}
-		add_history(input_line);
-		/* Se parsea la entrada y se verifican las comillas */
-		if (parse_input_line(shell, &shell->cmd, input_line)
-			&& shell->quote != 0)
-		{
-			/* Ejecuta el comando de forma individual o en pipeline según corresponda */
-			if (is_builtin(shell->cmd->cmd))
-				execute_builtin(shell, shell->cmd);
-			else
-				execute_commands(shell);
-		}
-		free (input_line);
-	}
+    while (1)
+    {
+        /* Se muestra el prompt simple y se lee la línea de comando */
+        input_line = readline(WHITE_T "minishell-> " RESET_COLOR);
+        if (!input_line)
+            exit_error("exit", shell->error_value);
+        /* Si la línea está vacía o solo contiene espacios, se descarta */
+        if (is_line_empty(input_line))
+        {
+            free(input_line);
+            continue;
+        }
+        add_history(input_line);
+        /* Guarda el puntero al comando actual antes de parsearlo */
+        old_cmd = shell->cmd;
+        /* Se parsea la entrada y se verifican las comillas */
+        if (parse_input_line(shell, &shell->cmd, input_line))
+        {
+            /* Ejecuta el comando de forma individual o en pipeline según corresponda */
+            if (is_builtin(shell->cmd->cmd))
+                execute_builtin(shell, shell->cmd);
+            else
+                execute_commands(shell);
+        }
+        /* Libera la memoria del comando anterior si existía */
+        if (old_cmd != shell->cmd)
+            free_command_list(old_cmd);
+        /* Libera la línea de entrada - no debe liberarse en parse_input_line */
+        free(input_line);
+    }
 }
 
 int    main(int argc, char **argv, char **envp)
@@ -66,5 +72,6 @@ int    main(int argc, char **argv, char **envp)
     shell->error_value = 0;
     setup_signals();
     run_shell_loop(shell);
+	cleanup_shell(shell);
     return (0);
 }

@@ -92,6 +92,10 @@ typedef struct s_msh
 
 # include "builtins.h"
 
+void	free_command_node(t_cmd *cmd);
+void	free_command_list(t_cmd *cmd);
+void	cleanup_shell(t_msh *shell);
+
 int		is_line_empty(const char *line);
 char	*str_noquotes(char *str);
 void	run_shell_loop(t_msh *shell);
