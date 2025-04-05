@@ -46,7 +46,6 @@ int	parse_input_line(t_msh *shell, t_cmd **commandList, char *inputLine)
         i++;
     }
     free(splitSegments);
-    free(inputLine);
     return (1);
 }
 
