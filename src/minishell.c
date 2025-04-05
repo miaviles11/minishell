@@ -49,7 +49,6 @@ void	run_shell_loop(t_msh *shell)
 			else
 				execute_commands(shell);
 		}
-		free (input_line);
 	}
 }
 
