@@ -78,6 +78,7 @@ typedef struct s_msh
 	char	**env;      // Array de variables de entorno (cada cadena "VAR=VAL")
 	char	*path;      // Contenido de la variable PATH, extraído del env
 	int		num_env;    // Número de variables en env
+	int		error_value; // Valor del último error
 }				t_msh;
 
 # include "../libft/libft.h"

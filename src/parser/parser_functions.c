@@ -35,7 +35,7 @@ int	validate_and_split_input(t_msh *shell, char *inputLine, char ***segments)
 	/* 3. Divide la línea en segmentos utilizando el pipe ('|') como delimitador.
 	   split_pipes devuelve un arreglo de cadenas (cada una es un segmento).
 	*/
-	*segments = split_pipes(inputLine);
+	*segments = split_pipes(shell, inputLine);
 	if (!(*segments))
 	{
 		free(inputLine);

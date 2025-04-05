@@ -61,8 +61,8 @@ int		validate_pipe_segment(char *segment);
 int		validate_redirection_syntax(char **segments, int index);
 
 /*parse_pipes.c*/
-int		count_pipes(const char *inputLine);
-char	**split_pipes(char *inputLine);
+int		count_pipes(const char *inputLine, t_msh *msh);
+char	**split_pipes(char *inputLine, t_msh *msh);
 
 /*parse_quotes.c*/
 int		check_quotes_balance(const char *s, t_msh *shell);
