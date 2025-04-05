@@ -16,10 +16,17 @@ SRCS		=	src/builtins/builtins_utils.c \
 				src/builtins/ft_unset.c \
 				src/executor/exec_builtin.c \
 				src/executor/executor.c \
-				src/parser/parse.c \
-				src/parser/parse_functions.c \
-				src/parser/utils/parse_pipes.c \
-				src/parser/utils/parse_quotes.c \
+				src/parser/create_command_node/process_arguments_1.c \
+				src/parser/create_command_node/process_arguments_2.c \
+				src/parser/perform_expansion/expansion_utils_1.c \
+				src/parser/perform_expansion/expansion_utils_2.c \
+				src/parser/perform_expansion/expansion_utils_3.c \
+				src/parser/perform_expansion/expansion_utils_4.c \
+				src/parser/validate_input/p_pipes_utils.c \
+				src/parser/validate_input/parse_pipes.c \
+				src/parser/validate_input/parse_quotes.c \
+				src/parser/parser.c \
+				src/parser/parser_functions.c \
 				src/signals/signals.c \
 				src/ft_error.c \
 				src/minishell.c \

@@ -13,34 +13,60 @@
 #ifndef PARSER_H
 # define PARSER_H
 
-int	count_pipes(const char *inputLine);
-char	**split_pipes(char *inputLine);
-int	parse_input_line(t_msh *shell, t_cmd **commandList, char *inputLine);
-int	validate_and_split_input(t_msh *shell, char *inputLine, char ***segments);
-int	check_quotes_balance(const char *s, t_msh *shell);
-char	**extract_pipe_segments(char *s, char **segments);
-int	validate_pipe_segment(char *segment);
-int	validate_redirection_syntax(char **segments, int index);
-int	has_variable(const char *s);
+# include "minishell.h"
+
+/*process_arguments_1.c*/
+int		count_arguments(char *s);
+
+/*process_arguments_2.c*/
+int		check_null_args(char *s)
+char	*change_null_args(char *s, t_cmd *cmd)
+
+/*expansion_utils_1.c*/
+int		has_variable(const char *s);
 char	*substitute_variables(t_cmd *cmd, char *s, char *varReminder);
 char	*join_special(const char *s1, const char *s2);
-int	needs_home_expansion(const char *s);
+int		needs_home_expansion(const char *s);
 char	*expand_home_directory(char *s);
-int	check_variable_and_digit(const char *s);
+
+/*expansion_utils_2.c*/
+int		check_variable_and_digit(const char *s);
 char	*quit_variable_and_digit(char *s, int dummy1, int dummy2);
-int	is_digit_special(int c);
+int		is_digit_special(int c);
 char	*substitute_variable_value(t_cmd *cmd, char *line, char *varReminder);
+
+/*expansion_utils_3.c*/
 char	*replace_special_value(char *s);
 char	*replace_special_value_helper(char *s, int i, int j);
 char	*extract_variable_name(char *line);
-int	find_next_dollar(const char *s, int start);
+int		find_next_dollar(const char *s, int start);
 char	*split_variable_reminder(char *line, int index, t_cmd *cmd);
-int	special_char_check(char c);
+
+/*expansion_utils_4.c*/
+int		special_char_check(char c);
 char	*compare_variable_name(t_cmd *cmd, char *line, char *nameVar);
-int	compare_env_variable_name(const char *s1, const char *s2);
+int		compare_env_variable_name(const char *s1, const char *s2);
 char	*extract_env_value(const char *envVar);
 char	*replace_variable_in_line(char *line, char *var);
+
+/*p_pipes_utils.c*/
+char	**extract_pipe_segments(char *s, char **segments);
+int		validate_pipe_segment(char *segment);
+int		validate_redirection_syntax(char **segments, int index);
+
+/*parse_pipes.c*/
+int		count_pipes(const char *inputLine);
+char	**split_pipes(char *inputLine);
+
+/*parse_quotes.c*/
+int		check_quotes_balance(const char *s, t_msh *shell);
+
+/*parser_functions.c*/
+int		validate_and_split_input(t_msh *shell, char *inputLine, char ***segments);
 void	perform_expansion(t_cmd **command);
 t_cmd	*get_last_command_node(t_cmd **cmd);
+
+/*parser.c*/
+int	parse_input_line(t_msh *shell, t_cmd **commandList, char *inputLine);
 
 #endif
