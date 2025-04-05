@@ -14,6 +14,9 @@
 
 int	exec_builtin(t_msh *msh, char **argv)
 {
+	// Verificar que los punteros no sean NULL
+	if (!msh || !argv || !argv[0])
+		return (1);
 	if (ft_strncmp(argv[0], "cd", 3) == 0)
 		return (minishell_cd(msh, argv));
 	if (ft_strncmp(argv[0], "pwd", 4) == 0)
@@ -33,6 +36,8 @@ int	exec_builtin(t_msh *msh, char **argv)
 
 int	is_builtin(char *cmd_name)
 {
+	if (!cmd_name)
+		return (0);
 	// Lista de builtins
 	if (ft_strncmp(cmd_name, "cd", 3) == 0 || ft_strncmp(cmd_name, "pwd", 4) == 0 ||
 		ft_strncmp(cmd_name, "echo", 5) == 0 || ft_strncmp(cmd_name, "exit", 5) == 0 ||
@@ -44,5 +49,11 @@ int	is_builtin(char *cmd_name)
 
 void	execute_builtin(t_msh *msh, t_cmd *cmd)
 {
-		exec_builtin(msh,cmd->arg);
+	// Verificar que los punteros no sean NULL
+	if (!msh || !cmd || !cmd->arg || !cmd->arg[0])
+	{
+		ft_printf("Error: comando builtin no válido\n");
+		return ;
+	}
+	exec_builtin(msh,cmd->arg);
 }
