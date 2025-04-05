@@ -21,7 +21,7 @@ void	execute_command(t_msh *msh, t_cmd *cmd);
 void	execute_commands(t_msh *msh);
 
 int		exec_builtin(t_msh *msh, char **argv);
-int 	is_builtin(char *cmd);
+int		is_builtin(char *cmd_name);
 void	execute_builtin(t_msh *msh, t_cmd *cmd);
 
 #endif

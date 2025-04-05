@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/minishell.h"
+#include "../includes/minishell.h"
 /*
 ** is_redirect_operator:
 **   Retorna 1 si el carácter 'c' es un operador de redirección ('>' o '<'),

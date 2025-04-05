@@ -92,9 +92,16 @@ typedef struct s_msh
 
 # include "builtins.h"
 
-int 	is_builtin_no_pipeline(t_cmd *cmd, char *cmd_name);
+int		is_line_empty(const char *line);
 char	*str_noquotes(char *str);
 void	run_shell_loop(t_msh *shell);
+int		main(int argc, char **argv, char **envp);
+
+t_msh 	*initialize_shell(char **envp);
+char 	*get_env_value(t_msh *shell, const char *var_name);
+void 	update_shell_level(t_msh *shell);
+int 	set_env_value(t_msh *shell, const char *var_name, const char *value);
+
 void	put_error(char *bash, char *file, char *error);
 void	exit_error(char *str, int n);
 //int	main(int argc, char **argv, char **envp);

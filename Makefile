@@ -30,9 +30,10 @@ SRCS		=	src/builtins/builtins_utils.c \
 				src/parser/parser_functions.c \
 				src/signals/signals.c \
 				src/ft_error.c \
+				src/initialize_minishell.c \
 				src/minishell.c \
-				src/utils/utils_1.c \
-				src/utils/redir_utils.c \
+				utils/utils_1.c \
+				utils/redir_utils.c \
 
 OBJS		= $(SRCS:.c=.o)
 
@@ -44,7 +45,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	@make -C $(LIBFT_DIR)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -lreadline -o $(NAME)
 	@echo "Minishell compilado con éxito."
 
 %.o: %.c includes/minishell.h

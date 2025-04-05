@@ -14,37 +14,35 @@
 
 int	exec_builtin(t_msh *msh, char **argv)
 {
-	if (strcmp(argv[0], "cd") == 0)
+	if (ft_strncmp(argv[0], "cd", 3) == 0)
 		return (minishell_cd(msh, argv));
-	if (strcmp(argv[0], "pwd") == 0)
+	if (ft_strncmp(argv[0], "pwd", 4) == 0)
 		return (minishell_pwd(msh));
-	if (strcmp(argv[0], "echo") == 0)
+	if (ft_strncmp(argv[0], "echo", 5) == 0)
 		return (minishell_echo(msh));
-	if (strcmp(argv[0], "exit") == 0)
+	if (ft_strncmp(argv[0], "exit", 5) == 0)
 		return (minishell_exit(msh));
-	if (strcmp(argv[0], "env") == 0)
+	if (ft_strncmp(argv[0], "env", 4) == 0)
 		return (minishell_env(msh));
-	if (strcmp(argv[0], "export") == 0)
+	if (ft_strncmp(argv[0], "export", 7) == 0)
 		return (minishell_export(msh, argv));
-	if (strcmp(argv[0], "unset") == 0)
+	if (ft_strncmp(argv[0], "unset", 6) == 0)
 		return (minishell_unset(msh, argv));
 	return (0);
 }
 
-int	is_builtin(char *cmd)
+int	is_builtin(char *cmd_name)
 {
 	// Lista de builtins
-	if (strcmp(cmd, "cd") == 0 || strcmp(cmd, "pwd") == 0 || strcmp(cmd, "echo") == 0 ||
-		strcmp(cmd, "exit") == 0 || strcmp(cmd, "env") == 0 || strcmp(cmd, "export") == 0 ||
-		strcmp(cmd, "unset") == 0)
+	if (ft_strncmp(cmd_name, "cd", 3) == 0 || ft_strncmp(cmd_name, "pwd", 4) == 0 ||
+		ft_strncmp(cmd_name, "echo", 5) == 0 || ft_strncmp(cmd_name, "exit", 5) == 0 ||
+		ft_strncmp(cmd_name, "env", 4) == 0 || ft_strncmp(cmd_name, "export", 7) == 0 ||
+		ft_strncmp(cmd_name, "unset", 6) == 0)
 		return (1);
 	return (0);
 }
 
 void	execute_builtin(t_msh *msh, t_cmd *cmd)
 {
-	if (is_builtin(cmd->cmd))
-	{
 		exec_builtin(msh,cmd->arg);
-	}
 }
