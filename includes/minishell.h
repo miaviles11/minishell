@@ -39,9 +39,6 @@ typedef struct s_pipe
 
 typedef struct s_flags
 {
-	int	quote;          // Indica si hay error en el balance de comillas
-	int	pipe;           // Número de pipes detectados en la línea
-	int	redic;          // Indicador de redirecciones
 	int	dollar_special; // Indicador para casos especiales con $
 }	t_flags;
 
@@ -79,6 +76,10 @@ typedef struct s_msh
 	char	*path;      // Contenido de la variable PATH, extraído del env
 	int		num_env;    // Número de variables en env
 	int		error_value; // Valor del último error
+
+	int	quote;          // Indica si hay error en el balance de comillas
+	int	pipe;           // Número de pipes detectados en la línea
+	int	redic;          // Indicador de redirecciones
 }				t_msh;
 
 # include "../libft/libft.h"

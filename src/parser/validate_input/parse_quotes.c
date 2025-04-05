@@ -12,6 +12,22 @@
 
 #include "../../../includes/minishell.h"
 
+static int	both_quotes_exist(const char *s, int *i, char quote)
+{
+	int	pairing;
+
+	pairing = 1;
+	// Avanza mientras haya caracteres y no se encuentre la comilla de cierre.
+	while (s[*i + 1] && s[*i + 1] != quote)
+		(*i)++;
+	// Si se encontró la comilla de cierre, incrementa el contador.
+	if (s[*i + 1] == quote)
+		pairing++;
+	// Salta la comilla de cierre (o el final si no se encontró).
+	(*i)++;
+	return (pairing);
+}
+
 /*
 ** check_quotes_balance:
 **   Verifica que en la cadena 's' las comillas dobles y simples estén balanceadas.
@@ -45,21 +61,6 @@ int	check_quotes_balance(const char *s, t_msh *shell)
 		i++;
 	}
 	return (1);
-}
-static int	both_quotes_exist(const char *s, int *i, char quote)
-{
-	int	pairing;
-
-	pairing = 1;
-	// Avanza mientras haya caracteres y no se encuentre la comilla de cierre.
-	while (s[*i + 1] && s[*i + 1] != quote)
-		(*i)++;
-	// Si se encontró la comilla de cierre, incrementa el contador.
-	if (s[*i + 1] == quote)
-		pairing++;
-	// Salta la comilla de cierre (o el final si no se encontró).
-	(*i)++;
-	return (pairing);
 }
 
 int	get_next_quote(int i, char *str, char c)
