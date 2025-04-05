@@ -24,7 +24,7 @@ int	check_variable_and_digit(const char *s)
 
 	while (s[i] && s[i] != '$')
 		i++;
-	if (s[i] == '$' && s[i + 1] && ft_isdigit_special(s[i + 1]) == 1)
+	if (s[i] == '$' && s[i + 1] && is_digit_special(s[i + 1]) == 1)
 		return (0);
 	return (1);
 }
@@ -42,7 +42,7 @@ int	check_variable_and_digit(const char *s)
 ** Retorna:
 **   Una nueva cadena con los patrones eliminados. Se libera la cadena original.
 */
-char	*quit_variable_and_digit(char *s, int dummy1, int dummy2)
+char	*quit_variable_and_digit(char *s)
 {
 	int		i;
 	int		j;
@@ -58,7 +58,7 @@ char	*quit_variable_and_digit(char *s, int dummy1, int dummy2)
 	while (s[i])
 	{
 		// Si se detecta un '$' seguido de un dígito, lo salta.
-		if (s[i] == '$' && s[i + 1] && ft_isdigit_special(s[i + 1]) == 1)
+		if (s[i] == '$' && s[i + 1] && is_digit_special(s[i + 1]) == 1)
 		{
 			i += 2;
 			continue;
@@ -107,37 +107,42 @@ int	is_digit_special(int c)
 */
 char	*substitute_variable_value(t_cmd *cmd, char *line, char **varReminder)
 {
-	char	*varName;
-	int		i;
+    char	*varName;
+    char	*temp; // Puntero temporal para manejar el resultado de split_variable_reminder
+    int		i;
 
-	// Si se encuentra el patrón "$?", reemplaza por su valor especial.
-	if (ft_strnstr(line, "$?", ft_strlen(line)) != 0)
-		return (replace_special_value(line));
+    // Si se encuentra el patrón "$?", reemplaza por su valor especial.
+    if (ft_strnstr(line, "$?", ft_strlen(line)) != 0)
+        return (replace_special_value(line));
 
-	// Extrae el nombre de la variable (por ejemplo, "USER" de "$USER").
-	varName = extract_variable_name(line);
+    // Extrae el nombre de la variable (por ejemplo, "USER" de "$USER").
+    varName = extract_variable_name(line);
 
-	// Busca la posición del primer '$' en la cadena.
-	i = find_next_dollar(line, -1);
+    // Busca la posición del primer '$' en la cadena.
+    i = find_next_dollar(line, -1);
 
-	// Recorre la cadena a partir de la posición encontrada, hasta un espacio.
-	while (line[++i] && line[i] != ' ')
-	{
-		// Si se encuentra un carácter especial o un segundo '$' en la posición indicada,
-		// guarda la parte restante en varReminder.
-		if ((special_char_check(line[i]) == -1 && line[i] != '$')
-			|| (line[i] == '$' && i == find_next_dollar(line, find_next_dollar(line, -1) + 1)))
-		{
-			varReminder = split_variable_reminder(line, i, cmd);
-			break ;
-		}
-	}
-	// Si no se pudo extraer un nombre de variable, retorna NULL.
-	if (!varName)
-		return (NULL);
-	// Si el nombre extraído es vacío, retorna la parte de la cadena a partir del '$'.
-	if (!varName[0])
-		return (ft_strchr(line, '$') + 1);
-	// Compara el nombre extraído con las variables de entorno y realiza la sustitución.
-	return (compare_variable_name(cmd, line, varName));
+    // Recorre la cadena a partir de la posición encontrada, hasta un espacio.
+    while (line[++i] && line[i] != ' ')
+    {
+        // Si se encuentra un carácter especial o un segundo '$' en la posición indicada,
+        // guarda la parte restante en varReminder.
+        if ((special_char_check(line[i]) == -1 && line[i] != '$')
+            || (line[i] == '$' && i == find_next_dollar(line, find_next_dollar(line, -1) + 1)))
+        {
+            temp = split_variable_reminder(line, i, cmd); // Usa un puntero temporal
+            if (varReminder) // Asegúrate de que varReminder no sea NULL
+            {
+                *varReminder = temp; // Asigna el resultado al contenido de varReminder
+            }
+            break ;
+        }
+    }
+    // Si no se pudo extraer un nombre de variable, retorna NULL.
+    if (!varName)
+        return (NULL);
+    // Si el nombre extraído es vacío, retorna la parte de la cadena a partir del '$'.
+    if (!varName[0])
+        return (ft_strchr(line, '$') + 1);
+    // Compara el nombre extraído con las variables de entorno y realiza la sustitución.
+    return (compare_variable_name(cmd, line, varName));
 }

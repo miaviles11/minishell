@@ -37,7 +37,7 @@ char	*expand_home_directory(char *s);
 
 /*expansion_utils_2.c*/
 int		check_variable_and_digit(const char *s);
-char	*quit_variable_and_digit(char *s, int dummy1, int dummy2);
+char	*quit_variable_and_digit(char *s);
 int		is_digit_special(int c);
 char	*substitute_variable_value(t_cmd *cmd, char *line, char **varReminder);
 
