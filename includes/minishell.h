@@ -57,7 +57,8 @@ typedef struct s_cmd
     char 		*input_file;
     char 		*output_file;
     int 		background;
-    t_flags		*flags; // Agregar los flags aquí
+    t_flags		*flags; // Puntero a las banderas globales
+    char		**env;  // Puntero al entorno global
     int			error_value; // Valor del último error asociado al comando
     struct 		s_cmd *next;
 }	t_cmd;

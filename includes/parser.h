@@ -70,6 +70,7 @@ int		get_next_quote(int i, char *str, char c);
 
 /*parser_functions.c*/
 int		validate_and_split_input(t_msh *shell, char *inputLine, char ***segments);
+t_cmd	*create_command_node(t_msh *shell, char *segment);
 void	perform_expansion(t_msh *msh, t_cmd **command);
 t_cmd	*get_last_command_node(t_cmd **cmd);
 
