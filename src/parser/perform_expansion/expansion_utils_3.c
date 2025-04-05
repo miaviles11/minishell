@@ -20,53 +20,53 @@
 **
 ** Retorna la cadena modificada.
 */
-char	*replace_special_value(char *s)
+char *replace_special_value(char *s, int error_value)
 {
-	int	i;
-	int	j;
+    int i;
+    int j;
 
-	// Busca la posición del signo '?' y retrocede 1 para posicionarse en '$'
-	i = get_next_quote(0, s, '?') - 1;
-	while (s[i])
-	{
-		// Si se detecta el patrón "$?"
-		if (s[i] == '$' && s[i + 1] && s[i + 1] == '?')
-			s = replace_special_value_helper(s, i, -1);
-		j = i;
-		// Busca la siguiente aparición de '$'
-		i = get_next_quote(0, s, '$');
-		// Si no se ha avanzado, sal del bucle
-		if (j == i)
-			break ;
-	}
-	return (s);
+    // Busca la posición del signo '?' y retrocede 1 para posicionarse en '$'
+    i = get_next_quote(0, s, '?') - 1;
+    while (s[i])
+    {
+        // Si se detecta el patrón "$?"
+        if (s[i] == '$' && s[i + 1] && s[i + 1] == '?')
+            s = replace_special_value_helper(s, i, error_value);
+        j = i;
+        // Busca la siguiente aparición de '$'
+        i = get_next_quote(0, s, '$');
+        // Si no se ha avanzado, sal del bucle
+        if (j == i)
+            break;
+    }
+    return (s);
 }
-char	*replace_special_value_helper(char *s, int i, int j)
+char *replace_special_value_helper(char *s, int i, int error_value)
 {
-	char	*errorStr;
-	char	*prefix;
-	char	*suffix;
-	char	*result;
-	char	*temp;
+    char *errorStr;
+    char *prefix;
+    char *suffix;
+    char *result;
+    char *temp;
 
-	// Convierte el valor global g_error a cadena.
-	errorStr = ft_itoa(g_error);
-	// Extrae el prefijo: todo antes de la ocurrencia de "$?"
-	prefix = ft_substr(s, 0, i);
-	// Se asume que "$?" ocupa 2 caracteres; extrae el sufijo desde i+2.
-	suffix = ft_strdup(s + i + 2);
-	// Une el prefijo con el valor de error.
-	result = ft_strjoin(prefix, errorStr);
-	// Une el resultado anterior con el sufijo.
-	temp = result;
-	result = ft_strjoin(result, suffix);
-	// Libera las cadenas temporales utilizadas.
-	free(temp);
-	free(prefix);
-	free(suffix);
-	free(errorStr);
-	free(s);
-	return (result);
+    // Convierte el valor del error a cadena.
+    errorStr = ft_itoa(error_value);
+    // Extrae el prefijo: todo antes de la ocurrencia de "$?"
+    prefix = ft_substr(s, 0, i);
+    // Se asume que "$?" ocupa 2 caracteres; extrae el sufijo desde i+2.
+    suffix = ft_strdup(s + i + 2);
+    // Une el prefijo con el valor de error.
+    result = ft_strjoin(prefix, errorStr);
+    // Une el resultado anterior con el sufijo.
+    temp = result;
+    result = ft_strjoin(result, suffix);
+    // Libera las cadenas temporales utilizadas.
+    free(temp);
+    free(prefix);
+    free(suffix);
+    free(errorStr);
+    free(s);
+    return (result);
 }
 
 /*

@@ -113,7 +113,7 @@ char	*substitute_variable_value(t_cmd *cmd, char *line, char **varReminder)
 
     // Si se encuentra el patrón "$?", reemplaza por su valor especial.
     if (ft_strnstr(line, "$?", ft_strlen(line)) != 0)
-        return (replace_special_value(line));
+        return (replace_special_value(line, cmd->error_value));
 
     // Extrae el nombre de la variable (por ejemplo, "USER" de "$USER").
     varName = extract_variable_name(line);

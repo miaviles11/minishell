@@ -42,8 +42,8 @@ int		is_digit_special(int c);
 char	*substitute_variable_value(t_cmd *cmd, char *line, char **varReminder);
 
 /*expansion_utils_3.c*/
-char	*replace_special_value(char *s);
-char	*replace_special_value_helper(char *s, int i, int j);
+char	*replace_special_value(char *s, int error_value);
+char	*replace_special_value_helper(char *s, int i, int error_value);
 char	*extract_variable_name(char *line);
 int		find_next_dollar(const char *s, int start);
 char	*split_variable_reminder(char *line, int index, t_cmd *cmd);

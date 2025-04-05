@@ -54,14 +54,15 @@ typedef struct s_flags
 
 typedef struct s_cmd
 {
-	char 		*cmd;
-	char 		**arg;
-	int 		num_arg;
-	char 		*input_file;
-	char 		*output_file;
-	int 		background;
-	t_flags		*flags; // Agregar los flags aquí
-	struct 		s_cmd *next;
+    char 		*cmd;
+    char 		**arg;
+    int 		num_arg;
+    char 		*input_file;
+    char 		*output_file;
+    int 		background;
+    t_flags		*flags; // Agregar los flags aquí
+    int			error_value; // Valor del último error asociado al comando
+    struct 		s_cmd *next;
 }	t_cmd;
 
 /*

@@ -46,7 +46,7 @@ char	*substitute_variables(t_cmd *cmd, char *s, char **varReminder)
 	char	*temp;
 
 	if (check_variable_and_digit(s) == 0)
-		s = quit_variable_and_digit(s, -1, -1);
+		s = quit_variable_and_digit(s);
 	// Mientras se detecte una variable en la cadena...
 	while (has_variable(s))
 	{
