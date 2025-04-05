@@ -33,14 +33,14 @@ int	special_char_check(char c)
 **   el nombre extraído con la parte del nombre de cada variable de entorno.
 **
 **   Si se encuentra una coincidencia, se libera nameVar, se extrae el valor de
-**   la variable (usando ft_add_var_value) y se llama a change_line_value para
+**   la variable (usando ft_add_var_value) y se llama a replace_variable_in_line para
 **   reemplazar la parte correspondiente en la línea.
 **
 **   Si no se encuentra ninguna coincidencia, se libera nameVar y se reemplaza
 **   por una cadena vacía en la línea.
 **
 ** Retorna:
-**   La línea modificada con la variable sustituida, o el resultado de change_line_value.
+**   La línea modificada con la variable sustituida, o el resultado de replace_variable_in_line.
 */
 char	*compare_variable_name(t_msh *msh, char *line, char *nameVar)
 {
@@ -54,12 +54,12 @@ char	*compare_variable_name(t_msh *msh, char *line, char *nameVar)
         {
             free(nameVar);
             varValue = extract_env_value(msh->env[envIndex]);
-            return (change_line_value(line, varValue));
+            return (replace_variable_in_line(line, varValue));
         }
         envIndex++;
     }
     free(nameVar);
-    return (change_line_value(line, ft_strdup("")));
+    return (replace_variable_in_line(line, ft_strdup("")));
 }
 /*
 ** compare_env_variable_name:
