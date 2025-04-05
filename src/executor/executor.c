@@ -18,6 +18,7 @@ char	*find_executable(char *cmd)
 	char	*path_env;
 	char	**paths;
 	char	*full_path;
+	char 	*temp;
 	int		i;
 
 	// Obtiene la variable de entorno PATH
@@ -33,7 +34,9 @@ char	*find_executable(char *cmd)
 	while (paths[i])
 	{
 		full_path = ft_strjoin(paths[i], "/");
+		temp = full_path;
 		full_path = ft_strjoin(full_path, cmd);
+		free(temp);
 		if (access(full_path, X_OK) == 0)
 		{
 			ft_free_split(paths);
