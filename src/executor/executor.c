@@ -111,14 +111,14 @@ static void	execute_single_command(t_msh *msh, t_cmd *cmd)
 	char	*executable;
 	pid_t	pid;
 	int		status;
+	char	**argv;
+	int		i;
+	int		j;
 
+	i = 0;
+	j = -1;
 	if (!cmd || !cmd->cmd)
 		return ;
-	if (is_builtin(cmd->cmd))
-	{
-		execute_builtin(msh, cmd);
-		return ;
-	}
 	executable = find_executable(cmd->cmd);
 	if (!executable)
 	{
@@ -134,11 +134,27 @@ static void	execute_single_command(t_msh *msh, t_cmd *cmd)
 		msh->error_value = 1;
 		return ;
 	}
+	if (cmd->arg)
+	{
+		while (cmd->arg[i++])
+			i++;
+	}
+	argv = (char **)malloc(sizeof(char *) * (i + 2));
+	if (!argv)
+	{
+		free(argv);
+		return ;
+	}
+	argv[0] = cmd->cmd;
+
+	while (++j < i)
+		argv[j + 1] = cmd->arg[j];
+	argv[i + 1] = NULL;
 	if (pid == 0)
 	{
 		if (msh->redic)
 			handle_redirection(cmd);
-		execve(executable, cmd->arg, cmd->env);
+		execve(executable, argv, cmd->env);
 		perror("execve");
 		free(executable);
 		_exit(1);
@@ -149,6 +165,7 @@ static void	execute_single_command(t_msh *msh, t_cmd *cmd)
 		if (WIFEXITED(status))
 			msh->error_value = WEXITSTATUS(status);
 	}
+	free(argv);
 	free(executable);
 }
 
