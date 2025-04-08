@@ -55,7 +55,13 @@ char	*find_executable(char *cmd)
 void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 {
 	char	*executable;
+	char	**argv;
+	int		i;
+	int		j;
 
+	i = 0;
+	j = -1;
+	
 	if (input_fd != STDIN_FILENO)
 	{
 		dup2(input_fd, STDIN_FILENO);
@@ -74,9 +80,26 @@ void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 		ft_printf("Command not found: %s\n", cmd->cmd);
 		_exit(127);
 	}
-	execve(executable, cmd->arg, cmd->env);
+	if (cmd->arg)
+	{
+		while (cmd->arg[i++])
+			i++;
+	}
+	argv = (char **)malloc(sizeof(char *) * (i + 2));
+	if (!argv)
+	{
+		free(argv);
+		return ;
+	}
+	argv[0] = cmd->cmd;
+
+	while (++j < i)
+		argv[j + 1] = cmd->arg[j];
+	argv[i + 1] = NULL;
+	execve(executable, argv, cmd->env);
 	perror("execve");
 	free(executable);
+	free(argv);
 	_exit(1);
 }
 

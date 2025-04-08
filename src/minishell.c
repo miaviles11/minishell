@@ -46,7 +46,7 @@ void run_shell_loop(t_msh *shell)
 		/* Se parsea la entrada y se verifican las comillas */
 		if (parse_input_line(shell, &shell->cmd, input_line))
 		{
-			if (shell->cmd && shell->cmd->cmd && is_builtin(shell->cmd->cmd))
+			if (!shell->pipe && shell->cmd && shell->cmd->cmd && is_builtin(shell->cmd->cmd))
 				execute_builtin(shell, shell->cmd);
 			else if (shell->cmd)
 				execute_commands(shell);
