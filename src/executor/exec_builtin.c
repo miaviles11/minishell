@@ -49,11 +49,29 @@ int	is_builtin(char *cmd_name)
 
 void	execute_builtin(t_msh *msh, t_cmd *cmd)
 {
-	// Verificar que los punteros no sean NULL
-	if (!msh || !cmd || !cmd->arg || !cmd->arg[0])
+	char	**argv;
+	int		i;
+	int		j;
+
+	i = 0;
+	if (!msh || !cmd || !cmd->cmd)
+		return ;
+	if (cmd->arg)
 	{
-		ft_printf("Error: comando builtin no válido\n");
+		while (cmd->arg[i++])
+			i++;
+	}
+	argv = (char **)malloc(sizeof(char *) * (i + 2));
+	if (!argv)
+	{
+		free(argv);
 		return ;
 	}
-	exec_builtin(msh,cmd->arg);
+	argv[0] = cmd->cmd;
+	j = -1;
+	while (++j < i)
+		argv[j + 1] = cmd->arg[j];
+	argv[i + 1] = NULL;
+	msh->error_value = exec_builtin(msh, argv);
+	free(argv);
 }

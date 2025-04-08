@@ -17,7 +17,7 @@
 
 char	*find_executable(char *cmd);
 void	handle_redirection(t_cmd *cmd);
-void	execute_command(t_msh *msh, t_cmd *cmd);
+void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd);
 void	execute_commands(t_msh *msh);
 
 int		exec_builtin(t_msh *msh, char **argv);

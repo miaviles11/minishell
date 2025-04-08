@@ -49,12 +49,205 @@ char	*find_executable(char *cmd)
 	return (NULL);
 }
 
-// Maneja la redirección de entrada y salida para un comando
+/**
+ * Ejecuta un comando en un proceso hijo con los descriptores de archivo especificados
+ */
+void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
+{
+	char	*executable;
+
+	if (input_fd != STDIN_FILENO)
+	{
+		dup2(input_fd, STDIN_FILENO);
+		close(input_fd);
+	}
+	if (output_fd != STDOUT_FILENO)
+	{
+		dup2(output_fd, STDOUT_FILENO);
+		close(output_fd);
+	}
+	if (msh->redic)
+		handle_redirection(cmd);
+	executable = find_executable(cmd->cmd);
+	if (!executable)
+	{
+		ft_printf("Command not found: %s\n", cmd->cmd);
+		_exit(127);
+	}
+	execve(executable, cmd->arg, cmd->env);
+	perror("execve");
+	free(executable);
+	_exit(1);
+}
+
+/**
+ * Ejecuta un comando individual (sin pipes)
+ */
+static void	execute_single_command(t_msh *msh, t_cmd *cmd)
+{
+	char	*executable;
+	pid_t	pid;
+	int		status;
+
+	if (!cmd || !cmd->cmd)
+		return ;
+	if (is_builtin(cmd->cmd))
+	{
+		execute_builtin(msh, cmd);
+		return ;
+	}
+	executable = find_executable(cmd->cmd);
+	if (!executable)
+	{
+		ft_printf("Command not found: %s\n", cmd->cmd);
+		msh->error_value = 127;
+		return ;
+	}
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		free(executable);
+		msh->error_value = 1;
+		return ;
+	}
+	if (pid == 0)
+	{
+		if (msh->redic)
+			handle_redirection(cmd);
+		execve(executable, cmd->arg, cmd->env);
+		perror("execve");
+		free(executable);
+		_exit(1);
+	}
+	else if (pid > 0 && !cmd->background)
+	{
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			msh->error_value = WEXITSTATUS(status);
+	}
+	free(executable);
+}
+
+/**
+ * Procesa un comando con su pipe de salida
+ */
+static void	process_cmd_with_pipe(t_msh *msh, t_cmd *cmd, int prev_pipe, int *pipe_fd)
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		if (prev_pipe != STDIN_FILENO)
+			close(prev_pipe);
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		return ;
+	}
+	if (pid == 0)
+	{
+		close(pipe_fd[0]);
+		child_process(msh, cmd, prev_pipe, pipe_fd[1]);
+	}
+	if (prev_pipe != STDIN_FILENO)
+		close(prev_pipe);
+	close(pipe_fd[1]);
+}
+
+/**
+ * Procesa el último comando en un pipeline
+ */
+static void	process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
+{
+	pid_t	pid;
+	int		status;
+
+	if (is_builtin(cmd->cmd) && prev_pipe == STDIN_FILENO)
+	{
+		execute_builtin(msh, cmd);
+		return ;
+	}
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		if (prev_pipe != STDIN_FILENO)
+			close(prev_pipe);
+		return ;
+	}
+	if (pid == 0)
+		child_process(msh, cmd, prev_pipe, STDOUT_FILENO);
+	if (prev_pipe != STDIN_FILENO)
+		close(prev_pipe);
+	if (!cmd->background)
+	{
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			msh->error_value = WEXITSTATUS(status);
+	}
+}
+
+/**
+ * Espera a que terminen todos los procesos hijos pendientes
+ */
+static void	wait_for_children(void)
+{
+	pid_t	wpid;
+	int		status;
+
+	while ((wpid = wait(&status)) > 0)
+		;
+}
+
+/**
+ * Ejecuta una lista de comandos con pipes
+ */
+void	execute_commands(t_msh *msh)
+{
+	t_cmd	*current;
+	t_cmd	*next;
+	int		pipe_fd[2];
+	int		prev_pipe;
+
+	if (!msh->cmd)
+		return ;
+	if (!msh->cmd->next && !msh->pipe)
+	{
+		execute_single_command(msh, msh->cmd);
+		return ;
+	}
+	current = msh->cmd;
+	prev_pipe = STDIN_FILENO;
+	while (current)
+	{
+		next = current->next;
+		if (next)
+		{
+			if (pipe(pipe_fd) == -1)
+			{
+				perror("pipe");
+				return ;
+			}
+			process_cmd_with_pipe(msh, current, prev_pipe, pipe_fd);
+			prev_pipe = pipe_fd[0];
+		}
+		else
+			process_last_cmd(msh, current, prev_pipe);
+		current = next;
+	}
+	if (!msh->cmd->background)
+		wait_for_children();
+}
+
+/**
+ * Maneja la redirección de entrada y salida para un comando
+ */
 void	handle_redirection(t_cmd *cmd)
 {
 	int	fd;
 
-	// Redirige la entrada si se especifica un archivo de entrada
 	if (cmd->input_file)
 	{
 		fd = open(cmd->input_file, O_RDONLY);
@@ -66,7 +259,6 @@ void	handle_redirection(t_cmd *cmd)
 		dup2(fd, STDIN_FILENO);
 		close(fd);
 	}
-	// Redirige la salida si se especifica un archivo de salida
 	if (cmd->output_file)
 	{
 		fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -77,53 +269,5 @@ void	handle_redirection(t_cmd *cmd)
 		}
 		dup2(fd, STDOUT_FILENO);
 		close(fd);
-	}
-}
-
-// Ejecuta un comando específico
-void	execute_command(t_msh *msh, t_cmd *cmd)
-{
-	char	*executable;
-	pid_t	pid;
-
-	// Verifica si el comando es válido
-	if (!cmd || !cmd->cmd)
-		return ;
-	// Ejecuta el comando si es un comando interno
-	if (is_builtin(cmd->cmd))
-		return (execute_builtin(msh, cmd));
-	// Busca el ejecutable del comando
-	executable = find_executable(cmd->cmd);
-	if (!executable)
-	{
-		ft_printf("Command not found: %s\n", cmd->cmd);
-		return ;
-	}
-	// Crea un proceso hijo para ejecutar el comando
-	pid = fork();
-	if (pid == 0)
-	{
-		handle_redirection(cmd); // Maneja la redirección en el proceso hijo
-		execve(executable, cmd->arg, NULL); // Ejecuta el comando
-		perror("execve");
-		_exit(1);
-	}
-	else if (pid > 0 && !cmd->background)
-		waitpid(pid, NULL, 0); // Espera a que el proceso hijo termine si no es en segundo plano
-	else if (pid < 0)
-		perror("fork");
-	free(executable); // Libera la memoria del ejecutable
-}
-
-// Ejecuta una lista de comandos
-void	execute_commands(t_msh *msh)
-{
-	t_cmd	*current;
-
-	current = msh->cmd;
-	while (current)
-	{
-		execute_command(msh, current); // Ejecuta cada comando en la lista
-		current = current->next;
 	}
 }
