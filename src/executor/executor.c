@@ -61,7 +61,6 @@ void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 
 	i = 0;
 	j = -1;
-	
 	if (input_fd != STDIN_FILENO)
 	{
 		dup2(input_fd, STDIN_FILENO);
@@ -188,6 +187,11 @@ static void	process_cmd_with_pipe(t_msh *msh, t_cmd *cmd, int prev_pipe, int *pi
 	}
 	if (pid == 0)
 	{
+		if (is_builtin(cmd->cmd) && prev_pipe == STDIN_FILENO)
+		{
+			execute_builtin(msh, cmd);
+			exit(0);
+		}
 		close(pipe_fd[0]);
 		child_process(msh, cmd, prev_pipe, pipe_fd[1]);
 	}
@@ -204,11 +208,7 @@ static void	process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
 	pid_t	pid;
 	int		status;
 
-	if (is_builtin(cmd->cmd) && prev_pipe == STDIN_FILENO)
-	{
-		execute_builtin(msh, cmd);
-		return ;
-	}
+
 	pid = fork();
 	if (pid == -1)
 	{
@@ -218,7 +218,14 @@ static void	process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
 		return ;
 	}
 	if (pid == 0)
+	{
+		if (is_builtin(cmd->cmd) && prev_pipe == STDIN_FILENO)
+		{
+			execute_builtin(msh, cmd);
+			exit(0);
+		}
 		child_process(msh, cmd, prev_pipe, STDOUT_FILENO);
+	}
 	if (prev_pipe != STDIN_FILENO)
 		close(prev_pipe);
 	if (!cmd->background)
