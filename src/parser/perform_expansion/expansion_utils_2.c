@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion_utils_2.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
+/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/05 10:20:24 by miaviles          #+#    #+#             */
-/*   Updated: 2025/04/05 10:20:24 by miaviles         ###   ########.fr       */
+/*   Created: 2025/04/05 10:20:24 by carlsanc          #+#    #+#             */
+/*   Updated: 2025/04/05 10:20:24 by carlsanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
