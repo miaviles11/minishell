@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redirection_utils.c                                :+:      :+:    :+:   */
+/*   redirection_utils_1.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -122,6 +122,7 @@ void	handle_here_document(t_cmd *command, char *delimiter)
 	close(pipeFd[0]);
 	close(pipeFd[1]);
 }
+
 int	redirect_input_from_file(t_cmd *command, char *fileName, int argIndex)
 {
 	int	fileDescriptor;
@@ -141,7 +142,7 @@ int	redirect_input_from_file(t_cmd *command, char *fileName, int argIndex)
 			exit_error("Error al cerrar pipe para redirección", 51);
 		// Se eliminan del arreglo de argumentos aquellos elementos ya procesados.
 		while (command->arg[argIndex])
-			command->arg = remove_one(command->arg, argIndex);
+			command->arg = remove_argument_at_index(command->arg, argIndex);
 		free(fileName);
 		return (1);
 	}
