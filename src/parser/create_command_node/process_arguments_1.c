@@ -57,7 +57,7 @@ char	*extract_command(t_msh *shell, char *segment)
 	return (command);
 }
 
-int	count_arguments(char *s)
+int	count_arguments_parser(char *s)
 {
 	int	i;
 	int	count;

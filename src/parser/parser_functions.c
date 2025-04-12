@@ -55,7 +55,7 @@ t_cmd	*create_command_node(t_msh *shell, char *segment)
     // Extrae el nombre del comando desde el segmento (a partir de shell->total_chars)
     node->cmd = extract_command(shell, segment + shell->total_chars);
     // Cuenta el número de argumentos en el segmento
-    node->num_arg = count_arguments(segment + shell->total_chars);
+    node->num_arg = count_arguments_parser(segment + shell->total_chars);
     node->next = NULL;
     // Asigna las referencias globales (entorno y banderas)
     node->env = shell->env;

@@ -15,7 +15,7 @@
 
 char **insert_argument_at_index(char **argList, char *newArg, int idx)
 {
-    int count = count_arguments(argList), i = 0, j;
+    int count = count_arguments_redirections(argList), i = 0, j;
     char **newList;
     if (idx < 0)
         idx = 0;
@@ -39,7 +39,7 @@ char **insert_argument_at_index(char **argList, char *newArg, int idx)
     free(argList);
     return newList;
 }
-int	count_arguments(char **args)
+int	count_arguments_redirections(char **args)
 {
 	int	count;
 

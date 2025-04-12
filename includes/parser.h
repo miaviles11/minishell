@@ -17,7 +17,7 @@
 
 /*process_arguments_1.c*/
 char	*extract_command(t_msh *shell, char *segment);
-int		count_arguments(char *s);
+int		count_arguments_parser(char *s);
 
 /*process_arguments_2.c*/
 int		check_null_args(char *s);
