@@ -95,7 +95,7 @@ char **keep_argument(char **arg, int j, char c)
 }
 int	get_next_diff_op(int i, char *str)
 {
-	while (str[i] && !isdifoperator(str[i]))
+	while (str[i] && !is_redirect_operator(str[i]))
 		i++;
 	return (i);
 }

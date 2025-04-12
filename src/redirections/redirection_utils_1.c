@@ -15,6 +15,7 @@
 void	handle_output_redirection(int redirType, t_cmd *command, char *filename)
 {
 	int	fd;
+	(void) command;
 	int	openFlags;
 
 	/* Para redirecciones simples o de error (sobrescritura), usamos O_TRUNC;
@@ -46,6 +47,7 @@ void	handle_here_document(t_cmd *command, char *delimiter)
 {
 	char	*inputLine;
 	int		pipeFd[2];
+	(void)	command;
 
 	/* Crea un pipe para almacenar las líneas del here-document */
 	if (pipe(pipeFd) == -1)
