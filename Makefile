@@ -35,6 +35,9 @@ SRCS		=	src/builtins/builtins_utils.c \
 				src/minishell.c \
 				utils/utils_1.c \
 				utils/redir_utils.c \
+				src/redirections/redirect.c \
+				src/redirections/redirection_utils_1.c \
+				src/redirections/redirection_utils_2.c \
 
 OBJS		= $(SRCS:.c=.o)
 

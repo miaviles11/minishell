@@ -59,8 +59,7 @@ void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 	int		i;
 	int		j;
 
-	i = 0;
-	j = -1;
+	/* Redirige la entrada y la salida según los fds pasados */
 	if (input_fd != STDIN_FILENO)
 	{
 		dup2(input_fd, STDIN_FILENO);
@@ -71,17 +70,21 @@ void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 		dup2(output_fd, STDOUT_FILENO);
 		close(output_fd);
 	}
-	if (msh->redic)
-		handle_redirection(cmd);
+	/* Procesa las redirecciones definidas en cmd->arg si el flag está activo */
+	if (msh->redic && cmd->arg && is_redir(cmd->arg) != -1)
+		process_redirections(cmd);
+		
 	executable = find_executable(cmd->cmd);
 	if (!executable)
 	{
 		ft_printf("Command not found: %s\n", cmd->cmd);
 		_exit(127);
 	}
+	i = 0;
+	j = -1;
 	if (cmd->arg)
 	{
-		while (cmd->arg[i++])
+		while (cmd->arg[i])
 			i++;
 	}
 	argv = (char **)malloc(sizeof(char *) * (i + 2));
@@ -91,7 +94,6 @@ void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 		return ;
 	}
 	argv[0] = cmd->cmd;
-
 	while (++j < i)
 		argv[j + 1] = cmd->arg[j];
 	argv[i + 1] = NULL;
@@ -114,8 +116,6 @@ static void	execute_single_command(t_msh *msh, t_cmd *cmd)
 	int		i;
 	int		j;
 
-	i = 0;
-	j = -1;
 	if (!cmd || !cmd->cmd)
 		return ;
 	executable = find_executable(cmd->cmd);
@@ -133,29 +133,34 @@ static void	execute_single_command(t_msh *msh, t_cmd *cmd)
 		msh->error_value = 1;
 		return ;
 	}
-	if (cmd->arg)
-	{
-		while (cmd->arg[i++])
-			i++;
-	}
-	argv = (char **)malloc(sizeof(char *) * (i + 2));
-	if (!argv)
-	{
-		free(argv);
-		return ;
-	}
-	argv[0] = cmd->cmd;
-
-	while (++j < i)
-		argv[j + 1] = cmd->arg[j];
-	argv[i + 1] = NULL;
 	if (pid == 0)
 	{
-		if (msh->redic)
-			handle_redirection(cmd);
+		/* Procesa redirecciones basadas en los tokens (cmd->arg) */
+		if (msh->redic && cmd->arg && is_redir(cmd->arg) != -1)
+			process_redirections(cmd);
+		if (cmd->arg)
+		{
+			i = 0;
+			while (cmd->arg[i])
+				i++;
+		}
+		else
+			i = 0;
+		argv = (char **)malloc(sizeof(char *) * (i + 2));
+		if (!argv)
+		{
+			free(argv);
+			_exit(1);
+		}
+		argv[0] = cmd->cmd;
+		j = -1;
+		while (++j < i)
+			argv[j + 1] = cmd->arg[j];
+		argv[i + 1] = NULL;
 		execve(executable, argv, cmd->env);
 		perror("execve");
 		free(executable);
+		free(argv);
 		_exit(1);
 	}
 	else if (pid > 0 && !cmd->background)
@@ -164,7 +169,6 @@ static void	execute_single_command(t_msh *msh, t_cmd *cmd)
 		if (WIFEXITED(status))
 			msh->error_value = WEXITSTATUS(status);
 	}
-	free(argv);
 	free(executable);
 }
 
