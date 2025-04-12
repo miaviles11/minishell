@@ -68,30 +68,18 @@ void	process_redirections(t_cmd *cmd)
 	int		rtype;
 
 	i = 0;
-	// Mientras se encuentre un operador de redirección en los argumentos...
+	/* Mientras se encuentre un operador de redirección en los argumentos... */
 	while (find_first_redirect_index(cmd->arg + i) != -1)
 	{
-		// Encuentra el índice relativo del siguiente operador y lo suma a i.
 		i += find_first_redirect_index(cmd->arg + i);
-		
-		// Ajusta el argumento en la posición i (contiene el operador)
-		// extrayendo y separando el operador y su operando.
 		cmd->arg = extract_filename_from_arg(cmd->arg, i,
 				get_operator_for_type(get_redirect_type(cmd->arg[i])), 1);
-		
-		// Si tras el procesamiento no se detecta un operador, se incrementa i.
 		if (!get_redirect_type(cmd->arg[i]))
 			i++;
-		
-		// Si el siguiente argumento también contiene un operador, lo procesa.
 		if (get_redirect_type(cmd->arg[i + 1]))
 			cmd->arg = extract_filename_from_arg(cmd->arg, i + 1,
 				get_operator_for_type(get_redirect_type(cmd->arg[i + 1])), 1);
-		
-		// Extrae el nombre del archivo, eliminando las comillas si las hay.
 		file = str_noquotes(cmd->arg[i + 1]);
-		
-		// Determina el tipo de redirección en el argumento i.
 		rtype = get_redirect_type(cmd->arg[i]);
 		if (rtype == 1 || rtype == 2 || rtype == 5 || rtype == 6)
 			handle_output_redirection(rtype, cmd, file);
@@ -99,8 +87,6 @@ void	process_redirections(t_cmd *cmd)
 			return ;
 		else if (rtype == 4)
 			handle_here_document(cmd, file);
-		
-		// Elimina del arreglo los elementos ya procesados: el operador y el archivo.
 		cmd->arg = remove_argument_at_index(cmd->arg, i);
 		cmd->arg = remove_argument_at_index(cmd->arg, i);
 	}
