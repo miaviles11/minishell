@@ -48,18 +48,6 @@ int	count_arguments_redirections(char **args)
 		count++;
 	return (count);
 }
-
-static char **keep_argument(char **arg, int j, char c)
-{
-    char *temp;
-
-    arg = insert_argument_at_index(arg, 
-            ft_substr(arg[j], 0, get_next_diff_op(0, arg[j])), j + 1);
-    temp = ft_strdup(ft_strchr(arg[j], c));
-    free(arg[j]);
-    arg[j] = temp;
-    return (get_filename(arg, j, c, 2));
-}
 static char **get_filename(char **args, int index, char opChar, int offset)
 {
     int i;
@@ -92,6 +80,18 @@ static char **get_filename(char **args, int index, char opChar, int offset)
     }
     args = remove_argument_at_index(args, index);
     return (args);
+}
+
+static char **keep_argument(char **arg, int j, char c)
+{
+    char *temp;
+
+    arg = insert_argument_at_index(arg, 
+            ft_substr(arg[j], 0, get_next_diff_op(0, arg[j])), j + 1);
+    temp = ft_strdup(ft_strchr(arg[j], c));
+    free(arg[j]);
+    arg[j] = temp;
+    return (get_filename(arg, j, c, 2));
 }
 int	get_next_diff_op(int i, char *str)
 {

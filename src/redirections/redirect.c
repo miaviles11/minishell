@@ -12,6 +12,41 @@
 
 #include "../../includes/minishell.h"
 
+static char	**extract_filename_from_arg(char **args, int index, char opChar, int offset)
+{
+	int	i;
+
+	i = 0;
+	// Si el argumento empieza con "2>", salta el '2'
+	if (args[index][i] == '2' && args[index][i + 1] == '>')
+		i++;
+	// Salta todos los caracteres del operador (por ejemplo, '>' o '<')
+	while (args[index][i] == opChar)
+		i++;
+	// Si después del operador no queda nada, no se hace modificación.
+	if (!args[index][i])
+		return (args);
+	// Si no se ha saltado ningún operador, utiliza keep_argument para ajustar el argumento.
+	if (i == 0)
+		return (keep_argument(args, index, opChar));
+	// Inserta la parte anterior al operador en el arreglo.
+	args = insert_argument_at_index(args, ft_substr(args[index], 0, i), index + offset++);
+	// Inserta la parte correspondiente al operador.
+	args = insert_argument_at_index(args, ft_substr(args[index], i,
+				find_next_redirect_operator_index(i, args[index]) - i),
+				index + offset++);
+	// Actualiza 'i' para avanzar hasta el final de la parte del operador.
+	i = find_next_redirect_operator_index(i, args[index]);
+	// Si queda parte adicional (el sufijo), la inserta en el arreglo.
+	if (args[index][i])
+		args = insert_argument_at_index(args, ft_substr(args[index], i,
+							ft_strlen(args[index]) - i),
+							index + offset++);
+	// Elimina el elemento original, ya que fue dividido en varias partes.
+	args = remove_argument_at_index(args, index);
+	return (args);
+}
+
 /*
 ** process_redirections:
 **   Recorre el arreglo de argumentos del comando, identifica y procesa los
