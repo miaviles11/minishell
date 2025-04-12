@@ -82,7 +82,7 @@ static char **get_filename(char **args, int index, char opChar, int offset)
     return (args);
 }
 
-static char **keep_argument(char **arg, int j, char c)
+char **keep_argument(char **arg, int j, char c)
 {
     char *temp;
 
