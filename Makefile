@@ -14,6 +14,7 @@ SRCS		=	src/builtins/builtins_utils.c \
 				src/builtins/ft_export.c \
 				src/builtins/ft_pwd.c \
 				src/builtins/ft_unset.c \
+				src/executor/child_process.c \
 				src/executor/exec_builtin.c \
 				src/executor/executor.c \
 				src/parser/create_command_node/process_arguments_1.c \

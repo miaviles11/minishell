@@ -12,99 +12,6 @@
 
 #include "../../includes/minishell.h"
 
-// Busca el ejecutable del comando en los directorios del PATH
-char	*find_executable(char *cmd)
-{
-	char	*path_env;
-	char	**paths;
-	char	*full_path;
-	char 	*temp;
-	int		i;
-
-	// Obtiene la variable de entorno PATH
-	path_env = getenv("PATH");
-	if (!path_env)
-		return (NULL);
-	// Divide la variable PATH en un array de directorios
-	paths = ft_split(path_env, ':');
-	if (!paths)
-		return (NULL);
-	// Recorre cada directorio en PATH para buscar el ejecutable
-	i = 0;
-	while (paths[i])
-	{
-		full_path = ft_strjoin(paths[i], "/");
-		temp = full_path;
-		full_path = ft_strjoin(full_path, cmd);
-		free(temp);
-		if (access(full_path, X_OK) == 0)
-		{
-			ft_free_split(paths);
-			return (full_path);
-		}
-		free(full_path);
-		i++;
-	}
-	ft_free_split(paths);
-	return (NULL);
-}
-
-/**
- * Ejecuta un comando en un proceso hijo con los descriptores de archivo especificados
- */
-void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
-{
-    char	*executable;
-    char	**argv;
-    int		i;
-    int		j;
-
-    /* Redirige la entrada y la salida según los fds pasados */
-    if (input_fd != STDIN_FILENO)
-    {
-        dup2(input_fd, STDIN_FILENO);
-        close(input_fd);
-    }
-    if (output_fd != STDOUT_FILENO)
-    {
-        dup2(output_fd, STDOUT_FILENO);
-        close(output_fd);
-    }
-    /* Procesa las redirecciones definidas en cmd->arg si el flag está activo.
-       Se usa find_first_redirect_index para comprobar si existe algún operador. */
-    if (msh->redic && cmd->arg && find_first_redirect_index(cmd->arg) != -1)
-        process_redirections(cmd);
-        
-    executable = find_executable(cmd->cmd);
-    if (!executable)
-    {
-        ft_printf("Command not found: %s\n", cmd->cmd);
-        _exit(127);
-    }
-    i = 0;
-    j = -1;
-    if (cmd->arg)
-    {
-        while (cmd->arg[i])
-            i++;
-    }
-    argv = (char **)malloc(sizeof(char *) * (i + 2));
-    if (!argv)
-    {
-        free(argv);
-        return;
-    }
-    argv[0] = cmd->cmd;
-    while (++j < i)
-        argv[j + 1] = cmd->arg[j];
-    argv[i + 1] = NULL;
-    execve(executable, argv, cmd->env);
-    perror("execve");
-    free(executable);
-    free(argv);
-    _exit(1);
-}
-
 /**
  * Ejecuta un comando individual (sin pipes)
  */
@@ -176,69 +83,70 @@ static void	execute_single_command(t_msh *msh, t_cmd *cmd)
 /**
  * Procesa un comando con su pipe de salida
  */
-static void	process_cmd_with_pipe(t_msh *msh, t_cmd *cmd, int prev_pipe, int *pipe_fd)
+static void process_cmd_with_pipe(t_msh *msh, t_cmd *cmd, int prev_pipe, int *pipe_fd)
 {
-	pid_t	pid;
+    pid_t pid;
 
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		if (prev_pipe != STDIN_FILENO)
-			close(prev_pipe);
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
-		return ;
-	}
-	if (pid == 0)
-	{
-		if (is_builtin(cmd->cmd) && prev_pipe == STDIN_FILENO)
-		{
-			execute_builtin(msh, cmd);
-			exit(0);
-		}
-		close(pipe_fd[0]);
-		child_process(msh, cmd, prev_pipe, pipe_fd[1]);
-	}
-	if (prev_pipe != STDIN_FILENO)
-		close(prev_pipe);
-	close(pipe_fd[1]);
+    pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        if (prev_pipe != STDIN_FILENO)
+            close(prev_pipe);
+        close(pipe_fd[0]);
+        close(pipe_fd[1]);
+        return;
+    }
+    if (pid == 0)
+    {
+        if (is_builtin(cmd->cmd))
+        {
+            close(pipe_fd[0]); // Cerrar el extremo de lectura del pipe
+            execute_builtin_with_redirection(msh, cmd, pipe_fd[1]);
+            exit(0);
+        }
+        close(pipe_fd[0]);
+        child_process(msh, cmd, prev_pipe, pipe_fd[1]);
+    }
+    if (prev_pipe != STDIN_FILENO)
+        close(prev_pipe);
+    close(pipe_fd[1]);
 }
+
 
 /**
  * Procesa el último comando en un pipeline
  */
-static void	process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
+static void process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
 {
-	pid_t	pid;
-	int		status;
+    pid_t pid;
+    int status;
 
-
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		if (prev_pipe != STDIN_FILENO)
-			close(prev_pipe);
-		return ;
-	}
-	if (pid == 0)
-	{
-		if (is_builtin(cmd->cmd) && prev_pipe == STDIN_FILENO)
-		{
-			execute_builtin(msh, cmd);
-			exit(0);
-		}
-		child_process(msh, cmd, prev_pipe, STDOUT_FILENO);
-	}
-	if (prev_pipe != STDIN_FILENO)
-		close(prev_pipe);
-	if (!cmd->background)
-	{
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			msh->error_value = WEXITSTATUS(status);
-	}
+    pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        if (prev_pipe != STDIN_FILENO)
+            close(prev_pipe);
+        return;
+    }
+    if (pid == 0)
+    {
+        if (is_builtin(cmd->cmd))
+        {
+            execute_builtin_with_redirection(msh, cmd, STDOUT_FILENO);
+            exit(0);
+        }
+        child_process(msh, cmd, prev_pipe, STDOUT_FILENO);
+    }
+    if (prev_pipe != STDIN_FILENO)
+        close(prev_pipe);
+    if (!cmd->background)
+    {
+        waitpid(pid, &status, 0);
+        if (WIFEXITED(status))
+            msh->error_value = WEXITSTATUS(status);
+    }
 }
 
 /**
@@ -256,46 +164,49 @@ static void	wait_for_children(void)
 /**
  * Ejecuta una lista de comandos con pipes
  */
-void	execute_commands(t_msh *msh)
+void execute_commands(t_msh *msh)
 {
-	t_cmd	*current;
-	t_cmd	*next;
-	int		pipe_fd[2];
-	int		prev_pipe;
+    t_cmd *current;
+    t_cmd *next;
+    int pipe_fd[2];
+    int prev_pipe;
 
-	if (!msh->cmd)
-		return ;
-	if (!msh->cmd->next && !msh->pipe)
-	{
-		execute_single_command(msh, msh->cmd);
-		return ;
-	}
-	current = msh->cmd;
-	prev_pipe = STDIN_FILENO;
-	while (current)
-	{
-		next = current->next;
-		if (next)
-		{
-			if (pipe(pipe_fd) == -1)
-			{
-				perror("pipe");
-				return ;
-			}
-			process_cmd_with_pipe(msh, current, prev_pipe, pipe_fd);
-			prev_pipe = pipe_fd[0];
-		}
-		else
-			process_last_cmd(msh, current, prev_pipe);
-		current = next;
-	}
-	if (!msh->cmd->background)
-		wait_for_children();
+    if (!msh->cmd)
+        return;
+    if (!msh->cmd->next && !msh->pipe)
+    {
+        if (is_builtin(msh->cmd->cmd))
+            execute_builtin(msh, msh->cmd);
+        else
+            execute_single_command(msh, msh->cmd);
+        return;
+    }
+    current = msh->cmd;
+    prev_pipe = STDIN_FILENO;
+    while (current)
+    {
+        next = current->next;
+        if (next)
+        {
+            if (pipe(pipe_fd) == -1)
+            {
+                perror("pipe");
+                return;
+            }
+            process_cmd_with_pipe(msh, current, prev_pipe, pipe_fd);
+            prev_pipe = pipe_fd[0];
+        }
+        else
+            process_last_cmd(msh, current, prev_pipe);
+        current = next;
+    }
+    if (!msh->cmd->background)
+        wait_for_children();
 }
 
 /**
  * Maneja la redirección de entrada y salida para un comando
- */
+ 
 void	handle_redirection(t_cmd *cmd)
 {
 	int	fd;
@@ -322,4 +233,4 @@ void	handle_redirection(t_cmd *cmd)
 		dup2(fd, STDOUT_FILENO);
 		close(fd);
 	}
-}
+}*/

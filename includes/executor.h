@@ -16,10 +16,12 @@
 #include <sys/wait.h>
 
 char	*find_executable(char *cmd);
-void	handle_redirection(t_cmd *cmd);
+void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd);
+
 void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd);
 void	execute_commands(t_msh *msh);
 
+void 	execute_builtin_with_redirection(t_msh *msh, t_cmd *cmd, int output_fd);
 int		exec_builtin(t_msh *msh, char **argv);
 int		is_builtin(char *cmd_name);
 void	execute_builtin(t_msh *msh, t_cmd *cmd);

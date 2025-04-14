@@ -12,16 +12,23 @@
 
 #include "../../includes/minishell.h"
 
-int	handle_no_newline(t_cmd *cmd, int *no_newline)
+int handle_no_newline(t_cmd *cmd, int *no_newline)
 {
-	int	i;
+	int i;
+	int j;
 
-	i = 1;
+	i = 0;
 	*no_newline = 0;
-	if (cmd->arg[1] && ft_strncmp(cmd->arg[1], "-n", 3) == 0)
+	if (cmd->arg[0] && cmd->arg[0][0] == '-')
 	{
-		*no_newline = 1;
-		i = 2;
+		j = 1;
+		while (cmd->arg[0][j] == 'n')
+			j++;
+		if (j > 1 && cmd->arg[0][j] == '\0')
+		{
+			*no_newline = 1;
+			i = 1;
+		}
 	}
 	return (i);
 }
@@ -39,16 +46,38 @@ void	print_arguments(t_cmd *cmd, int i)
 
 int	minishell_echo(t_msh *msh)
 {
-	int	i;
-	int	no_newline;
-	t_cmd *cmd;
+	t_cmd	*cmd;
+    int		i;
+	int		j;
+    int		no_newline;
+	char 	*temp;
 
-	cmd = msh->cmd;
-	i = handle_no_newline(cmd, &no_newline);
-	print_arguments(cmd, i);
-	if (!no_newline)
-		ft_printf("\n");
-	return (0);
+    cmd = msh->cmd;
+    // Validar que cmd->arg no sea NULL
+    if (!cmd || !cmd->arg || !cmd->arg[0])
+    {
+        ft_printf("\n");
+        return (0);
+    }
+	j = 0;
+	while (cmd->arg[j])
+	{
+		temp = str_noquotes(cmd->arg[j]);
+		if (temp) 
+		{
+			free(cmd->arg[j]);  // Liberar memoria del argumento original
+			cmd->arg[j] = temp;  // Reemplazar con la versión sin comillas
+		}
+		j++;
+	}
+	// Manejar la opción -n
+    i = handle_no_newline(cmd, &no_newline);
+    // Imprimir los argumentos restantes
+    print_arguments(cmd, i);
+    // Imprimir un salto de línea si no se especificó -n
+    if (!no_newline)
+        ft_printf("\n");
+    return (0);
 }
 
 /*int main(int argc, char **argv)

@@ -12,6 +12,43 @@
 
 #include "../../includes/minishell.h"
 
+void execute_builtin_with_redirection(t_msh *msh, t_cmd *cmd, int output_fd)
+{
+    // Redirigir la salida estándar al extremo de escritura del pipe
+    if (output_fd != STDOUT_FILENO)
+    {
+        if (dup2(output_fd, STDOUT_FILENO) == -1)
+        {
+            perror("dup2");
+            close(output_fd);
+            exit(1);
+        }
+        close(output_fd);
+    }
+    // Ejecutar el builtin correspondiente
+    if (ft_strncmp(cmd->cmd, "env", 4) == 0)
+        minishell_env(msh);
+    else if (ft_strncmp(cmd->cmd, "echo", 5) == 0)
+        minishell_echo(msh);
+    else if (ft_strncmp(cmd->cmd, "cd", 3) == 0)
+        minishell_cd(msh, cmd->arg); // Pasar cmd->arg como segundo argumento
+    else if (ft_strncmp(cmd->cmd, "pwd", 4) == 0)
+        minishell_pwd(msh);
+    else if (ft_strncmp(cmd->cmd, "export", 7) == 0)
+        minishell_export(msh, cmd->arg); // Pasar cmd->arg como segundo argumento
+    else if (ft_strncmp(cmd->cmd, "unset", 6) == 0)
+        minishell_unset(msh, cmd->arg); // Pasar cmd->arg como segundo argumento
+    else if (ft_strncmp(cmd->cmd, "exit", 5) == 0)
+        minishell_exit(msh);
+    else
+    {
+        ft_printf("Command not found: %s\n", cmd->cmd);
+        exit(127);
+    }
+    // Salir del proceso hijo después de ejecutar el builtin
+    exit(0);
+}
+
 int	exec_builtin(t_msh *msh, char **argv)
 {
 	// Verificar que los punteros no sean NULL
