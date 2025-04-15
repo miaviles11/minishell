@@ -23,12 +23,24 @@ void signal_handler(int sign)
 	}
 	else if (sign == SIGQUIT) // 'Ctrl+\'
 	{
-		printf("\b\b  \b\b"); // Borra `^\` en la terminal
+		// En el prompt, simplemente ignoramos Ctrl+\ sin mostrar nada
+		rl_redisplay();  // Solo redibujar para mantener consistencia
 	}
 }
 
 void setup_signals(void)
 {
-	signal(SIGINT, signal_handler);
-	signal(SIGQUIT, signal_handler);
+    struct sigaction sa_int, sa_quit;
+    
+    // Configurar SIGINT (Ctrl+C)
+    sa_int.sa_handler = signal_handler;
+    sigemptyset(&sa_int.sa_mask);
+    sa_int.sa_flags = 0;
+    sigaction(SIGINT, &sa_int, NULL);
+    
+    // Configurar SIGQUIT (Ctrl+\) para ignorarlo
+    sa_quit.sa_handler = SIG_IGN;  // Ignorar completamente
+    sigemptyset(&sa_quit.sa_mask);
+    sa_quit.sa_flags = 0;
+    sigaction(SIGQUIT, &sa_quit, NULL);
 }

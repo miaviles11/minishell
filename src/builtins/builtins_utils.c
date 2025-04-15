@@ -19,13 +19,15 @@
 int	update_existing_env_var(t_msh *msh, const char *name, const char *value)
 {
 	int		i;
+	char	*temp;
 	char	*new_var;
 
 	i = 0;
 	/* 1) Concatenar name + "=" */
-	new_var = ft_strjoin(name, "=");
+	temp = ft_strjoin(name, "=");
 	/* 2) Concatenar el paso anterior con 'value' */
-	new_var = ft_strjoin(new_var, value);
+	new_var = ft_strjoin(temp, value);
+	free(temp);
 	while (i < msh->num_env)
 	{
 		/* Chequear si la variable ya existe en msh->env */
@@ -35,6 +37,7 @@ int	update_existing_env_var(t_msh *msh, const char *name, const char *value)
 			/* Si existe, liberar la vieja y sustituirla */
 			free(msh->env[i]);
 			msh->env[i] = new_var;
+			setenv(name, value, 1);
 			return (0);
 		}
 		i++;
@@ -44,19 +47,21 @@ int	update_existing_env_var(t_msh *msh, const char *name, const char *value)
 	return (1);
 }
 
-int	add_new_env_var(t_msh *msh, const char *name, const char *value)
+int add_new_env_var(t_msh *msh, const char *name, const char *value)
 {
 	int		i;
+	char	*temp;
 	char	*new_var;
 	char	**new_env;
 
 	/* name + "=" */
-	new_var = ft_strjoin(name, "=");
+	temp = ft_strjoin(name, "=");
 	/* concatenamos con 'value' */
-	new_var = ft_strjoin(new_var, value);
+	new_var = ft_strjoin(temp, value);
+	free(temp); // Importante: liberar el string temporal
 
 	/* Reservamos espacio para un array con una variable más */
-	new_env = malloc(sizeof(char *) * (msh->num_env + 1));
+	new_env = malloc(sizeof(char *) * (msh->num_env + 2)); // +1 para la nueva, +1 para NULL
 	if (!new_env)
 		return (1);
 
@@ -69,11 +74,15 @@ int	add_new_env_var(t_msh *msh, const char *name, const char *value)
 	}
 	/* Añadimos la nueva variable */
 	new_env[msh->num_env] = new_var;
+	new_env[msh->num_env + 1] = NULL; // Asegúrate de que el array termina en NULL
 
 	/* Liberamos el array antiguo y actualizamos punteros */
 	free(msh->env);
 	msh->env = new_env;
 	msh->num_env++;
+	
+	// También actualizar el entorno real
+	setenv(name, value, 1);
 	return (0);
 }
 

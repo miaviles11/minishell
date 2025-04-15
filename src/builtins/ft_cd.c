@@ -12,40 +12,68 @@
 
 #include "../../includes/minishell.h"
 
-static void print_error(const char *message)
+static int change_to_oldpwd(t_msh *msh, char *oldpwd, char *current_pwd)
 {
-    int stdout_fd;
-	
-	stdout_fd = dup(STDOUT_FILENO);
-    dup2(STDERR_FILENO, STDOUT_FILENO);
-    ft_printf("%s\n", message);
-    dup2(stdout_fd, STDOUT_FILENO);
-    close(stdout_fd);
-}
-
-int	minishell_cd(t_msh *msh, char **argv)
-{
-	char	*path;
-	char	cwd[1024];
-
-	path = NULL;
-	if (argv[1] == NULL)
+	if (getcwd(current_pwd, 1024) == NULL)
 	{
-		path = getenv("HOME");
-		if (!path)
-		{
-			print_error("cd: HOME not set");
-			return (1);
-		}
+		perror("getcwd");
+		return (1);
 	}
-	else
-		path = argv[1];
-	if (chdir(path) != 0)
+	if (chdir(oldpwd) != 0)
 	{
 		perror("cd");
 		return (1);
 	}
-	if (getcwd(cwd, sizeof(cwd)) != NULL)
-		set_env_var(msh, "PWD", cwd);
+	set_env_var(msh, "PWD", oldpwd);
+	set_env_var(msh, "OLDPWD", current_pwd);
+	ft_printf("%s\n", oldpwd);
 	return (0);
+}
+
+static int change_directory(t_msh *msh, char *path, char *cwd)
+{
+    char old_cwd[1024];
+
+    if (getcwd(old_cwd, sizeof(old_cwd)) == NULL)
+    {
+        perror("getcwd");
+        return (1);
+    }
+    if (chdir(path) != 0)
+    {
+        perror("cd");
+        return (1);
+    }
+    set_env_var(msh, "OLDPWD", old_cwd);
+    if (getcwd(cwd, 1024) != NULL)
+        set_env_var(msh, "PWD", cwd);
+    return (0);
+}
+
+int minishell_cd(t_msh *msh, char **argv)
+{
+	char cwd[1024];
+	char *oldpwd;
+	char *path;
+
+	if (argv[1] && argv[1][0] == '-' && argv[1][1] == '\0')
+	{
+		oldpwd = getenv("OLDPWD");
+		if (!oldpwd)
+		{
+			ft_printf("cd: OLDPWD not set\n");
+			return (1);
+		}
+		return change_to_oldpwd(msh, oldpwd, cwd);
+	}
+	if (argv[1])
+		path = argv[1];
+	else
+		path = getenv("HOME");	
+	if (!path)
+	{
+		ft_printf("cd: HOME not set\n");
+		return (1);
+	}
+	return change_directory(msh, path, cwd);
 }

@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:24:00 by miaviles          #+#    #+#             */
-/*   Updated: 2025/04/05 17:24:00 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/04/15 18:46:25 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,4 +87,5 @@ void cleanup_shell(t_msh *shell)
 	
 	// Liberar la estructura principal
 	free(shell);
+	rl_clear_history();
 }

@@ -35,6 +35,7 @@ int		minishell_env(t_msh *msh);
 
 int		minishell_export(t_msh *msh, char **argv);
 void	update_env(t_msh *msh, const char *arg);
+void	handle_no_equal(t_msh *msh, const char *arg);
 
 int		minishell_unset(t_msh *msh, char **args);
 void	remove_env_var(t_msh *msh, const char *key);
