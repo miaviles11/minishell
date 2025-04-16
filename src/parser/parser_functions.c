@@ -14,36 +14,32 @@
 
 int	validate_and_split_input(t_msh *shell, char *inputLine, char ***segments)
 {
-	/* 1. Verifica que las comillas estén balanceadas.
-	   check_quotes_balance retorna un valor distinto de 0 si están balanceadas.
-	*/
+	/* 1. Verifica que las comillas estén balanceadas. */
 	shell->quote = check_quotes_balance(inputLine, shell);
 	if (shell->quote == 0)
 	{
 		free(inputLine);
 		return (1);
 	}
-	/* 2. Cuenta el número de pipes en la línea.
-	   count_pipes retorna -1 si hay error de sintaxis (por ejemplo, pipe mal colocado).
-	*/
+
+	/* 2. Cuenta el número de pipes en la línea. */
 	shell->pipe = count_pipes(inputLine, shell);
 	if (shell->pipe == -1)
 	{
 		free(inputLine);
 		return (1);
 	}
-	/* 3. Divide la línea en segmentos utilizando el pipe ('|') como delimitador.
-	   split_pipes devuelve un arreglo de cadenas (cada una es un segmento).
-	*/
+	/* 4. Divide la línea en segmentos utilizando el pipe ('|') como delimitador. */
 	*segments = split_pipes(inputLine, shell);
 	if (!(*segments))
 	{
 		free(inputLine);
 		return (1);
 	}
-	/* Si todo es correcto, retorna 0 indicando que no hubo errores */
+
 	return (0);
 }
+
 
 t_cmd	*create_command_node(t_msh *shell, char *segment)
 {
@@ -80,10 +76,11 @@ t_cmd	*create_command_node(t_msh *shell, char *segment)
 void	perform_expansion(t_msh *msh, t_cmd **command)
 {
 	int	i;
+	char *var_reminder = NULL;
 
 	// Procesa el nombre del comando.
 	if (has_variable((*command)->cmd))
-		(*command)->cmd = substitute_variables(msh, *command, (*command)->cmd, NULL);
+		(*command)->cmd = substitute_variables(msh, *command, (*command)->cmd, &var_reminder);
 	if (needs_home_expansion((*command)->cmd))
 		(*command)->cmd = expand_home_directory((*command)->cmd);
 	// Si no hay argumentos, terminamos.
@@ -94,7 +91,7 @@ void	perform_expansion(t_msh *msh, t_cmd **command)
 	while ((*command)->arg[i])
 	{
 		if (has_variable((*command)->arg[i]))
-			(*command)->arg[i] = substitute_variables(msh, *command, (*command)->arg[i], NULL);
+			(*command)->arg[i] = substitute_variables(msh, *command, (*command)->arg[i], &var_reminder);
 		if (needs_home_expansion((*command)->arg[i]))
 			(*command)->arg[i] = expand_home_directory((*command)->arg[i]);
 		i++;

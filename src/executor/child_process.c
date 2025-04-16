@@ -90,11 +90,12 @@ void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 {
 	char	*executable;
 	char	**argv;
+    (void)msh;
 
 	executable = NULL;
 	argv = NULL;
 	setup_redirections(input_fd, output_fd);
-	if (msh->redic && cmd->arg && find_first_redirect_index(cmd->arg) != -1)
+	if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
 		process_redirections(cmd);
 	executable = find_executable(cmd->cmd);
 	if (!executable)

@@ -17,9 +17,9 @@
 static void	exec_child(t_msh *msh, t_cmd *cmd, char *executable)
 {
 	char	**argv;
-
+    (void)msh;
 	// Procesa redirecciones si hay redic y se detecta algún token
-	if (msh->redic && cmd->arg && find_first_redirect_index(cmd->arg) != -1)
+	if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
 		process_redirections(cmd);
 	// Prepara el arreglo de argumentos utilizando la función unificada
 	argv = prepare_argv(cmd);

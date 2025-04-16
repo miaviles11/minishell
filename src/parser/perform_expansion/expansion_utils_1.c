@@ -45,6 +45,12 @@ char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder)
 {
 	char	*temp;
 
+	if (!cmd->flags)
+	{
+        cmd->flags = calloc(1, sizeof(*(cmd->flags)));
+        if (!cmd->flags)
+            exit_error("Error malloc flags", 12);
+    }
 	if (check_variable_and_digit(s) == 0)
 		s = quit_variable_and_digit(s);
 	// Mientras se detecte una variable en la cadena...
@@ -58,16 +64,10 @@ char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder)
 			temp = join_special(s, *varReminder);
 			free(s);
 			s = temp;
-			free(*varReminder);  // Liberar el contenido apuntado por varReminder
-			*varReminder = NULL; // Evitar acceso posterior a memoria liberada
+			free(*varReminder);
+			*varReminder = NULL;
 			cmd->flags->dollar_special = 0;
-		}
-	}
-	// Liberar varReminder si aún no ha sido liberado
-	if (varReminder && *varReminder)
-	{
-		free(*varReminder);
-		*varReminder = NULL;
+		}		
 	}
 	return (s);
 }

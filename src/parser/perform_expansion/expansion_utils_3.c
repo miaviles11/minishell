@@ -118,26 +118,31 @@ char	*extract_variable_name(char *line)
 ** Retorna:
 **   El índice de la siguiente ocurrencia de '$' fuera de comillas, o -1 si no se encuentra.
 */
-int	find_next_dollar(const char *s, int start)
+int find_next_dollar(const char *s, int start)
 {
-	int	i;
+    int i;
 
-	i = start;
-	while (s[i])
-	{
-		// Si se encuentra una comilla, salta todo el bloque entre comillas.
-		if (s[i] == '"' || s[i] == '\'')
-		{
-			i = get_next_quote(i + 1, (char *)s, s[i]);
-			continue;
-		}
-		// Si se encuentra '$', retorna el índice.
-		if (s[i] == '$')
-			return (i);
-		i++;
-	}
-	return (-1);
+    /* Si nos pasan un start negativo, comenzamos en 0 */
+    if (start < 0)
+        i = 0;
+    else
+        i = start;
+
+    while (s[i])
+    {
+        /* Si encontramos comillas, saltamos su contenido */
+        if (s[i] == '"' || s[i] == '\'')
+        {
+            i = get_next_quote(i + 1, (char *)s, s[i]);
+            continue;
+        }
+        if (s[i] == '$')
+            return (i);
+        i++;
+    }
+    return (-1);
 }
+
 char	*split_variable_reminder(char *line, int index, t_cmd *cmd)
 {
 	int		len;
