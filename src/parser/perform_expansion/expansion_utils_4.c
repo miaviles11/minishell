@@ -140,37 +140,41 @@ char	*extract_env_value(const char *envVar)
 **
 **   Libera la cadena original 'line' y la cadena 'var', y retorna la nueva cadena.
 */
-char	*replace_variable_in_line(char *line, char *var)
+char *replace_variable_in_line(char *line, char *var)
 {
-	int		posDollar;
-	int		varNameLen;
-	int		totalLen;
-	char	*newLine;
+	int     posDollar;
+	int     varNameLen;
+	int     totalLen;
+	char    *newLine;
 
-	// Encuentra el primer '$' en la línea (se asume que find_next_dollar retorna -1 si no hay)
+	// Encuentra el primer '$' en la línea
 	posDollar = find_next_dollar(line, 0);
 	if (posDollar == -1)
 		return (line);
+		
 	// Calcula la longitud del nombre de la variable después del '$'
 	varNameLen = 0;
 	while (line[posDollar + 1 + varNameLen] &&
-		   line[posDollar + 1 + varNameLen] != ' ' &&
-		   line[posDollar + 1 + varNameLen] != '"' &&
-		   line[posDollar + 1 + varNameLen] != '\'')
+		line[posDollar + 1 + varNameLen] != ' ' &&
+		line[posDollar + 1 + varNameLen] != '"' &&
+		line[posDollar + 1 + varNameLen] != '\'' &&
+		special_char_check(line[posDollar + 1 + varNameLen]) == 0)
 		varNameLen++;
-	// Calcula la longitud total para la nueva cadena:
-	// parte antes del '$' + longitud del valor de la variable + parte después del nombre
+		
+	// Calcula la longitud total para la nueva cadena
 	totalLen = posDollar + ft_strlen(var) +
 		ft_strlen(line + posDollar + 1 + varNameLen) + 1;
 	newLine = malloc(sizeof(char) * totalLen);
 	if (!newLine)
 		exit_error("Error malloc", 18);
+		
 	// Copia la parte de la línea antes del '$'
 	ft_strlcpy(newLine, line, posDollar + 1);
 	// Concatena el valor de la variable
 	ft_strlcat(newLine, var, totalLen);
-	// Concatena la parte restante de la línea, después del nombre de la variable
+	// Concatena la parte restante de la línea
 	ft_strlcat(newLine, line + posDollar + 1 + varNameLen, totalLen);
+	
 	free(line);
 	free(var);
 	return (newLine);

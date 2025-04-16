@@ -53,18 +53,22 @@ char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder)
 		cmd->flags->dollar_special = 0;
 		s = substitute_variable_value(msh, cmd, s, varReminder);
 		// Si se activó un caso especial, concatena varReminder.
-		if (cmd->flags->dollar_special == 1)
+		if (cmd->flags->dollar_special == 1 && varReminder && *varReminder)
 		{
 			temp = join_special(s, *varReminder);
 			free(s);
 			s = temp;
-			free(varReminder);
-			varReminder = NULL;
+			free(*varReminder);  // Liberar el contenido apuntado por varReminder
+			*varReminder = NULL; // Evitar acceso posterior a memoria liberada
 			cmd->flags->dollar_special = 0;
 		}
 	}
-	if (varReminder)
-		free(varReminder);
+	// Liberar varReminder si aún no ha sido liberado
+	if (varReminder && *varReminder)
+	{
+		free(*varReminder);
+		*varReminder = NULL;
+	}
 	return (s);
 }
 

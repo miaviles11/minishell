@@ -12,77 +12,64 @@
 
 #include "../../includes/minishell.h"
 
-/**
- * Ejecuta un comando individual (sin pipes)
- */
-static void	execute_single_command(t_msh *msh, t_cmd *cmd)
-{
-    char	*executable;
-    pid_t	pid;
-    int		status;
-    char	**argv;
-    int		i;
-    int		j;
+/*Ejecuta el proceso hijo: aplica redirecciones, prepara argv y ejecuta el comando.*/
 
-    if (!cmd || !cmd->cmd)
-        return;
-    executable = find_executable(cmd->cmd);
-    if (!executable)
-    {
-        ft_printf("Command not found: %s\n", cmd->cmd);
-        msh->error_value = 127;
-        return;
-    }
-    pid = fork();
-    if (pid == -1)
-    {
-        perror("fork");
-        free(executable);
-        msh->error_value = 1;
-        return;
-    }
-    if (pid == 0)
-    {
-        /* Procesa redirecciones basadas en los tokens (cmd->arg) */
-        if (msh->redic && cmd->arg && find_first_redirect_index(cmd->arg) != -1)
-            process_redirections(cmd);
-        if (cmd->arg)
-        {
-            i = 0;
-            while (cmd->arg[i])
-                i++;
-        }
-        else
-            i = 0;
-        argv = (char **)malloc(sizeof(char *) * (i + 2));
-        if (!argv)
-        {
-            free(argv);
-            _exit(1);
-        }
-        argv[0] = cmd->cmd;
-        j = -1;
-        while (++j < i)
-            argv[j + 1] = cmd->arg[j];
-        argv[i + 1] = NULL;
-        execve(executable, argv, cmd->env);
-        perror("execve");
-        free(executable);
-        free(argv);
-        _exit(1);
-    }
-    else if (pid > 0 && !cmd->background)
-    {
-        waitpid(pid, &status, 0);
-        if (WIFEXITED(status))
-            msh->error_value = WEXITSTATUS(status);
-    }
-    free(executable);
+static void	exec_child(t_msh *msh, t_cmd *cmd, char *executable)
+{
+	char	**argv;
+
+	// Procesa redirecciones si hay redic y se detecta algún token
+	if (msh->redic && cmd->arg && find_first_redirect_index(cmd->arg) != -1)
+		process_redirections(cmd);
+	// Prepara el arreglo de argumentos utilizando la función unificada
+	argv = prepare_argv(cmd);
+	if (!argv)
+	{
+		free(executable);
+		_exit(1);
+	}
+	execve(executable, argv, cmd->env);
+	perror("execve");
+	free(executable);
+	free(argv);
+	_exit(1);
 }
 
-/**
- * Procesa un comando con su pipe de salida
- */
+static void	execute_single_command(t_msh *msh, t_cmd *cmd)
+{
+	char	*executable;
+	pid_t	pid;
+	int		status;
+
+	if (!cmd || !cmd->cmd)
+		return ;
+	executable = find_executable(cmd->cmd);
+	if (!executable)
+	{
+		ft_printf("Command not found: %s\n", cmd->cmd);
+		msh->error_value = 127;
+		return ;
+	}
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		free(executable);
+		msh->error_value = 1;
+		return ;
+	}
+	if (pid == 0)
+		exec_child(msh, cmd, executable);
+	else if (pid > 0 && !cmd->background)
+	{
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			msh->error_value = WEXITSTATUS(status);
+	}
+}
+
+/*Procesa un comando con su pipe de salida*/
+
 static void process_cmd_with_pipe(t_msh *msh, t_cmd *cmd, int prev_pipe, int *pipe_fd)
 {
     pid_t pid;
@@ -149,17 +136,6 @@ static void process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
     }
 }
 
-/**
- * Espera a que terminen todos los procesos hijos pendientes
- */
-static void	wait_for_children(void)
-{
-	pid_t	wpid;
-	int		status;
-
-	while ((wpid = wait(&status)) > 0)
-		;
-}
 
 /**
  * Ejecuta una lista de comandos con pipes

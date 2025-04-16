@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 19:44:22 by miaviles          #+#    #+#             */
-/*   Updated: 2025/04/14 19:44:22 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/04/16 17:16:35 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ char	*find_executable(char *cmd)
 }
 
 /* Prepara los argumentos para execve */
-static char	**prepare_argv(t_cmd *cmd)
+char	**prepare_argv(t_cmd *cmd)
 {
     char	**argv;
     int		i;
@@ -88,27 +88,29 @@ static void	setup_redirections(int input_fd, int output_fd)
 /* Ejecuta un comando en un proceso hijo con los descriptores especificados */
 void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 {
-    char	*executable;
-    char	**argv;
+	char	*executable;
+	char	**argv;
 
-    setup_redirections(input_fd, output_fd);
-    if (msh->redic && cmd->arg && find_first_redirect_index(cmd->arg) != -1)
-        process_redirections(cmd);
-    executable = find_executable(cmd->cmd);
-    if (!executable)
-    {
-        ft_printf("Command not found: %s\n", cmd->cmd);
-        _exit(127);
-    }
-    argv = prepare_argv(cmd);
-    if (!argv)
-    {
-        free(executable);
-        _exit(1);
-    }
-    execve(executable, argv, cmd->env);
-    perror("execve");
-    free(executable);
-    free(argv);
-    _exit(1);
+	executable = NULL;
+	argv = NULL;
+	setup_redirections(input_fd, output_fd);
+	if (msh->redic && cmd->arg && find_first_redirect_index(cmd->arg) != -1)
+		process_redirections(cmd);
+	executable = find_executable(cmd->cmd);
+	if (!executable)
+	{
+		ft_printf("Command not found: %s\n", cmd->cmd);
+		_exit(127);
+	}
+	argv = prepare_argv(cmd);
+	if (!argv)
+	{
+		free(executable);
+		_exit(1);
+	}
+	execve(executable, argv, cmd->env);
+	perror("execve");
+	free(executable);
+	free(argv);
+	_exit(1);
 }
