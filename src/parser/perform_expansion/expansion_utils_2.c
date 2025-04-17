@@ -112,7 +112,7 @@ char	*substitute_variable_value(t_msh *msh, t_cmd *cmd, char *line, char **varRe
 
 	// Si se encuentra el patrón "$?", reemplaza por su valor especial.
 	if (ft_strnstr(line, "$?", ft_strlen(line)) != 0)
-		return (replace_special_value(line, cmd->error_value));
+    return (replace_special_value(line, msh->error_value));
 	// Extrae el nombre de la variable
 	varName = extract_variable_name(line);
 	if (!varName)
