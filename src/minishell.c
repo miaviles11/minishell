@@ -35,6 +35,7 @@ void run_shell_loop(t_msh *shell)
 		if (is_line_empty(input_line))
 		{
 			free(input_line);
+			input_line = NULL;
 			continue;
 		}
 		add_history(input_line);
