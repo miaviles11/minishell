@@ -14,11 +14,8 @@
 
 static void	handle_extra_arguments(char **argv)
 {
-	// Imprimir un mensaje de error indicando que no se aceptan argumentos
-	fprintf(stderr, "Error: minishell no acepta argumentos adicionales\n");
-	fprintf(stderr, "Uso: %s\n", argv[0]);
-	
-	// Terminar el programa con código de error
+	ft_printf("Error: minishell no acepta argumentos adicionales\n");
+	ft_printf("Uso: %s\n", argv[0]);
 	exit(1);
 }
 

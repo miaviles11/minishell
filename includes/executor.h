@@ -19,10 +19,11 @@ char	*find_executable(char *cmd);
 char	**prepare_argv(t_cmd *cmd);
 void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd);
 
-void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd);
 void	execute_commands(t_msh *msh);
 
 void	wait_for_children(void);
+char	*check_command_path(char *cmd);
+char	*search_in_path(char *cmd);
 
 void 	execute_builtin_with_redirection(t_msh *msh, t_cmd *cmd, int output_fd);
 int		exec_builtin(t_msh *msh, char **argv);
