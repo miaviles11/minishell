@@ -17,5 +17,6 @@ char	**insert_argument_at_index(char **argList, char *newArg, int idx);
 char **keep_argument(char **arg, int j, char c);
 int	count_arguments_redirections(char **args);
 int	get_next_diff_op(int i, char *str);
+char *extract_redirect_token(char *s);
 
 #endif

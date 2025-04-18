@@ -12,41 +12,54 @@
 
 #include "../../includes/minishell.h"
 
-void execute_builtin_with_redirection(t_msh *msh, t_cmd *cmd, int output_fd)
+
+void exit_child(t_cmd *cmd)
 {
-    // Redirigir la salida estándar al extremo de escritura del pipe
-    if (output_fd != STDOUT_FILENO)
+    int code;
+
+    code = 0;
+    if (cmd->arg && cmd->arg[1])
     {
-        if (dup2(output_fd, STDOUT_FILENO) == -1)
+        if (!is_numeric(cmd->arg[1]))
         {
-            perror("dup2");
-            close(output_fd);
-            exit(1);
+            ft_printf("exit: %s: numeric argument required\n",
+                      cmd->arg[1]);
+            code = 255;
         }
-        close(output_fd);
+        else if (cmd->arg[2])
+        {
+            ft_printf("exit: too many arguments\n");
+            _exit(1);
+        }
+        else
+            code = ft_atoi(cmd->arg[1]);
     }
-    // Ejecutar el builtin correspondiente
-    if (ft_strncmp(cmd->cmd, "env", 4) == 0)
+    _exit(code);
+}
+
+void execute_builtin_with_redirection(t_msh *msh, t_cmd *cmd, int out_fd)
+{
+    if (out_fd != STDOUT_FILENO && dup2(out_fd, STDOUT_FILENO) == -1)
+        exit_error("dup2 failed", 1);
+    if (out_fd != STDOUT_FILENO)
+        close(out_fd);
+    if (!ft_strncmp(cmd->cmd, "exit", 5))
+        exit_child(cmd);
+    else if (!ft_strncmp(cmd->cmd, "env", 4))
         minishell_env(msh);
-    else if (ft_strncmp(cmd->cmd, "echo", 5) == 0)
+    else if (!ft_strncmp(cmd->cmd, "echo", 5))
         minishell_echo(msh);
-    else if (ft_strncmp(cmd->cmd, "cd", 3) == 0)
-        minishell_cd(msh, cmd->arg); // Pasar cmd->arg como segundo argumento
-    else if (ft_strncmp(cmd->cmd, "pwd", 4) == 0)
+    else if (!ft_strncmp(cmd->cmd, "cd", 3))
+        minishell_cd(msh, cmd->arg);
+    else if (!ft_strncmp(cmd->cmd, "pwd", 4))
         minishell_pwd(msh);
-    else if (ft_strncmp(cmd->cmd, "export", 7) == 0)
-        minishell_export(msh, cmd->arg); // Pasar cmd->arg como segundo argumento
-    else if (ft_strncmp(cmd->cmd, "unset", 6) == 0)
-        minishell_unset(msh, cmd->arg); // Pasar cmd->arg como segundo argumento
-    else if (ft_strncmp(cmd->cmd, "exit", 5) == 0)
-        minishell_exit(msh);
+    else if (!ft_strncmp(cmd->cmd, "export", 7))
+        minishell_export(msh, cmd->arg);
+    else if (!ft_strncmp(cmd->cmd, "unset", 6))
+        minishell_unset(msh, cmd->arg);
     else
-    {
         ft_printf("Command not found: %s\n", cmd->cmd);
-        exit(127);
-    }
-    // Salir del proceso hijo después de ejecutar el builtin
-    exit(0);
+    _exit(msh->error_value);
 }
 
 int	exec_builtin(t_msh *msh, char **argv)

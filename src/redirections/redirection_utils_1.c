@@ -42,36 +42,35 @@ void	handle_output_redirection(int redirType, t_cmd *command, char *filename)
 	free(filename);
 	close(fd);
 }
-
 void	handle_here_document(t_cmd *command, char *delimiter)
 {
 	char	*inputLine;
-	int		pipeFd[2];
-	(void)	command;
+	int		p[2];
 
-	/* Crea un pipe para almacenar las líneas del here-document */
-	if (pipe(pipeFd) == -1)
+	(void)command;
+	if (pipe(p) == -1)
 		exit_error("Error al crear pipe para here-document", 47);
-	if (write(1, "> ", 2) == -1)
-		exit_error("Error de escritura en prompt", 48);
-	/* Lee desde STDIN_FILENO (la entrada estándar) */
-	inputLine = get_next_line(STDIN_FILENO);
-	while (inputLine && ft_strncmp(inputLine, delimiter, ft_strlen(delimiter)) != 0)
+	while (1)
 	{
-		if (write(1, "> ", 2) == -1)
+		if (write(STDERR_FILENO, "> ", 2) == -1)
 			exit_error("Error de escritura en prompt", 48);
-		if (write(pipeFd[1], inputLine, ft_strlen(inputLine)) == -1)
+		inputLine = get_next_line(STDIN_FILENO);
+		if (!inputLine)
+			_exit(1);
+		if (!ft_strncmp(inputLine, delimiter, ft_strlen(delimiter)))
+		{
+			free(inputLine);
+			break ;
+		}
+		if (write(p[1], inputLine, ft_strlen(inputLine)) == -1)
 			exit_error("Error al escribir en pipe", 30);
 		free(inputLine);
-		inputLine = get_next_line(STDIN_FILENO);
 	}
-	free(inputLine);
 	free(delimiter);
-	/* Duplica el extremo de lectura del pipe a STDIN_FILENO */
-	if (dup2(pipeFd[0], STDIN_FILENO) == -1)
-		exit_error("Error al redirigir la entrada del here-document", 48);
-	close(pipeFd[0]);
-	close(pipeFd[1]);
+	if (dup2(p[0], STDIN_FILENO) == -1)
+		exit_error("Error al redirigir here-document", 48);
+	close(p[0]);
+	close(p[1]);
 }
 
 

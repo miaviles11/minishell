@@ -28,13 +28,13 @@ int	is_numeric(const char *str)
     return (1);
 }
 
-int	minishell_exit(t_msh *msh)
+int minishell_exit(t_msh *msh)
 {
-    int	status;
+    int status;
     t_cmd *cmd;
 
     cmd = msh->cmd;
-    if (cmd->arg[1])
+    if (cmd->arg && cmd->arg[1])
     {
         if (!is_numeric(cmd->arg[1]))
         {

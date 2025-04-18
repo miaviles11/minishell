@@ -25,9 +25,10 @@ void	wait_for_children(void);
 char	*check_command_path(char *cmd);
 char	*search_in_path(char *cmd);
 
-void 	execute_builtin_with_redirection(t_msh *msh, t_cmd *cmd, int output_fd);
+void execute_builtin_with_redirection(t_msh *msh, t_cmd *cmd, int out_fd);
 int		exec_builtin(t_msh *msh, char **argv);
 int		is_builtin(char *cmd_name);
 void	execute_builtin(t_msh *msh, t_cmd *cmd);
+void exit_child(t_cmd *cmd);
 
 #endif

@@ -18,25 +18,20 @@ int	validate_and_split_input(t_msh *shell, char *inputLine, char ***segments)
 	shell->quote = check_quotes_balance(inputLine, shell);
 	if (shell->quote == 0)
 	{
-		free(inputLine);
 		return (1);
 	}
-
 	/* 2. Cuenta el número de pipes en la línea. */
 	shell->pipe = count_pipes(inputLine, shell);
-	if (shell->pipe == -1)
+    if (shell->pipe == -1)
 	{
-		free(inputLine);
-		return (1);
+        return (1);
 	}
 	/* 4. Divide la línea en segmentos utilizando el pipe ('|') como delimitador. */
 	*segments = split_pipes(inputLine, shell);
-	if (!(*segments))
+    if (!(*segments))
 	{
-		free(inputLine);
-		return (1);
+        return (1);
 	}
-
 	return (0);
 }
 

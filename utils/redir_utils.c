@@ -34,41 +34,37 @@ int	is_redirect_operator(char c)
 **    -1  si se detecta un operador mal formado,
 **     0  si no se encuentra ningún operador.
 */
-int	get_redirect_type(char *str)
-{
-	int	i = 0;
+#include "../includes/minishell.h"
 
-	while (str[i])
+int	get_redirect_type(char *s)
+{
+	int i = 0;
+	while (s[i])
 	{
-		if (str[i] == '"' || str[i] == '\'')
-			i = get_next_quote(i + 1, str, str[i]);
-		if (str[i] == '2' && str[i + 1] == '>')
-		{
-			if (str[i + 2] == '>')
-				return (6);
-			if (!is_redirect_operator(str[i + 2]))
-				return (5);
-		}
-		if (str[i] == '>')
-		{
-			if (str[i + 1] == '>' && !is_redirect_operator(str[i + 2]))
-				return (2);
-			if (!is_redirect_operator(str[i + 1]))
-				return (1);
-		}
-		if (str[i] == '<')
-		{
-			if (str[i + 1] == '<' && !is_redirect_operator(str[i + 2]))
-				return (4);
-			if (!is_redirect_operator(str[i + 1]))
-				return (3);
-		}
-		if (is_redirect_operator(str[i]))
+		if (s[i] == '"' || s[i] == '\'')
+			i = get_next_quote(i + 1, s, s[i]);
+		if (!ft_strncmp(s + i, "<<<", 3))
+			return (-1);
+		if (!ft_strncmp(s + i, "2>>", 3))
+			return (6);
+		if (!ft_strncmp(s + i, "2>", 2) && !is_redirect_operator(s[i + 2]))
+			return (5);
+		if (!ft_strncmp(s + i, ">>", 2) && !is_redirect_operator(s[i + 2]))
+			return (2);
+		if (s[i] == '>' && !is_redirect_operator(s[i + 1]))
+			return (1);
+		if (!ft_strncmp(s + i, "<<", 2) && !is_redirect_operator(s[i + 2]))
+			return (4);
+		if (s[i] == '<' && !is_redirect_operator(s[i + 1]))
+			return (3);
+		if (is_redirect_operator(s[i]))
 			return (-1);
 		i++;
 	}
 	return (0);
 }
+
+
 
 /*
 ** find_first_redirect_index:

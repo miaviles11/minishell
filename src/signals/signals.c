@@ -14,13 +14,13 @@
 
 void signal_handler(int sign)
 {
-	if (sign == SIGINT)  // Ctrl+C
-	{
-		printf("\n");
-		rl_on_new_line();       // Mueve el cursor a una nueva línea
-		rl_replace_line("", 0); // Borra la línea actual del buffer
-		rl_redisplay();         // Redibuja el prompt
-	}
+   if (sign == SIGINT)  // Ctrl+C
+   {
+       /* Solo salto de línea y limpio el buffer de readline */
+       write(STDOUT_FILENO, "\n", 1);
+       rl_on_new_line();
+       rl_replace_line("", 0);
+   }
 	else if (sign == SIGQUIT) // 'Ctrl+\'
 	{
 		// En el prompt, simplemente ignoramos Ctrl+\ sin mostrar nada

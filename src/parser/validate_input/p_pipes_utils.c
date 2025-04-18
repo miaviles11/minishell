@@ -12,90 +12,129 @@
 
 #include "../../../includes/minishell.h"
 /*
-** extract_pipe_segments:
-**   Divide la cadena 's' en segmentos utilizando el carácter pipe ('|')
-**   como delimitador, ignorando los pipes que aparezcan dentro de comillas.
-**   Los segmentos se almacenan en el arreglo 'segments', que debe estar
-**   previamente reservado con suficiente espacio (número de pipes + 2).
-**   Retorna 'segments'.
+** count_redirections:
+**   Cuenta el número de operadores de redirección en la cadena,
+**   incluyendo >, >>, <, <<, 2>, 2>>.
 */
-char	**extract_pipe_segments(char *s, char **segments)
+int count_redirections(const char *s)
 {
-	int	i = 0, start = 0, pos = 0;
+    int count = 0;
+    int i = 0;
 
-	while (s[i])
-	{
-		if (s[i] == '"' || s[i] == '\'')
-			i = get_next_quote(i + 1, s, s[i]);
-		if ((s[i + 1] == '|' || s[i + 1] == '\0') && s[i] != '|')
-		{
-			segments[pos] = ft_substr(s, start, i - start + 1);
-			if (!segments[pos])
-				exit_error("Error malloc", 54);
-			pos++;
-		}
-		if (s[i] == '|' && !(s[i + 1] == '|' || s[i + 1] == '\0'))
-			start = i + 1;
-		i++;
-	}
-	segments[pos] = NULL;
-	return (segments);
+    while (s[i])
+    {
+        if (s[i] == '"' || s[i] == '\'')
+            i = get_next_quote(i + 1, (char *)s, s[i]);
+        else if (s[i] == '2' && s[i + 1] == '>')
+        {
+            count++;
+            i += (s[i + 2] == '>') ? 3 : 2;
+        }
+        else if ((s[i] == '>' && s[i + 1] == '>') ||
+                 (s[i] == '<' && s[i + 1] == '<'))
+        {
+            count++;
+            i += 2;
+        }
+        else if (s[i] == '>' || s[i] == '<')
+        {
+            count++;
+            i++;
+        }
+        else
+            i++;
+    }
+    return (count);
 }
 
 /*
-** validate_pipe_segment:
-**   Verifica que el segmento 'segment' no esté compuesto únicamente por
-**   espacios en blanco (lo que indicaría un error de sintaxis).
-**   Retorna 0 si es válido, o -1 si sólo contiene espacios.
+** extract_redirect_token:
+**   Extrae la secuencia de operadores de redirección consecutivos
+**   (por ejemplo, ">>>" o "<<<") para el mensaje de error.
 */
-int	validate_pipe_segment(char *segment)
+char *extract_redirect_token(char *s)
 {
-	int	i = 0;
+    int  i = 0;
+    int  start;
+    char op;
 
-	while (segment[i])
-	{
-		if (segment[i] != ' ' && segment[i] != '\t' && segment[i] != '\n')
-			return (0);
-		i++;
-	}
-	put_error("bash", NULL, "syntax error near unexpected token `|'");
-	return (-1);
+    while (s[i] && !is_redirect_operator(s[i]))
+        i++;
+    if (!s[i])
+        return (ft_strdup(""));
+    op = s[i];
+    start = i;
+    while (s[i] == op)
+        i++;
+    return (ft_substr(s, start, i - start));
 }
 
-/*
-** validate_redirection_syntax:
-**   Verifica que el segmento segments[index] tenga una sintaxis válida en cuanto
-**   a redirecciones. Para ello, utiliza get_redirect_type() para identificar el
-**   operador y get_operator_for_type() para localizarlo en el segmento.
-**
-**   Si se detecta un error (por ejemplo, un operador sin operando o mal formado),
-**   se muestra un mensaje de error y se retorna -1. En caso contrario, retorna 0.
-*/
-int	validate_redirection_syntax(char **segments, int index)
+char **extract_pipe_segments(char *s, char **segments)
 {
-	char	*temp;
-	int		j = 0;
+    int i = 0;
+    int start = 0;
+    int pos = 0;
 
-	if (get_redirect_type(segments[index]) == -1)
-	{
-		put_error("bash", NULL, "syntax error near unexpected token `>'");
-		return (-1);
-	}
-	temp = ft_strchr(segments[index],
-			get_operator_for_type(get_redirect_type(segments[index])));
-	while (temp && get_redirect_type(temp + j))
-	{
-		j = 0;
-		while (temp[j] && (temp[j] == ' ' || is_redirect_operator(temp[j])))
-			j++;
-		if ((get_redirect_type(segments[index]) && !temp[j])
-			|| is_redirect_operator(temp[ft_strlen(temp) - 1]))
-		{
-			put_error("bash", NULL, "syntax error near unexpected token `>'");
-			return (-1);
-		}
-		temp = ft_strchr(temp + j,
-				get_operator_for_type(get_redirect_type(temp + j)));
-	}
-	return (0);
+    while (s[i])
+    {
+        if (s[i] == '"' || s[i] == '\'')
+            i = get_next_quote(i + 1, s, s[i]);
+        if ((s[i + 1] == '|' || s[i + 1] == '\0') && s[i] != '|')
+        {
+            segments[pos] = ft_substr(s, start, i - start + 1);
+            if (!segments[pos])
+                exit_error("Error malloc", 54);
+            pos++;
+        }
+        if (s[i] == '|' && s[i + 1] && s[i + 1] != '|')
+            start = i + 1;
+        i++;
+    }
+    segments[pos] = NULL;
+    return (segments);
+}
+
+int validate_pipe_segment(char *segment)
+{
+    int i = 0;
+
+    while (segment[i])
+    {
+        if (segment[i] != ' ' && segment[i] != '\t' &&
+            segment[i] != '\n')
+            return (0);
+        i++;
+    }
+    put_error("bash", NULL, "syntax error near unexpected token `|' ");
+    return (-1);
+}
+
+int validate_redirection_syntax(char **segments, int index)
+{
+    char *segment;
+    int  rt;
+    char *token;
+    char *tmp;
+    char *msg;
+
+    segment = segments[index];
+    rt = get_redirect_type(segment);
+    if (rt == -1)
+    {
+        token = extract_redirect_token(segment);
+        tmp   = ft_strjoin("syntax error near unexpected token `", token);
+        msg   = ft_strjoin(tmp, "`");
+        put_error("bash", NULL, msg);
+        free(token);
+        free(tmp);
+        free(msg);
+        return (-1);
+    }
+    if (rt > 0 && count_redirections(segment) > 1)
+    {
+        put_error("bash", NULL,
+            "syntax error near unexpected token `>'");
+        return (-1);
+    }
+    return (0);
 }
