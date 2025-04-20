@@ -14,58 +14,63 @@
 
 /*Ejecuta el proceso hijo: aplica redirecciones, prepara argv y ejecuta el comando.*/
 
-static void	exec_child(t_msh *msh, t_cmd *cmd, char *executable)
+static void exec_child(t_msh *msh, t_cmd *cmd, char *executable)
 {
-	char	**argv;
     (void)msh;
-	// Procesa redirecciones si hay redic y se detecta algún token
-	if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
-		process_redirections(cmd);
-	// Prepara el arreglo de argumentos utilizando la función unificada
-	argv = prepare_argv(cmd);
-	if (!argv)
-	{
-		free(executable);
-		_exit(1);
-	}
-	execve(executable, argv, cmd->env);
-	perror("execve");
-	free(executable);
-	free(argv);
-	_exit(1);
+    /* Restablecer handlers en el hijo */
+    setup_child_signals();
+
+    /* Procesar redirecciones si las hay */
+    if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
+        process_redirections(cmd);
+
+    /* Preparar argv */
+    char **argv = prepare_argv(cmd);
+    if (!argv)
+    {
+        free(executable);
+        _exit(1);
+    }
+
+    /* Ejecutar */
+    execve(executable, argv, cmd->env);
+    perror("execve");
+    free(executable);
+    free(argv);
+    _exit(1);
 }
 
-static void	execute_single_command(t_msh *msh, t_cmd *cmd)
+static void execute_single_command(t_msh *msh, t_cmd *cmd)
 {
-	char	*executable;
-	pid_t	pid;
-	int		status;
+    char *executable;
+    pid_t pid;
+    int status;
 
-	if (!cmd || !cmd->cmd)
-		return ;
-	executable = find_executable(cmd->cmd);
-	if (!executable)
-	{
-		ft_printf("Command not found: %s\n", cmd->cmd);
-		msh->error_value = 127;
-		return ;
-	}
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		free(executable);
-		msh->error_value = 1;
-		return ;
-	}
-	if (pid == 0)
-		exec_child(msh, cmd, executable);
-	else if (pid > 0 && !cmd->background)
-	{
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			msh->error_value = WEXITSTATUS(status);
-	}
+    if (!cmd || !cmd->cmd)
+        return;
+    executable = find_executable(cmd->cmd);
+    if (!executable)
+    {
+        ft_printf("Command not found: %s\n", cmd->cmd);
+        msh->error_value = 127;
+        return;
+    }
+    pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        free(executable);
+        msh->error_value = 1;
+        return;
+    }
+    if (pid == 0)
+        exec_child(msh, cmd, executable);
+    else if (pid > 0 && !cmd->background)
+    {
+        waitpid(pid, &status, 0);
+        if (WIFEXITED(status))
+            msh->error_value = WEXITSTATUS(status);
+    }
 }
 
 /*Procesa un comando con su pipe de salida*/

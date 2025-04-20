@@ -70,6 +70,7 @@ void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 	char	**argv;
     (void)msh;
 
+    setup_child_signals();
 	executable = NULL;
 	argv = NULL;
 	setup_redirections(input_fd, output_fd);

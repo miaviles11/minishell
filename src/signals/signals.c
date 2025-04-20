@@ -6,41 +6,76 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 18:29:26 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/18 18:51:39 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/04/20 19:34:39 by carlsanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void signal_handler(int sign)
+/* Indicador de que el shell está en modo espera de prompt */
+extern volatile sig_atomic_t g_interactive;
+
+/* Manejador de señales para el proceso padre (prompt interactivo) */
+void handle_parent_signal(int sign)
 {
-   if (sign == SIGINT)  // Ctrl+C
-   {
-       /* Solo salto de línea y limpio el buffer de readline */
-       write(STDOUT_FILENO, "\n", 1);
-       rl_on_new_line();
-       rl_replace_line("", 0);
-   }
-	else if (sign == SIGQUIT) // 'Ctrl+\'
-	{
-		// En el prompt, simplemente ignoramos Ctrl+\ sin mostrar nada
-		rl_redisplay();  // Solo redibujar para mantener consistencia
-	}
+    if (sign == SIGINT)  // Ctrl+C
+    {
+        write(STDOUT_FILENO, "\n", 1);
+        /* Solo cuando estamos esperando el prompt */
+        if (g_interactive)
+        {
+            rl_on_new_line();
+            rl_replace_line("", 0);
+            rl_redisplay();
+        }
+        /* si g_interactive==0 (estamos dentro de un comando), no redibujamos */
+    }
+    else if (sign == SIGQUIT)
+    {
+        if (g_interactive)
+        {
+            rl_on_new_line();
+            rl_redisplay();
+        }
+    }
 }
 
+/* Manejador de señales para procesos hijos */
+void handle_child_signal(int sign)
+{
+    if (sign == SIGINT)
+        _exit(130);
+    else if (sign == SIGQUIT)
+    {
+        write(STDERR_FILENO, "Quit: 3\n", 8);
+        _exit(131);
+    }
+}
+
+/* Instalación de manejadores para el shell interactivo */
 void setup_signals(void)
 {
-    struct sigaction sa_int, sa_quit;
-    
-    // Configurar SIGINT (Ctrl+C)
-    sa_int.sa_handler = signal_handler;
-    sigemptyset(&sa_int.sa_mask);
-    sa_int.sa_flags = 0;
-    sigaction(SIGINT, &sa_int, NULL);
-    
-    // Configurar SIGQUIT (Ctrl+\) para ignorarlo
-    sa_quit.sa_handler = SIG_IGN;  // Ignorar completamente
-    sigemptyset(&sa_quit.sa_mask);
-    sa_quit.sa_flags = 0;
-    sigaction(SIGQUIT, &sa_quit, NULL);
+    struct sigaction sa;
+
+    sa.sa_handler = handle_parent_signal;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+
+    sigaction(SIGINT,  &sa, NULL);
+    sigaction(SIGQUIT, &sa, NULL);
+    sigaction(SIGTERM, &sa, NULL);
+}
+
+/* Instalación de manejadores para los procesos hijos */
+void setup_child_signals(void)
+{
+    struct sigaction sa;
+
+    sa.sa_handler = handle_child_signal;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+
+    sigaction(SIGINT,  &sa, NULL);
+    sigaction(SIGQUIT, &sa, NULL);
+    sigaction(SIGTERM, &sa, NULL);
 }
