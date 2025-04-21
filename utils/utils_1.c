@@ -70,7 +70,7 @@ char	*str_noquotes(char *str)
 	return (temp);
 }
 
-char *str_noquotes_expand(char *str, t_msh *msh)
+/*char *str_noquotes_expand(char *str, t_msh *msh)
 {
 	int i = 0;
 	int j = 0;
@@ -104,4 +104,4 @@ char *str_noquotes_expand(char *str, t_msh *msh)
 	if (expanded_str && expanded_str != str)
 		free(expanded_str);
 	return (temp);
-}
+}*/

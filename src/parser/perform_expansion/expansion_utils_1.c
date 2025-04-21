@@ -23,24 +23,23 @@
 */
 int	has_variable(const char *s)
 {
-	int	i = 0;
-	int	dq_flag = 1;  // 1: fuera de comillas dobles; -1: dentro de comillas dobles.
+	int i = 0;
 
-	while (s[i])
-	{
-		// Si encontramos una comilla simple y estamos fuera de comillas dobles, saltamos su contenido.
-		if (s[i] == '\'' && dq_flag == 1)
+	while (s[i]) {
+		if (s[i] == '\'') {
+			// salto al final del bloque '...'
 			i = get_next_quote(i + 1, (char *)s, '\'');
-		// Alterna el estado al encontrar una comilla doble.
-		if (s[i] == '"')
-			dq_flag *= -1;
-		// Si se detecta un '$' seguido de un carácter que no sea espacio, se asume que hay una variable.
+			if (s[i] == '\'')
+				i++;
+			continue;
+		}
 		if (s[i] == '$' && s[i + 1] && s[i + 1] != ' ')
-			return (1);
+			return 1;
 		i++;
 	}
-	return (0);
+	return 0;
 }
+
 char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder)
 {
 	char	*temp;
@@ -54,10 +53,14 @@ char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder)
 	if (check_variable_and_digit(s) == 0)
 		s = quit_variable_and_digit(s);
 	// Mientras se detecte una variable en la cadena...
+	char *prev_s = NULL;
 	while (has_variable(s))
 	{
 		cmd->flags->dollar_special = 0;
+		// Guarda el estado anterior de 's' para comparar
+		prev_s = ft_strdup(s);
 		s = substitute_variable_value(msh, cmd, s, varReminder);
+		printf("s: %s\n", s);
 		// Si se activó un caso especial, concatena varReminder.
 		if (cmd->flags->dollar_special == 1 && varReminder && *varReminder)
 		{
@@ -67,7 +70,14 @@ char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder)
 			free(*varReminder);
 			*varReminder = NULL;
 			cmd->flags->dollar_special = 0;
-		}		
+		}
+		// Verifica si 's' no cambió, lo que indica un posible bucle infinito
+		if (ft_strcmp(prev_s, s) == 0)
+		{
+			free(prev_s);
+			break; // Sal del bucle para evitar el infinito
+		}
+		free(prev_s);
 	}
 	return (s);
 }

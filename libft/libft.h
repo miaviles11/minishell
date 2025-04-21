@@ -89,5 +89,6 @@ void	ft_error_clean(char *str, t_bool e, void *to_free);
 void	ft_error(char *str, t_bool e);
 int		ft_sqrt(int nmb);
 void	ft_free_split(char **arr);
+int		ft_strcmp(const char *s1, const char *s2);
 
 #endif

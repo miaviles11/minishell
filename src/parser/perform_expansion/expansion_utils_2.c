@@ -112,7 +112,7 @@ char	*substitute_variable_value(t_msh *msh, t_cmd *cmd, char *line, char **varRe
 
 	// Si se encuentra el patrón "$?", reemplaza por su valor especial.
 	if (ft_strnstr(line, "$?", ft_strlen(line)) != 0)
-    	return (replace_special_value(line, msh->error_value));
+    return (replace_special_value(line, msh->error_value));
 	// Extrae el nombre de la variable
 	varName = extract_variable_name(line);
 	if (!varName)
@@ -128,7 +128,7 @@ char	*substitute_variable_value(t_msh *msh, t_cmd *cmd, char *line, char **varRe
 	int nameLen = ft_strlen(varName);
 	i = nameIndex + nameLen - 1; // Posicionarse al final del nombre
 	// Ahora i debería estar justo después del nombre de la variable
-	if (line[i + 1] && ((special_char_check(line[i + 1]) == -1 && line[i + 1] != '$') ||
+	if (line[i + 1] && ((special_char_check(line[i + 1]) == -1 && line[i + 1] != '$'&& line[i + 1] != '"') ||
 		(line[i + 1] == '$' && (i + 1) == find_next_dollar(line, i))))
 	{
 		// Hay un carácter especial después del nombre de la variable
