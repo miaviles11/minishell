@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
+
 /*
 ** special_char_check:
 **   Determina si el carácter 'c' es considerado un carácter especial,
@@ -19,13 +20,16 @@
 */
 int	special_char_check(char c)
 {
-	if (c == '=' || c == '@' || c == '#' || c == '-' || c == '+' ||
-	    c == '{' || c == '}' || c == '[' || c == ']' || c == '!' ||
-	    c == '~' || c == '?' || c == '%' || c == '^' || c == '*' ||
-	    c == '/' || c == '$' || c == ';')
-		return (-1);
-	return (0);
+    if ((c >= '0' && c <= '9') ||
+        (c >= 'A' && c <= 'Z') ||
+        (c >= 'a' && c <= 'z') ||
+        c == '_')
+    {
+        return (0);
+    }
+    return (-1);
 }
+
 /*
 ** compare_variable_name:
 **   Compara el nombre extraído de la variable (nameVar) con cada variable
@@ -33,7 +37,7 @@ int	special_char_check(char c)
 **   el nombre extraído con la parte del nombre de cada variable de entorno.
 **
 **   Si se encuentra una coincidencia, se libera nameVar, se extrae el valor de
-**   la variable (usando ft_add_var_value) y se llama a replace_variable_in_line para
+**   la variable (usando extract_env_value) y se llama a replace_variable_in_line para
 **   reemplazar la parte correspondiente en la línea.
 **
 **   Si no se encuentra ninguna coincidencia, se libera nameVar y se reemplaza
@@ -44,8 +48,8 @@ int	special_char_check(char c)
 */
 char	*compare_variable_name(t_msh *msh, char *line, char *nameVar)
 {
-    int		envIndex;
-    char	*varValue;
+    int envIndex;
+    char *varValue;
 
     envIndex = 0;
     while (envIndex < msh->num_env)
@@ -61,6 +65,7 @@ char	*compare_variable_name(t_msh *msh, char *line, char *nameVar)
     free(nameVar);
     return (replace_variable_in_line(line, ft_strdup("")));
 }
+
 /*
 ** compare_env_variable_name:
 **   Compara el nombre de la variable almacenado en s1 con la parte de nombre de
@@ -71,27 +76,25 @@ char	*compare_variable_name(t_msh *msh, char *line, char *nameVar)
 */
 int	compare_env_variable_name(const char *s1, const char *s2)
 {
-	size_t	i;
+    size_t i;
 
-	i = 0;
-	if (!s1 || !s2)
-		return (1);
-	// Recorre s2 hasta encontrar '=' o el final de la cadena
-	while (s2[i] && s2[i] != '=')
-		i++;
-	// Si la longitud de s1 difiere de la parte de s2 hasta '=', son distintos.
-	if (ft_strlen(s1) != i)
-		return (1);
-	i = 0;
-	// Compara carácter a carácter hasta llegar al '=' o fin de cadena
-	while (s1[i] && s2[i] && s2[i] != '=')
-	{
-		if (s1[i] != s2[i])
-			return (1);
-		i++;
-	}
-	return (0);
+    if (!s1 || !s2)
+        return (1);
+    i = 0;
+    while (s2[i] && s2[i] != '=')
+        i++;
+    if (ft_strlen(s1) != i)
+        return (1);
+    i = 0;
+    while (s1[i] && s2[i] && s2[i] != '=')
+    {
+        if (s1[i] != s2[i])
+            return (1);
+        i++;
+    }
+    return (0);
 }
+
 /*
 ** extract_env_value:
 **   Extrae y retorna el valor de la variable de entorno contenida en la cadena
@@ -104,78 +107,63 @@ int	compare_env_variable_name(const char *s1, const char *s2)
 */
 char	*extract_env_value(const char *envVar)
 {
-	int		i;
-	int		len;
-	char	*result;
+    int i;
+    int len;
+    char *result;
 
-	i = 0;
-	// Busca el carácter '=' en la cadena.
-	while (envVar[i] && envVar[i] != '=')
-		i++;
-	// Si no se encontró '=', retorna una cadena vacía.
-	if (!envVar[i])
-		return (ft_strdup(""));
-	// Avanza para saltar el '='.
-	i++;
-	// Calcula la longitud del valor.
-	len = ft_strlen(envVar) - i;
-	// Reserva memoria para el valor más el terminador nulo.
-	result = malloc(sizeof(char) * (len + 1));
-	if (!result)
-		exit_error("Error malloc", 17);
-	// Copia el valor desde la posición i hasta el final.
-	ft_strlcpy(result, envVar + i, len + 1);
-	return (result);
+    i = 0;
+    while (envVar[i] && envVar[i] != '=')
+        i++;
+    if (!envVar[i])
+        return (ft_strdup(""));
+    i++;
+    len = ft_strlen(envVar) - i;
+    result = malloc(len + 1);
+    if (!result)
+        exit_error("Error malloc", 17);
+    ft_strlcpy(result, envVar + i, len + 1);
+    return (result);
 }
+
 /*
 ** replace_variable_in_line:
 **   Reemplaza en la cadena 'line' el primer patrón de variable (iniciado por '$')
 **   por el valor de 'var'. La función:
 **     1. Encuentra el primer '$' fuera de comillas (usando find_next_dollar).
 **     2. Determina la longitud del nombre de la variable (hasta un espacio o comilla).
-**     3. Construye una nueva cadena que consiste en:
-**         - La parte de 'line' antes del '$'
-**         - El contenido de 'var'
-**         - La parte de 'line' posterior al nombre de la variable
-**
-**   Libera la cadena original 'line' y la cadena 'var', y retorna la nueva cadena.
+**     3. Construye una nueva cadena:
+**         - Parte antes del '$'
+**         - Contenido de 'var'
+**         - Parte después del nombre de la variable
+**   Libera la cadena original 'line' y 'var', y retorna la nueva cadena.
 */
 char *replace_variable_in_line(char *line, char *var)
 {
-	int     posDollar;
-	int     varNameLen;
-	int     totalLen;
-	char    *newLine;
+    int pos;
+    int name_len;
+    int new_len;
+    char *new_line;
 
-	// Encuentra el primer '$' en la línea
-	posDollar = find_next_dollar(line, 0);
-	if (posDollar == -1)
-		return (line);
-		
-	// Calcula la longitud del nombre de la variable después del '$'
-	varNameLen = 0;
-	while (line[posDollar + 1 + varNameLen] &&
-		line[posDollar + 1 + varNameLen] != ' ' &&
-		line[posDollar + 1 + varNameLen] != '"' &&
-		line[posDollar + 1 + varNameLen] != '\'' &&
-		special_char_check(line[posDollar + 1 + varNameLen]) == 0)
-		varNameLen++;
-		
-	// Calcula la longitud total para la nueva cadena
-	totalLen = posDollar + ft_strlen(var) +
-		ft_strlen(line + posDollar + 1 + varNameLen) + 1;
-	newLine = malloc(sizeof(char) * totalLen);
-	if (!newLine)
-		exit_error("Error malloc", 18);
-		
-	// Copia la parte de la línea antes del '$'
-	ft_strlcpy(newLine, line, posDollar + 1);
-	// Concatena el valor de la variable
-	ft_strlcat(newLine, var, totalLen);
-	// Concatena la parte restante de la línea
-	ft_strlcat(newLine, line + posDollar + 1 + varNameLen, totalLen);
-	
-	free(line);
-	free(var);
-	return (newLine);
+    pos = find_next_dollar(line, 0);
+    if (pos < 0)
+        return (line);
+    /* Saltar '$' */
+    name_len = 1;
+    while (line[pos + name_len] && special_char_check(line[pos + name_len]) == 0)
+        name_len++;
+    /* Calcula nuevo tamaño: antes de '$', valor var, resto después de nombre */
+    new_len = pos + ft_strlen(var) + ft_strlen(line + pos + name_len) + 1;
+    new_line = malloc(new_len);
+    if (!new_line)
+        exit_error("Error malloc", 18);
+    /* Copia parte antes de '$' */
+    ft_strlcpy(new_line, line, pos + 1);
+    /* Concatena valor */
+    ft_strlcat(new_line, var, new_len);
+    /* Concatena resto */
+    ft_strlcat(new_line, line + pos + name_len, new_len);
+    free(line);
+    free(var);
+    return (new_line);
 }
+
