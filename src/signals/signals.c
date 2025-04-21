@@ -14,7 +14,7 @@
 
 extern volatile sig_atomic_t g_interactive;
 
-/* Handler para Ctrl‑C y Ctrl‑\ en el padre */
+/* Handler para Ctrl‑C y Ctrl‑\\ en el padre */
 void handle_parent_signal(int sign)
 {
     if (sign == SIGINT)  /* Ctrl‑C */
@@ -27,13 +27,18 @@ void handle_parent_signal(int sign)
             rl_redisplay();
         }
     }
-    else if (sign == SIGQUIT)  /* Ctrl‑\ */
+    else if (sign == SIGQUIT)  /* Ctrl‑\\ */
     {
         if (!g_interactive)  /* solo si un comando estaba corriendo */
         {
             /* El TTY ya imprimió "^\" y salto de línea */
             write(STDERR_FILENO, "Quit: 3\n", 8);
-            /* No redibujamos el prompt aquí para evitar duplicado */
+        }
+        else  /* prompt vacío: redibujar */
+        {
+            rl_on_new_line();
+            rl_replace_line("", 0);
+            rl_redisplay();
         }
     }
 }
@@ -51,7 +56,7 @@ void setup_signals(void)
 {
     struct sigaction sa;
 
-    /* Padre: capturar Ctrl‑C y Ctrl‑\ */
+    /* Padre: capturar Ctrl‑C y Ctrl‑\\ */
     sa.sa_handler = handle_parent_signal;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = SA_RESTART;
