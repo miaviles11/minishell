@@ -122,7 +122,6 @@ int find_next_dollar(const char *s, int start)
 {
     int i;
 
-    /* Si nos pasan un start negativo, comenzamos en 0 */
     if (start < 0)
         i = 0;
     else
@@ -130,10 +129,12 @@ int find_next_dollar(const char *s, int start)
 
     while (s[i])
     {
-        /* Si encontramos comillas, saltamos su contenido */
-        if (s[i] == '"' || s[i] == '\'')
+        /* Si encontramos comilla simple, saltar hasta la de cierre */
+        if (s[i] == '\'')
         {
-            i = get_next_quote(i + 1, (char *)s, s[i]);
+            i = get_next_quote(i + 1, (char *)s, '\'');
+            if (s[i] == '\'')
+                i++;
             continue;
         }
         if (s[i] == '$')
