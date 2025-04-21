@@ -60,7 +60,6 @@ char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder)
 		// Guarda el estado anterior de 's' para comparar
 		prev_s = ft_strdup(s);
 		s = substitute_variable_value(msh, cmd, s, varReminder);
-		printf("s: %s\n", s);
 		// Si se activó un caso especial, concatena varReminder.
 		if (cmd->flags->dollar_special == 1 && varReminder && *varReminder)
 		{
