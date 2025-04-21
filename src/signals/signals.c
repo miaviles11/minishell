@@ -12,69 +12,65 @@
 
 #include "../../includes/minishell.h"
 
-/* Indicador de que el shell está en modo espera de prompt */
 extern volatile sig_atomic_t g_interactive;
 
-/* Manejador de señales para el proceso padre (prompt interactivo) */
+/* Handler para Ctrl‑C y Ctrl‑\ en el padre */
 void handle_parent_signal(int sign)
 {
-    if (sign == SIGINT)  // Ctrl+C
+    if (sign == SIGINT)  /* Ctrl‑C */
     {
         write(STDOUT_FILENO, "\n", 1);
-        /* Solo cuando estamos esperando el prompt */
         if (g_interactive)
         {
             rl_on_new_line();
             rl_replace_line("", 0);
             rl_redisplay();
         }
-        /* si g_interactive==0 (estamos dentro de un comando), no redibujamos */
     }
-    else if (sign == SIGQUIT)
+    else if (sign == SIGQUIT)  /* Ctrl‑\ */
     {
-        if (g_interactive)
+        if (!g_interactive)  /* solo si un comando estaba corriendo */
         {
-            rl_on_new_line();
-            rl_redisplay();
+            /* El TTY ya imprimió "^\" y salto de línea */
+            write(STDERR_FILENO, "Quit: 3\n", 8);
+            /* No redibujamos el prompt aquí para evitar duplicado */
         }
     }
 }
 
-/* Manejador de señales para procesos hijos */
+/* Handler para SIGINT y SIGQUIT en los hijos */
 void handle_child_signal(int sign)
 {
     if (sign == SIGINT)
         _exit(130);
     else if (sign == SIGQUIT)
-    {
-        write(STDERR_FILENO, "Quit: 3\n", 8);
         _exit(131);
-    }
 }
 
-/* Instalación de manejadores para el shell interactivo */
 void setup_signals(void)
 {
     struct sigaction sa;
 
+    /* Padre: capturar Ctrl‑C y Ctrl‑\ */
     sa.sa_handler = handle_parent_signal;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = SA_RESTART;
-
     sigaction(SIGINT,  &sa, NULL);
     sigaction(SIGQUIT, &sa, NULL);
+
+    /* Ignorar SIGTERM en el padre */
+    sa.sa_handler = SIG_IGN;
     sigaction(SIGTERM, &sa, NULL);
 }
 
-/* Instalación de manejadores para los procesos hijos */
 void setup_child_signals(void)
 {
     struct sigaction sa;
 
+    /* Hijos: manejar SIGINT y SIGQUIT */
     sa.sa_handler = handle_child_signal;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = SA_RESTART;
-
     sigaction(SIGINT,  &sa, NULL);
     sigaction(SIGQUIT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
