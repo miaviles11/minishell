@@ -98,6 +98,7 @@ void	cleanup_shell(t_msh *shell);
 
 int		is_line_empty(const char *line);
 char	*str_noquotes(char *str);
+char	*str_noquotes_expand(char *str, t_msh *msh);
 void	run_shell_loop(t_msh *shell);
 int		main(int argc, char **argv, char **envp);
 

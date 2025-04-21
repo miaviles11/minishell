@@ -69,3 +69,39 @@ char	*str_noquotes(char *str)
 	}
 	return (temp);
 }
+
+char *str_noquotes_expand(char *str, t_msh *msh)
+{
+	int i = 0;
+	int j = 0;
+	char *temp;
+	int in_dquote = 0;
+	int in_squote = 0;
+	char *expanded_str = NULL;
+
+	// Expandir variables si no está completamente entre comillas simples
+	if (!(str[0] == '\'' && str[ft_strlen(str) - 1] == '\''))
+	{
+		expanded_str = substitute_variables(msh, msh->cmd, str, NULL);
+		if (expanded_str)
+			str = expanded_str;
+	}
+
+	// Quitar comillas
+	temp = ft_calloc(ft_strlen(str) + 1, sizeof(char));
+	if (!temp)
+		exit_error("Error malloc", 11);
+	while (str[i])
+	{
+		if (str[i] == '"' && !in_squote)
+			in_dquote = !in_dquote;
+		else if (str[i] == '\'' && !in_dquote)
+			in_squote = !in_squote;
+		else
+			temp[j++] = str[i];
+		i++;
+	}
+	if (expanded_str && expanded_str != str)
+		free(expanded_str);
+	return (temp);
+}

@@ -59,7 +59,7 @@ char	*replace_variable_in_line(char *line, char *var);
 char	**extract_pipe_segments(char *s, char **segments);
 int		validate_pipe_segment(char *segment);
 int		validate_redirection_syntax(char **segments, int index);
-int count_redirections(const char *s);
+int 	count_redirections(const char *s);
 
 /*parse_pipes.c*/
 int		count_pipes(const char *inputLine, t_msh *msh);

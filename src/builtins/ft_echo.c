@@ -62,7 +62,7 @@ int	minishell_echo(t_msh *msh)
 	j = 0;
 	while (cmd->arg[j])
 	{
-		temp = str_noquotes(cmd->arg[j]);
+		temp = str_noquotes_expand(cmd->arg[j], msh);
 		if (temp) 
 		{
 			free(cmd->arg[j]);  // Liberar memoria del argumento original
