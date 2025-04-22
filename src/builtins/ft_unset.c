@@ -41,20 +41,24 @@ void	remove_env_var(t_msh *msh, const char *key)
 // Implementación de ft_unset
 int minishell_unset(t_msh *msh, char **args)
 {
-	int i;
+    int i = 1;
 
-	i = 1;
-	if (!args[1])
-		return (0);
-	while (args[i])
-	{
-		if (!is_valid_identifier(args[i]))
-		{
-			printf("minishell: unset: `%s': not a valid identifier\n", args[i]);
-			continue ;
-		}
-		remove_env_var(msh, args[i]);
-		i++;
-	}
-	return (0);
+    if (!args[1])
+        return (0);
+    while (args[i])
+    {
+        if (!is_valid_identifier(args[i]))
+        {
+            ft_printf("minishell: unset: `%s': not a valid identifier\n", args[i]);
+            i++;
+            continue;
+        }
+        // Si eliminamos PATH, también quitamos la variable del entorno real
+        if (ft_strcmp(args[i], "PATH") == 0)
+            unsetenv("PATH");
+
+        remove_env_var(msh, args[i]);
+        i++;
+    }
+    return (0);
 }
