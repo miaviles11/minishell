@@ -120,28 +120,21 @@ char	*extract_variable_name(char *line)
 */
 int find_next_dollar(const char *s, int start)
 {
-    int i;
-
-    if (start < 0)
-        i = 0;
-    else
-        i = start;
+    int i = (start < 0 ? 0 : start);
+    int in_dq = 0;
+    int in_sq = 0;
 
     while (s[i])
     {
-        /* Si encontramos comilla simple, saltar hasta la de cierre */
-        if (s[i] == '\'')
-        {
-            i = get_next_quote(i + 1, (char *)s, '\'');
-            if (s[i] == '\'')
-                i++;
-            continue;
-        }
-        if (s[i] == '$')
-            return (i);
+        if (s[i] == '"' && !in_sq)
+            in_dq = !in_dq;
+        else if (s[i] == '\'' && !in_dq)
+            in_sq = !in_sq;
+        else if (s[i] == '$' && !in_sq)
+            return i;
         i++;
     }
-    return (-1);
+    return -1;
 }
 
 char	*split_variable_reminder(char *line, int index, t_cmd *cmd)

@@ -21,23 +21,23 @@
 ** Retorna:
 **   1 si se encuentra una variable, o 0 si no.
 */
-int	has_variable(const char *s)
+int has_variable(const char *s)
 {
-	int i = 0;
+    int i = 0;
+    int in_dq = 0;  // dentro de comillas dobles
+    int in_sq = 0;  // dentro de comillas simples
 
-	while (s[i]) {
-		if (s[i] == '\'') {
-			// salto al final del bloque '...'
-			i = get_next_quote(i + 1, (char *)s, '\'');
-			if (s[i] == '\'')
-				i++;
-			continue;
-		}
-		if (s[i] == '$' && s[i + 1] && s[i + 1] != ' ')
-			return 1;
-		i++;
-	}
-	return 0;
+    while (s[i])
+    {
+        if (s[i] == '"' && !in_sq)
+            in_dq = !in_dq;
+        else if (s[i] == '\'' && !in_dq)
+            in_sq = !in_sq;
+        else if (s[i] == '$' && !in_sq && s[i+1] && s[i+1] != ' ')
+            return 1;
+        i++;
+    }
+    return 0;
 }
 
 char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder)

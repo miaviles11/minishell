@@ -109,16 +109,15 @@ int validate_pipe_segment(char *segment)
     return (-1);
 }
 
-int validate_redirection_syntax(char **segments, int index)
+int	validate_redirection_syntax(char **segments, int index)
 {
-    char *segment;
-    int  rt;
+    char *segment = segments[index];
+    int  rt      = get_redirect_type(segment);
     char *token;
     char *tmp;
     char *msg;
 
-    segment = segments[index];
-    rt = get_redirect_type(segment);
+    /* Caso de operador mal formado (<<<, >|, etc.) */
     if (rt == -1)
     {
         token = extract_redirect_token(segment);
@@ -128,12 +127,6 @@ int validate_redirection_syntax(char **segments, int index)
         free(token);
         free(tmp);
         free(msg);
-        return (-1);
-    }
-    if (rt > 0 && count_redirections(segment) > 1)
-    {
-        put_error("bash", NULL,
-            "syntax error near unexpected token `>'");
         return (-1);
     }
     return (0);

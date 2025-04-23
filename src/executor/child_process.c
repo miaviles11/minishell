@@ -64,35 +64,38 @@ static void	setup_redirections(int input_fd, int output_fd)
 }
 
 /* Ejecuta un comando en un proceso hijo con los descriptores especificados */
-void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
+void child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 {
-	char	*executable;
-	char	**argv;
     (void)msh;
-
     setup_child_signals();
-	executable = NULL;
-	argv = NULL;
-	setup_redirections(input_fd, output_fd);
-	if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
-		process_redirections(cmd);
-	executable = find_executable(cmd->cmd);
-	if (!executable)
-	{
-		ft_printf("Command not found: %s\n", cmd->cmd);
-		_exit(127);
-	}
-	argv = prepare_argv(cmd);
-	if (!argv)
-	{
-		free(executable);
-		_exit(1);
-	}
-	execve(executable, argv, cmd->env);
-	perror("execve");
-	free(executable);
-	free(argv);
-	_exit(1);
+    /* here-doc sin comando: procesar redirecciones y salir */
+    if (!cmd->cmd || cmd->cmd[0] == '\0')
+    {
+        if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
+            process_redirections(cmd);
+        _exit(0);
+    }
+    setup_redirections(input_fd, output_fd);
+    if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
+        process_redirections(cmd);
+
+    char *executable = find_executable(cmd->cmd);
+    if (!executable)
+    {
+        ft_printf("Command not found: %s\n", cmd->cmd);
+        _exit(127);
+    }
+    char **argv = prepare_argv(cmd);
+    if (!argv)
+    {
+        free(executable);
+        _exit(1);
+    }
+    execve(executable, argv, cmd->env);
+    perror("execve");
+    free(executable);
+    free(argv);
+    _exit(1);
 }
 
 

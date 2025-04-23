@@ -40,14 +40,53 @@ static void exec_child(t_msh *msh, t_cmd *cmd, char *executable)
     _exit(1);
 }
 
+static void consume_here_docs(char **args)
+{
+    int  i = 0;
+    char *line;
+    char *delimiter;
+
+    while (args && args[i])
+    {
+        if (get_redirect_type(args[i]) == 4)
+        {
+            delimiter = str_noquotes(args[i + 1]);
+            while (1)
+            {
+                write(STDERR_FILENO, "> ", 2);
+                line = get_next_line(STDIN_FILENO);
+                if (!line)
+                    break;
+                if (!ft_strncmp(line, delimiter, ft_strlen(delimiter)))
+                {
+                    free(line);
+                    break;
+                }
+                free(line);
+            }
+            free(delimiter);
+            i += 2;
+        }
+        else
+            i++;
+    }
+}
+
 static void execute_single_command(t_msh *msh, t_cmd *cmd)
 {
-    char *executable;
-    pid_t pid;
-    int status;
-
-    if (!cmd || !cmd->cmd)
+    /* here-doc sin comando: solo consumir y descartar el contenido */
+    if (!cmd->cmd || cmd->cmd[0] == '\0')
+    {
+        consume_here_docs(cmd->arg);
+        msh->error_value = 0;
         return;
+    }
+
+    /* resto de la función sin cambios… */
+    char    *executable;
+    pid_t   pid;
+    int     status;
+
     executable = find_executable(cmd->cmd);
     if (!executable)
     {
@@ -55,6 +94,7 @@ static void execute_single_command(t_msh *msh, t_cmd *cmd)
         msh->error_value = 127;
         return;
     }
+
     pid = fork();
     if (pid == -1)
     {
