@@ -26,38 +26,27 @@
 ** Retorna:
 **   Una cadena con el nombre del comando extraído.
 */
-char	*extract_command(t_msh *shell, char *segment)
+char *extract_command(t_msh *shell, char *segment)
 {
-	int		i;
-	int		start;
-	char	*command;
+    int i = skip_spaces(segment, 0);
+    int start;
+    char *command;
 
-	i = 0;
-	// Salta los espacios y caracteres de control iniciales.
-	while (segment[i] == ' ' || (segment[i] >= 9 && segment[i] <= 13))
-		i++;
-	start = i;
-	// Recorre el segmento hasta encontrar un espacio, carácter de control o un operador.
-	while (segment[i] && segment[i] != ' ' &&
-	       !(segment[i] >= 9 && segment[i] <= 13) &&
-	       !is_redirect_operator(segment[i]))
-	{
-		// Si se encuentra una comilla, salta el bloque entre comillas.
-		if (segment[i] == '"' || segment[i] == '\'')
-			i = get_next_quote(i + 1, segment, segment[i]);
-		i++;
-	}
-	// Si se extrajo algún contenido válido, se crea la subcadena.
-	if (i > start && !is_redirect_operator(segment[i]))
-    	command = ft_substr(segment, start, i - start);
-	else if (is_redirect_operator(segment[start]))
-    // Si hay un operador de redirección al inicio, devuelve una cadena vacía o NULL
-   		command = ft_strdup("");
-	else
-    	command = ft_strdup("CD");  // Este caso ya no debería ocurrir
-	// Actualiza el contador global de caracteres procesados.
-	shell->total_chars += i;
-	return (command);
+    i = skip_initial_redirections(segment, i);
+    start = i;
+    /* Ahora extraer hasta espacio, control o nueva redirección */
+    while (segment[i]
+           && get_redirect_type(segment + i) == 0
+           && segment[i] != ' ' && !(segment[i] >= 9 && segment[i] <= 13))
+    {
+        i = skip_token(segment, i);
+    }
+    if (i > start)
+        command = ft_substr(segment, start, i - start);
+    else
+        command = ft_strdup("");
+    shell->total_chars += i;
+    return (command);
 }
 
 int	count_arguments_parser(char *s)

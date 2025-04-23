@@ -23,6 +23,10 @@ int		count_arguments_parser(char *s);
 int		check_null_args(char *s);
 char	*change_null_args(char *s, t_cmd *cmd);
 char	**extract_arguments(t_msh *shell, char *segment, t_cmd *command);
+int skip_spaces(const char *s, int i);
+int skip_token(const char *s, int i);
+int get_operator_length(int rtype);
+int skip_initial_redirections(const char *s, int i);
 
 /*process_arguments_utils.c*/
 char	*quit_null_space(char *s, int index);

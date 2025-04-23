@@ -35,27 +35,45 @@ int	validate_and_split_input(t_msh *shell, char *inputLine, char ***segments)
 	return (0);
 }
 
-
 t_cmd	*create_command_node(t_msh *shell, char *segment)
 {
-    t_cmd	*node;
+	int		cmd_idx;
+	t_cmd	*node;
 
-    node = ft_calloc(1, sizeof(t_cmd));
-    if (!node)
-        exit_error("Error malloc", 9);
-    // Extrae el nombre del comando desde el segmento (a partir de shell->total_chars)
-    node->cmd = extract_command(shell, segment + shell->total_chars);
-    // Cuenta el número de argumentos en el segmento
-    node->num_arg = count_arguments_parser(segment + shell->total_chars);
-    node->next = NULL;
-    // Asigna las referencias globales (entorno y banderas)
-    node->env = shell->env;
-    // Si no se encontraron argumentos, retorna el nodo sin extraer 'arg'
-    if (node->num_arg == 0)
-        return (node);
-    // Si hay argumentos, se extraen y se almacenan en 'arg'
-    node->arg = extract_arguments(shell, segment + shell->total_chars, node);
-    return (node);
+	node = ft_calloc(1, sizeof(t_cmd));
+	if (!node)
+		exit_error("Error malloc", 9);
+
+	/* 1) Extraer todos los tokens (incluye operadores y sus operandos) */
+	node->num_arg = count_arguments_parser(segment);
+	if (node->num_arg > 0)
+		node->arg = extract_arguments(shell, segment, node);
+	else
+		node->arg = NULL;
+
+	/* 2) Encontrar el índice del comando (primer token que NO es operador) */
+	cmd_idx = 0;
+	while (node->arg
+		&& node->arg[cmd_idx]
+		&& get_redirect_type(node->arg[cmd_idx]) > 0)
+		cmd_idx += 2;
+
+	/* 3) Asignar el comando y eliminarlo del array de args */
+	if (node->arg && node->arg[cmd_idx])
+	{
+		node->cmd = ft_strdup(node->arg[cmd_idx]);
+		node->arg = remove_argument_at_index(node->arg, cmd_idx);
+		node->num_arg--;
+	}
+	else
+	{
+		node->cmd = ft_strdup("");
+	}
+
+	/* 4) Enlazar entorno y siguiente */
+	node->env  = shell->env;
+	node->next = NULL;
+	return (node);
 }
 
 /*
@@ -70,25 +88,41 @@ t_cmd	*create_command_node(t_msh *shell, char *segment)
 */
 void	perform_expansion(t_msh *msh, t_cmd **command)
 {
-	int	i;
-	char *var_reminder = NULL;
+	int		i;
+	char	*var_reminder;
+	char	*tmp;
 
-	// Procesa el nombre del comando.
+	var_reminder = NULL;
+
+	/* 1) Variables y ~ en el nombre del comando */
 	if (has_variable((*command)->cmd))
-		(*command)->cmd = substitute_variables(msh, *command, (*command)->cmd, &var_reminder);
+		(*command)->cmd = substitute_variables(
+				msh, *command, (*command)->cmd, &var_reminder);
 	if (needs_home_expansion((*command)->cmd))
 		(*command)->cmd = expand_home_directory((*command)->cmd);
-	// Si no hay argumentos, terminamos.
+	/* 2) Elimina comillas del nombre del comando */
+	tmp = str_noquotes((*command)->cmd);
+	free((*command)->cmd);
+	(*command)->cmd = tmp;
+
+	/* Si no hay args, terminamos */
 	if (!(*command)->arg)
-		return;
+		return ;
+
+	/* 3) Variables y ~ en cada argumento, luego quitar comillas */
 	i = 0;
-	// Procesa cada argumento del comando.
 	while ((*command)->arg[i])
 	{
 		if (has_variable((*command)->arg[i]))
-			(*command)->arg[i] = substitute_variables(msh, *command, (*command)->arg[i], &var_reminder);
+			(*command)->arg[i] = substitute_variables(
+					msh, *command, (*command)->arg[i], &var_reminder);
 		if (needs_home_expansion((*command)->arg[i]))
-			(*command)->arg[i] = expand_home_directory((*command)->arg[i]);
+			(*command)->arg[i] = expand_home_directory(
+					(*command)->arg[i]);
+		/* quitar comillas */
+		tmp = str_noquotes((*command)->arg[i]);
+		free((*command)->arg[i]);
+		(*command)->arg[i] = tmp;
 		i++;
 	}
 }
