@@ -49,9 +49,12 @@ char	*extract_command(t_msh *shell, char *segment)
 	}
 	// Si se extrajo algún contenido válido, se crea la subcadena.
 	if (i > start && !is_redirect_operator(segment[i]))
-		command = ft_substr(segment, start, i - start);
+    	command = ft_substr(segment, start, i - start);
+	else if (is_redirect_operator(segment[start]))
+    // Si hay un operador de redirección al inicio, devuelve una cadena vacía o NULL
+   		command = ft_strdup("");
 	else
-		command = ft_strdup("CD");
+    	command = ft_strdup("CD");  // Este caso ya no debería ocurrir
 	// Actualiza el contador global de caracteres procesados.
 	shell->total_chars += i;
 	return (command);
