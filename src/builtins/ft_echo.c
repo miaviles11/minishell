@@ -47,37 +47,34 @@ void	print_arguments(t_cmd *cmd, int i)
 int	minishell_echo(t_msh *msh)
 {
 	t_cmd	*cmd;
-    int		i;
-	int		j;
-    int		no_newline;
-	char 	*temp;
+	int		i;
+	int		no_newline;
 
-    cmd = msh->cmd;
-    // Validar que cmd->arg no sea NULL
-    if (!cmd || !cmd->arg || !cmd->arg[0])
-    {
-        ft_printf("\n");
-        return (0);
-    }
-	j = 0;
-	while (cmd->arg[j])
+	cmd = msh->cmd;
+	// Si no hay argumentos, imprime solo salto de línea
+	if (!cmd || !cmd->arg || !cmd->arg[0])
 	{
-		temp = str_noquotes(cmd->arg[j]);
-		if (temp) 
-		{
-			free(cmd->arg[j]);  // Liberar memoria del argumento original
-			cmd->arg[j] = temp;  // Reemplazar con la versión sin comillas
-		}
-		j++;
+		ft_printf("\n");
+		return (0);
 	}
-	// Manejar la opción -n
-    i = handle_no_newline(cmd, &no_newline);
-    // Imprimir los argumentos restantes
-    print_arguments(cmd, i);
-    // Imprimir un salto de línea si no se especificó -n
-    if (!no_newline)
-        ft_printf("\n");
-    return (0);
+
+	// Manejar la opción -n (no newline)
+	i = handle_no_newline(cmd, &no_newline);
+
+	// Imprimir todos los argumentos, tal cual vienen
+	while (cmd->arg[i])
+	{
+		ft_printf("%s", cmd->arg[i]);
+		if (cmd->arg[i + 1])
+			ft_printf(" ");
+		i++;
+	}
+
+	// Si no se pidió '-n', añade salto de línea
+	if (!no_newline)
+		ft_printf("\n");
+
+	return (0);
 }
 
 /*int main(int argc, char **argv)
