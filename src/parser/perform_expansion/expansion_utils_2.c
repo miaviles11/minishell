@@ -83,6 +83,58 @@ int	is_digit_special(int c)
 		return (1);
 	return (0);
 }
+
+static int parse_braced(const char *line, int *colon, int *end)
+{
+    int i;
+
+    if (!line || line[0] != '$' || line[1] != '{')
+        return (0);
+    i = 2;
+    while (line[i] && (ft_isalnum(line[i]) || line[i] == '_'))
+        i++;
+    if (line[i] != ':')
+        return (0);
+    *colon = i;
+    while (line[i] && line[i] != '}')
+        i++;
+    if (line[i] != '}')
+        return (0);
+    *end = i;
+    return (1);
+}
+
+static char *expand_braced_substring(t_msh *msh, char *line)
+{
+    char	*name;
+	char	*value;
+	char	*res;
+	char	*suffix;
+    int	colon;
+	int	end;
+	int	offset;
+
+    if (!parse_braced(line, &colon, &end))
+        return (line);
+    name   = ft_substr(line + 2, 0, colon - 2);
+    offset = ft_atoi(line + colon + 1);
+    suffix = ft_strdup(line + end + 1);
+    value  = get_env_value(msh, name);
+    free(name);
+    if (!value)
+        value = ft_strdup("");
+    if (offset < (int)ft_strlen(value))
+        res = ft_strdup(value + offset);
+    else
+        res = ft_strdup("");
+    free(value);
+    name = res;
+    res  = ft_strjoin(name, suffix);
+    free(name);
+    free(suffix);
+    free(line);
+    return (res);
+}
 /*
 ** substitute_variable_value:
 **   Procesa la cadena 'line' para sustituir la primera variable de entorno
@@ -105,41 +157,50 @@ int	is_digit_special(int c)
 ** Retorna:
 **   La cadena 'line' con la variable sustituida por su valor.
 */
-char	*substitute_variable_value(t_msh *msh, t_cmd *cmd, char *line, char **varReminder)
-{
-	char *varName;
-	int   i;
 
-	// Si se encuentra el patrón "$?", reemplaza por su valor especial.
-	if (ft_strnstr(line, "$?", ft_strlen(line)) != 0)
-    return (replace_special_value(line, msh->error_value));
-	// Extrae el nombre de la variable
-	varName = extract_variable_name(line);
-	if (!varName)
-		return (line);
-	// Busca la posición del primer '$' en la cadena.
-	i = find_next_dollar(line, -1);
-	if (i == -1) {
-		free(varName);
-		return (line);
-	}
-	// Recorre la cadena a partir de la posición del '$', más la longitud del nombre
-	int nameIndex = i + 1;
-	int nameLen = ft_strlen(varName);
-	i = nameIndex + nameLen - 1; // Posicionarse al final del nombre
-	// Ahora i debería estar justo después del nombre de la variable
-	if (line[i + 1] && ((special_char_check(line[i + 1]) == -1 && line[i + 1] != '$'&& line[i + 1] != '"') ||
-		(line[i + 1] == '$' && (i + 1) == find_next_dollar(line, i))))
-	{
-		// Hay un carácter especial después del nombre de la variable
-		if (varReminder)
-		{
-			*varReminder = ft_strdup(line + i + 1);
-			cmd->flags->dollar_special = 1;
-			// Truncar la línea para que no incluya los caracteres que ya guardamos en varReminder
-			line[i + 1] = '\0';
-		}
-	}
-	// Compara el nombre y realiza la sustitución
-	return (compare_variable_name(msh, line, varName));
+char *substitute_variable_value(t_msh *msh, t_cmd *cmd, char *line, char **varReminder)
+{
+    char *varName;
+    char *tmp;
+    int   i;
+
+    tmp = expand_braced_substring(msh, line);
+    if (tmp != line)
+        return (tmp);
+
+    if (ft_strnstr(line, "$?", ft_strlen(line)) != NULL)
+        return (replace_special_value(line, msh->error_value));
+
+    varName = extract_variable_name(line);
+    if (!varName)
+        return (line);
+
+    i = find_next_dollar(line, -1);
+    if (i == -1)
+    {
+        free(varName);
+        return (line);
+    }
+
+    {
+        int nameIndex = i + 1;
+        int nameLen   = ft_strlen(varName);
+        i = nameIndex + nameLen - 1;
+    }
+
+    if (line[i + 1] &&
+        ((special_char_check(line[i + 1]) == -1 &&
+          line[i + 1] != '$' && line[i + 1] != '"') ||
+         (line[i + 1] == '$' &&
+          (i + 1) == find_next_dollar(line, i))))
+    {
+        if (varReminder)
+        {
+            *varReminder = ft_strdup(line + i + 1);
+            cmd->flags->dollar_special = 1;
+            line[i + 1] = '\0';
+        }
+    }
+
+    return (compare_variable_name(msh, line, varName));
 }
