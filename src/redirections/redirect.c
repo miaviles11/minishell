@@ -47,47 +47,103 @@ static char	**extract_filename_from_arg(char **args, int index, char opChar, int
 	return (args);
 }
 
-/*
-** process_redirections:
-**   Recorre el arreglo de argumentos del comando, identifica y procesa los
-**   operadores de redirección mediante las funciones auxiliares actualizadas.
-**
-**   Para cada redirección encontrada:
-**     - Se ajusta el argumento que contiene el operador y su operando usando
-**       extract_filename_from_arg.
-**     - Se elimina del arreglo los elementos ya procesados.
-**     - Se obtiene el tipo de redirección (get_redirect_type) y se ejecuta la acción:
-**          - Para salida (tipos 1, 2, 5, 6): se llama a handle_output_redirection.
-**          - Para entrada simple (tipo 3): se llama a redirect_input_from_file.
-**          - Para here-document (tipo 4): se llama a handle_here_document.
-*/
-void	process_redirections(t_cmd *cmd)
+static void read_here_doc_to_pipe(const char *delimiter, int write_fd)
 {
-	int		i;
-	char	*file;
-	int		rtype;
+    char    *line;
+    int     tty_fd;
 
-	i = 0;
-	/* Mientras se encuentre un operador de redirección en los argumentos... */
-	while (find_first_redirect_index(cmd->arg + i) != -1)
-	{
-		i += find_first_redirect_index(cmd->arg + i);
-		cmd->arg = extract_filename_from_arg(cmd->arg, i,
-				get_operator_for_type(get_redirect_type(cmd->arg[i])), 1);
-		if (!get_redirect_type(cmd->arg[i]))
-			i++;
-		if (get_redirect_type(cmd->arg[i + 1]))
-			cmd->arg = extract_filename_from_arg(cmd->arg, i + 1,
-				get_operator_for_type(get_redirect_type(cmd->arg[i + 1])), 1);
-		file = str_noquotes(cmd->arg[i + 1]);
-		rtype = get_redirect_type(cmd->arg[i]);
-		if (rtype == 1 || rtype == 2 || rtype == 5 || rtype == 6)
-			handle_output_redirection(rtype, cmd, file);
-		else if (rtype == 3 && redirect_input_from_file(cmd, file, i))
-			return ;
-		else if (rtype == 4)
-			handle_here_document(cmd, file);
-		cmd->arg = remove_argument_at_index(cmd->arg, i);
-		cmd->arg = remove_argument_at_index(cmd->arg, i);
-	}
+    tty_fd = open("/dev/tty", O_RDONLY);
+    if (tty_fd < 0)
+        exit_error("Error al abrir /dev/tty para here-doc", 47);
+
+    while (1)
+    {
+        if (write(STDERR_FILENO, "> ", 2) == -1)
+            exit_error("Error de escritura en prompt", 48);
+        line = get_next_line(tty_fd);
+        if (!line)
+            exit_error("EOF inesperado en here-doc", 53);
+        if (!ft_strncmp(line, delimiter, ft_strlen(delimiter))
+            && line[ft_strlen(delimiter)] == '\n')
+        {
+            free(line);
+            break;
+        }
+        if (write(write_fd, line, ft_strlen(line)) == -1)
+            exit_error("Error al escribir en pipe de here-doc", 54);
+        free(line);
+    }
+    free((void *)delimiter);
+    close(tty_fd);
 }
+
+void process_redirections(t_cmd *cmd)
+{
+    int     i = 0;
+    int     idx;
+    int     rtype;
+    char    *file;
+    int     heredoc_pipe[2];
+    int     has_heredoc = 0;
+
+    // First pass: detect here-docs and open pipe if needed
+    while ((idx = find_first_redirect_index(cmd->arg + i)) != -1)
+    {
+        if (get_redirect_type(cmd->arg[i + idx]) == 4)
+        {
+            if (!has_heredoc)
+            {
+                if (pipe(heredoc_pipe) == -1)
+                    exit_error("Error al crear pipe para here-docs", 47);
+                has_heredoc = 1;
+            }
+        }
+        i += idx + 2;
+    }
+
+    // Second pass: process each operator
+    i = 0;
+    while ((idx = find_first_redirect_index(cmd->arg + i)) != -1)
+    {
+        i += idx;
+        cmd->arg = extract_filename_from_arg(cmd->arg, i,
+                    get_operator_for_type(get_redirect_type(cmd->arg[i])), 1);
+        if (!get_redirect_type(cmd->arg[i]))
+            i++;
+        if (get_redirect_type(cmd->arg[i + 1]))
+            cmd->arg = extract_filename_from_arg(cmd->arg, i + 1,
+                        get_operator_for_type(get_redirect_type(cmd->arg[i + 1])), 1);
+        file = str_noquotes(cmd->arg[i + 1]);
+        rtype = get_redirect_type(cmd->arg[i]);
+
+        if (rtype == 4)
+        {
+            // Here-doc: append to shared pipe
+            read_here_doc_to_pipe(file, heredoc_pipe[1]);
+        }
+        else if (rtype == 3)
+        {
+            // Simple input redirection
+            if (redirect_input_from_file(cmd, file, i))
+                return; // on error, abort
+        }
+        else
+        {
+            // Output (>, >>, 2>, 2>>)
+            handle_output_redirection(rtype, cmd, file);
+        }
+        // Remove processed args (operator and operand)
+        cmd->arg = remove_argument_at_index(cmd->arg, i);
+        cmd->arg = remove_argument_at_index(cmd->arg, i);
+    }
+
+    // After all here-docs, if any, redirect STDIN to the concatenated pipe
+    if (has_heredoc)
+    {
+        close(heredoc_pipe[1]);
+        if (dup2(heredoc_pipe[0], STDIN_FILENO) == -1)
+            exit_error("Error al redirigir STDIN para here-docs", 55);
+        close(heredoc_pipe[0]);
+    }
+}
+

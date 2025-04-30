@@ -46,31 +46,37 @@ void	handle_here_document(t_cmd *command, char *delimiter)
 {
 	char	*inputLine;
 	int		p[2];
-
+	int		tty_fd;
 	(void)command;
+
 	if (pipe(p) == -1)
 		exit_error("Error al crear pipe para here-document", 47);
+	tty_fd = open("/dev/tty", O_RDONLY);
+	if (tty_fd < 0)
+		exit_error("Error al abrir /dev/tty para here-document", 52);
 	while (1)
 	{
 		if (write(STDERR_FILENO, "> ", 2) == -1)
 			exit_error("Error de escritura en prompt", 48);
-		inputLine = get_next_line(STDIN_FILENO);
+		inputLine = get_next_line(tty_fd);
 		if (!inputLine)
-			_exit(1);
-		if (!ft_strncmp(inputLine, delimiter, ft_strlen(delimiter)))
+			exit_error("EOF inesperado en here-document", 53);
+		if (!ft_strncmp(inputLine, delimiter, ft_strlen(delimiter))
+			&& inputLine[ft_strlen(delimiter)] == '\n')
 		{
 			free(inputLine);
-			break ;
+			break;
 		}
 		if (write(p[1], inputLine, ft_strlen(inputLine)) == -1)
-			exit_error("Error al escribir en pipe", 30);
+			exit_error("Error al escribir en pipe de here-document", 54);
 		free(inputLine);
 	}
-	free(delimiter);
-	if (dup2(p[0], STDIN_FILENO) == -1)
-		exit_error("Error al redirigir here-document", 48);
-	close(p[0]);
+	close(tty_fd);
 	close(p[1]);
+	if (dup2(p[0], STDIN_FILENO) == -1)
+		exit_error("Error al redirigir STDIN para here-document", 55);
+	close(p[0]);
+	free(delimiter);
 }
 
 
