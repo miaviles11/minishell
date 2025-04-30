@@ -12,6 +12,55 @@
 
 #include "../../includes/minishell.h"
 
+/*
+** ft_split_sort_env:
+**   Duplica el array de entorno 'env', lo ordena lexicográficamente
+**   y devuelve el nuevo array terminado en NULL.
+*/
+char    **ft_split_sort_env(char **env)
+{
+    char    **sorted;
+    char    *tmp;
+    int      len;
+    int      i;
+    int      j;
+
+    if (!env)
+        return (NULL);
+    len = 0;
+    while (env[len])
+        len++;
+    sorted = malloc(sizeof(char *) * (len + 1));
+    if (!sorted)
+        exit_error("Error malloc", 1);
+    i = 0;
+    while (i < len)
+    {
+        sorted[i] = ft_strdup(env[i]);
+        if (!sorted[i])
+            exit_error("Error malloc", 1);
+        i++;
+    }
+    sorted[len] = NULL;
+    i = 0;
+    while (i < len - 1)
+    {
+        j = i + 1;
+        while (j < len)
+        {
+            if (ft_strcmp(sorted[i], sorted[j]) > 0)
+            {
+                tmp          = sorted[i];
+                sorted[i]    = sorted[j];
+                sorted[j]    = tmp;
+            }
+            j++;
+        }
+        i++;
+    }
+    return (sorted);
+}
+
 // Maneja el caso en el que no hay '=' en el argumento
 void	handle_no_equal(t_msh *msh, const char *arg)
 {
@@ -61,21 +110,45 @@ void	update_env(t_msh *msh, const char *arg)
 
 int minishell_export(t_msh *msh, char **argv)
 {
-	int i;
-	
-	i = 1;
-	if (!argv[1])
-	{
-		minishell_env(msh);
-		return (0);
-	}
-	while (argv[i])
-	{
-		if (is_valid_identifier(argv[i]))
-			update_env(msh, argv[i]);
-		else
-			ft_printf("export: `%s': not a valid identifier\n", argv[i]);
-		i++;
-	}
-	return (0);
+    int i;
+
+    /* SIN ARGUMENTOS: listar variables exportadas */
+    if (!argv[1])
+    {
+        char **sorted = ft_split_sort_env(msh->env);
+        int  j = 0;
+
+        while (sorted[j])
+        {
+            /* copiar nombre y posible valor */
+            char *eq = ft_strchr(sorted[j], '=');
+            if (eq)
+            {
+                /* name="value" */
+                *eq = '\0';
+                printf("declare -x %s=\"%s\"\n", sorted[j], eq + 1);
+                *eq = '=';
+            }
+            else
+            {
+                /* name */
+                printf("declare -x %s\n", sorted[j]);
+            }
+            j++;
+        }
+        ft_free_split(sorted);
+        return (0);
+    }
+
+    /* CON ARGUMENTOS: comportamiento actual */
+    i = 1;
+    while (argv[i])
+    {
+        if (is_valid_identifier(argv[i]))
+            update_env(msh, argv[i]);
+        else
+            ft_printf("export: `%s': not a valid identifier\n", argv[i]);
+        i++;
+    }
+    return (0);
 }

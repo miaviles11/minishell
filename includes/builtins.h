@@ -19,6 +19,7 @@ int		update_existing_env_var(t_msh *msh, const char *name, const char *value);
 int		add_new_env_var(t_msh *msh, const char *name, const char *value);
 int		set_env_var(t_msh *msh, const char *name, const char *value);
 int		is_valid_identifier(const char *var);
+char    **ft_split_sort_env(char **env);
 
 int		minishell_cd(t_msh *msh, char **argv);
 
