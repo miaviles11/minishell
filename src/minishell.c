@@ -22,59 +22,48 @@ static void handle_extra_arguments(char **argv)
     exit(1);
 }
 
-/**
- * Inserta espacios alrededor de los operadores de redirección
- * SOLO cuando no esté dentro de comillas simples o dobles.
- */
 char *preprocess_redirections(const char *line)
 {
-    size_t  i = 0, j = 0;
-    char    *out;
-    char    quote = 0;
+    size_t i = 0, j = 0;
+    char *out;
+    char quote = 0;
 
-    /* Reservamos hasta el doble de espacio + \0 */
+    /* Reservamos hasta doble tamaño + '\0' */
     out = malloc(ft_strlen(line) * 2 + 1);
     if (!out)
         exit_error("Error malloc", 1);
 
     while (line[i])
     {
-        /* Abrir comillas */
+        /* Gestión de comillas */
         if (!quote && (line[i] == '"' || line[i] == '\''))
         {
             quote = line[i++];
             out[j++] = quote;
             continue;
         }
-        /* Cerrar comillas */
         if (quote && line[i] == quote)
         {
             out[j++] = line[i++];
             quote = 0;
             continue;
         }
-        /* Si estamos dentro de comillas, copiamos literalmente */
         if (quote)
         {
             out[j++] = line[i++];
             continue;
         }
-
-        /* Aquí NO hay comillas: tratamos redirecciones */
+        /* Inserción de espacios en redirecciones fuera de comillas */
         if (line[i] == '<' && line[i+1] == '<')
         {
-            out[j++] = '<';
-            out[j++] = '<';
-            i += 2;
+            out[j++] = '<'; out[j++] = '<'; i += 2;
             if (line[i] && line[i] != ' ')
                 out[j++] = ' ';
             continue;
         }
         if (line[i] == '>' && line[i+1] == '>')
         {
-            out[j++] = '>';
-            out[j++] = '>';
-            i += 2;
+            out[j++] = '>'; out[j++] = '>'; i += 2;
             if (line[i] && line[i] != ' ')
                 out[j++] = ' ';
             continue;
@@ -82,17 +71,8 @@ char *preprocess_redirections(const char *line)
         if (line[i] == '2' && line[i+1] == '>')
         {
             out[j++] = '2';
-            if (line[i+2] == '>')
-            {
-                out[j++] = '>';
-                out[j++] = '>';
-                i += 3;
-            }
-            else
-            {
-                out[j++] = '>';
-                i += 2;
-            }
+            if (line[i+2] == '>') { out[j++] = '>'; out[j++] = '>'; i += 3; }
+            else { out[j++] = '>'; i += 2; }
             if (line[i] && line[i] != ' ')
                 out[j++] = ' ';
             continue;
@@ -104,40 +84,55 @@ char *preprocess_redirections(const char *line)
                 out[j++] = ' ';
             continue;
         }
-
         /* Copia normal */
         out[j++] = line[i++];
     }
-
     out[j] = '\0';
     return out;
 }
 
-/**
- * Bucle principal de lectura-ejecución.
- * Ahora aplica preprocess_redirections() justo después de readline().
- */
 void run_shell_loop(t_msh *shell)
 {
-    char    *raw_line;
-    char    *line;
-    t_cmd   *old_cmd;
+    char *raw_line;
+    char *line;
+    t_cmd *old_cmd;
+    int interactive = isatty(STDIN_FILENO);
 
     while (1)
     {
-        g_interactive = 1;
-        raw_line = readline(WHITE_T "minishell-> " RESET_COLOR);
-        if (!raw_line)
-            exit_error("exit", shell->error_value);
+        if (interactive)
+        {
+            g_interactive = 1;
+            raw_line = readline(WHITE_T "minishell-> " RESET_COLOR);
+        }
+        else
+        {
+            g_interactive = 0;
+            raw_line = get_next_line(STDIN_FILENO);
+        }
 
+        /* EOF: salir */
+        if (!raw_line)
+            break;
+
+        /* Eliminar posible '\n' final para parse */
+        {
+            size_t len = ft_strlen(raw_line);
+            if (len > 0 && raw_line[len - 1] == '\n')
+                raw_line[len - 1] = '\0';
+        }
+
+        /* Línea vacía: continuar */
         if (is_line_empty(raw_line))
         {
             free(raw_line);
             continue;
         }
-        add_history(raw_line);
 
-        /* --- Nuevo paso: preprocesar redirecciones --- */
+        if (interactive)
+            add_history(raw_line);
+
+        /* Preprocesar redirecciones */
         line = preprocess_redirections(raw_line);
         free(raw_line);
 
@@ -146,6 +141,34 @@ void run_shell_loop(t_msh *shell)
         {
             g_interactive = 0;
 
+            /* Gestión explícita de exit */
+            if (shell->cmd && shell->cmd->cmd
+                && !ft_strncmp(shell->cmd->cmd, "exit", 5))
+            {
+                char **args = shell->cmd->arg;
+                int code = 0;
+
+                if (args && args[0])
+                {
+                    if (!is_numeric(args[0]))
+                    {
+                        ft_printf("exit: %s: numeric argument required\n", args[0]);
+                        exit(255);
+                    }
+                    if (args[1])
+                    {
+                        ft_printf("exit: too many arguments\n");
+                        shell->error_value = 1;
+                        free_command_list(shell->cmd);
+                        free(line);
+                        continue;
+                    }
+                    code = ft_atoi(args[0]);
+                }
+                exit(code);
+            }
+
+            /* Ejecutar built-in en padre */
             if (!shell->pipe
                 && shell->cmd
                 && shell->cmd->cmd
@@ -165,6 +188,8 @@ void run_shell_loop(t_msh *shell)
             free_command_list(old_cmd);
         free(line);
     }
+    if (interactive)
+        write(STDOUT_FILENO, "exit\n", 5);
 }
 
 int main(int argc, char **argv, char **envp)
@@ -182,5 +207,7 @@ int main(int argc, char **argv, char **envp)
     setup_signals();
     run_shell_loop(shell);
     cleanup_shell(shell);
-    return (0);
+
+    /* Devolver código final (en caso de EOF sin exit) */
+    return (shell->error_value);
 }
