@@ -111,64 +111,124 @@ static void execute_single_command(t_msh *msh, t_cmd *cmd)
     }
 }
 
-/*Procesa un comando con su pipe de salida*/
-
+/* -------------------------------------------------- */
+/* Comando intermedio en un pipeline                  */
+/* -------------------------------------------------- */
+/*
+ *  Comando intermedio de un pipeline:
+ *   - stdin  ← prev_pipe (si != STDIN_FILENO)
+ *   - stdout → pipe_fd[1]
+ *   - luego: aplica redirecciones de archivo, expande variables y quita comillas
+ *   - ejecuta builtin o execve
+ */
 static void process_cmd_with_pipe(t_msh *msh, t_cmd *cmd, int prev_pipe, int *pipe_fd)
 {
     pid_t pid;
+    int   status;
 
     pid = fork();
     if (pid == -1)
     {
         perror("fork");
-        if (prev_pipe != STDIN_FILENO)
-            close(prev_pipe);
-        close(pipe_fd[0]);
-        close(pipe_fd[1]);
         return;
     }
     if (pid == 0)
     {
+        /* --- HIJO --- */
+        /* 1) stdin desde pipe anterior */
+        if (prev_pipe != STDIN_FILENO)
+        {
+            dup2(prev_pipe, STDIN_FILENO);
+            close(prev_pipe);
+        }
+        /* 2) stdout al siguiente pipe */
+        close(pipe_fd[0]);
+        dup2(pipe_fd[1], STDOUT_FILENO);
+        close(pipe_fd[1]);
+
+        /* 3) redirecciones > < >> << */
+        if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
+            process_redirections(cmd);
+
+        /* 4) expandir variables y quitar comillas */
+        perform_expansion(msh, &cmd);
+
+        /* 5) ejecutar builtin o externo */
         if (is_builtin(cmd->cmd))
         {
-            close(pipe_fd[0]); // Cerrar el extremo de lectura del pipe
-            execute_builtin_with_redirection(msh, cmd, pipe_fd[1]);
-            exit(0);
+            execute_builtin_with_redirection(msh, cmd, STDOUT_FILENO);
+            _exit(msh->error_value);
         }
-        close(pipe_fd[0]);
-        child_process(msh, cmd, prev_pipe, pipe_fd[1]);
+        else
+        {
+            char **argv = prepare_argv(cmd);
+            char *exe   = find_executable(cmd->cmd);
+            execve(exe, argv, msh->env);
+            perror("execve");
+            _exit(1);
+        }
     }
+
+    /* --- PADRE --- */
     if (prev_pipe != STDIN_FILENO)
         close(prev_pipe);
     close(pipe_fd[1]);
+
+    /* esperamos siempre para que el archivo (si hubo >) exista antes de la siguiente etapa */
+    waitpid(pid, &status, 0);
+    if (WIFEXITED(status))
+        msh->error_value = WEXITSTATUS(status);
 }
 
-
-/**
- * Procesa el último comando en un pipeline
+/*
+ *  Último (o único) comando:
+ *   - stdin  ← prev_pipe
+ *   - stdout → STDOUT_FILENO
+ *   - luego redirecciones, expansión y ejecución
  */
 static void process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
 {
     pid_t pid;
-    int status;
+    int   status;
 
     pid = fork();
     if (pid == -1)
     {
         perror("fork");
-        if (prev_pipe != STDIN_FILENO)
-            close(prev_pipe);
         return;
     }
     if (pid == 0)
     {
+        /* --- HIJO --- */
+        if (prev_pipe != STDIN_FILENO)
+        {
+            dup2(prev_pipe, STDIN_FILENO);
+            close(prev_pipe);
+        }
+
+        /* redirecciones */
+        if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
+            process_redirections(cmd);
+
+        /* expansión y quitar comillas */
+        perform_expansion(msh, &cmd);
+
+        /* ejecutar */
         if (is_builtin(cmd->cmd))
         {
             execute_builtin_with_redirection(msh, cmd, STDOUT_FILENO);
-            exit(0);
         }
-        child_process(msh, cmd, prev_pipe, STDOUT_FILENO);
+        else
+        {
+            char **argv = prepare_argv(cmd);/
+            char *exe   = find_executable(cmd->cmd);
+            execve(exe, argv, msh->env);
+            perror("execve");
+            _exit(1);
+        }
     }
+
+    /* --- PADRE --- */
     if (prev_pipe != STDIN_FILENO)
         close(prev_pipe);
     if (!cmd->background)
@@ -178,7 +238,6 @@ static void process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
             msh->error_value = WEXITSTATUS(status);
     }
 }
-
 
 /**
  * Ejecuta una lista de comandos con pipes
