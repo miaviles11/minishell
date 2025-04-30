@@ -22,30 +22,99 @@ static void handle_extra_arguments(char **argv)
     exit(1);
 }
 
+char *preprocess_redirections(const char *line)
+{
+    size_t  i = 0, j = 0;
+    char    *out;
+
+    /* Reservamos espacio: posible inserción de espacios extra */
+    out = malloc(ft_strlen(line) * 2 + 1);
+    if (!out)
+        exit_error("Error malloc", 1);
+
+    while (line[i])
+    {
+        /* Here-doc '<<' */
+        if (line[i] == '<' && line[i+1] == '<')
+        {
+            out[j++] = '<';
+            out[j++] = '<';
+            i += 2;
+            if (line[i] && line[i] != ' ')
+                out[j++] = ' ';
+            continue;
+        }
+        /* Append '>>' */
+        if (line[i] == '>' && line[i+1] == '>')
+        {
+            out[j++] = '>';
+            out[j++] = '>';
+            i += 2;
+            if (line[i] && line[i] != ' ')
+                out[j++] = ' ';
+            continue;
+        }
+        /* Redirección de error '2>' o '2>>' */
+        if (line[i] == '2' && line[i+1] == '>')
+        {
+            out[j++] = '2';
+            if (line[i+2] == '>')
+            {
+                out[j++] = '>';
+                out[j++] = '>';
+                i += 3;
+            }
+            else
+            {
+                out[j++] = '>';
+                i += 2;
+            }
+            if (line[i] && line[i] != ' ')
+                out[j++] = ' ';
+            continue;
+        }
+        /* Redirección simple '<' o '>' */
+        if (line[i] == '<' || line[i] == '>')
+        {
+            out[j++] = line[i++];
+            if (line[i] && line[i] != ' ')
+                out[j++] = ' ';
+            continue;
+        }
+        /* Copia cualquier otro carácter */
+        out[j++] = line[i++];
+    }
+    out[j] = '\0';
+    return out;
+}
+
 void run_shell_loop(t_msh *shell)
 {
-    char *input_line;
-    t_cmd *old_cmd;
+    char    *raw_line;
+    char    *line;
+    t_cmd   *old_cmd;
 
     while (1)
     {
-        /* Estamos esperando el prompt */
         g_interactive = 1;
-        input_line = readline(WHITE_T "minishell-> " RESET_COLOR);
-        if (!input_line)
+        raw_line = readline(WHITE_T "minishell-> " RESET_COLOR);
+        if (!raw_line)
             exit_error("exit", shell->error_value);
 
-        if (is_line_empty(input_line))
+        if (is_line_empty(raw_line))
         {
-            free(input_line);
+            free(raw_line);
             continue;
         }
-        add_history(input_line);
+        add_history(raw_line);
+
+        /* Pre-procesar espacios en redirecciones */
+        line = preprocess_redirections(raw_line);
+        free(raw_line);
 
         old_cmd = shell->cmd;
-        if (parse_input_line(shell, &shell->cmd, input_line))
+        if (parse_input_line(shell, &shell->cmd, line))
         {
-            /* A partir de aquí, ejecutamos un comando, ya no estamos en prompt */
             g_interactive = 0;
 
             if (!shell->pipe
@@ -60,13 +129,12 @@ void run_shell_loop(t_msh *shell)
                 execute_commands(shell);
             }
 
-            /* Fin de ejecución, volver a modo prompt */
             g_interactive = 1;
         }
 
         if (old_cmd != shell->cmd)
             free_command_list(old_cmd);
-        free(input_line);
+        free(line);
     }
 }
 
@@ -82,9 +150,7 @@ int main(int argc, char **argv, char **envp)
         return (1);
     shell->error_value = 0;
 
-    /* Instalar handlers de señales del padre */
     setup_signals();
-
     run_shell_loop(shell);
     cleanup_shell(shell);
     return (0);

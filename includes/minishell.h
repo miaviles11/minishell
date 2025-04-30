@@ -95,6 +95,7 @@ typedef struct s_msh
 void	free_command_node(t_cmd *cmd);
 void	free_command_list(t_cmd *cmd);
 void	cleanup_shell(t_msh *shell);
+char *preprocess_redirections(const char *line);
 
 int		is_line_empty(const char *line);
 char	*str_noquotes(char *str);
