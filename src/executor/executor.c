@@ -16,15 +16,14 @@
 
 static void exec_child(t_msh *msh, t_cmd *cmd, char *executable)
 {
-    (void)msh;
-    /* Restablecer handlers en el hijo */
     setup_child_signals();
 
-    /* Procesar redirecciones si las hay */
     if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
         process_redirections(cmd);
 
-    /* Preparar argv */
+    /* Quitar comillas y expandir ahora que ya procesamos here-doc */
+    perform_expansion(msh, &cmd);
+
     char **argv = prepare_argv(cmd);
     if (!argv)
     {
@@ -32,7 +31,6 @@ static void exec_child(t_msh *msh, t_cmd *cmd, char *executable)
         _exit(1);
     }
 
-    /* Ejecutar */
     execve(executable, argv, cmd->env);
     perror("execve");
     free(executable);

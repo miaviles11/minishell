@@ -22,19 +22,45 @@ static void handle_extra_arguments(char **argv)
     exit(1);
 }
 
+/**
+ * Inserta espacios alrededor de los operadores de redirección
+ * SOLO cuando no esté dentro de comillas simples o dobles.
+ */
 char *preprocess_redirections(const char *line)
 {
     size_t  i = 0, j = 0;
     char    *out;
+    char    quote = 0;
 
-    /* Reservamos espacio: posible inserción de espacios extra */
+    /* Reservamos hasta el doble de espacio + \0 */
     out = malloc(ft_strlen(line) * 2 + 1);
     if (!out)
         exit_error("Error malloc", 1);
 
     while (line[i])
     {
-        /* Here-doc '<<' */
+        /* Abrir comillas */
+        if (!quote && (line[i] == '"' || line[i] == '\''))
+        {
+            quote = line[i++];
+            out[j++] = quote;
+            continue;
+        }
+        /* Cerrar comillas */
+        if (quote && line[i] == quote)
+        {
+            out[j++] = line[i++];
+            quote = 0;
+            continue;
+        }
+        /* Si estamos dentro de comillas, copiamos literalmente */
+        if (quote)
+        {
+            out[j++] = line[i++];
+            continue;
+        }
+
+        /* Aquí NO hay comillas: tratamos redirecciones */
         if (line[i] == '<' && line[i+1] == '<')
         {
             out[j++] = '<';
@@ -44,7 +70,6 @@ char *preprocess_redirections(const char *line)
                 out[j++] = ' ';
             continue;
         }
-        /* Append '>>' */
         if (line[i] == '>' && line[i+1] == '>')
         {
             out[j++] = '>';
@@ -54,7 +79,6 @@ char *preprocess_redirections(const char *line)
                 out[j++] = ' ';
             continue;
         }
-        /* Redirección de error '2>' o '2>>' */
         if (line[i] == '2' && line[i+1] == '>')
         {
             out[j++] = '2';
@@ -73,7 +97,6 @@ char *preprocess_redirections(const char *line)
                 out[j++] = ' ';
             continue;
         }
-        /* Redirección simple '<' o '>' */
         if (line[i] == '<' || line[i] == '>')
         {
             out[j++] = line[i++];
@@ -81,13 +104,19 @@ char *preprocess_redirections(const char *line)
                 out[j++] = ' ';
             continue;
         }
-        /* Copia cualquier otro carácter */
+
+        /* Copia normal */
         out[j++] = line[i++];
     }
+
     out[j] = '\0';
     return out;
 }
 
+/**
+ * Bucle principal de lectura-ejecución.
+ * Ahora aplica preprocess_redirections() justo después de readline().
+ */
 void run_shell_loop(t_msh *shell)
 {
     char    *raw_line;
@@ -108,7 +137,7 @@ void run_shell_loop(t_msh *shell)
         }
         add_history(raw_line);
 
-        /* Pre-procesar espacios en redirecciones */
+        /* --- Nuevo paso: preprocesar redirecciones --- */
         line = preprocess_redirections(raw_line);
         free(raw_line);
 

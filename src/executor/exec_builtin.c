@@ -99,36 +99,26 @@ int	is_builtin(char *cmd_name)
 
 void execute_builtin(t_msh *msh, t_cmd *cmd)
 {
-    int  saved_out;
-    int  saved_err;
-    char **argv;
-    int   argc = 0;
-    int   j;
+    int   saved_out = dup(STDOUT_FILENO);
+    int   saved_err = dup(STDERR_FILENO);
+    char  **argv;
+    int    argc = 0, j;
 
-    // 0) Validaciones básicas
-    if (!msh || !cmd || !cmd->cmd)
-        return;
-
-    // 1) Guarda stdout y stderr del shell
-    saved_out = dup(STDOUT_FILENO);
-    saved_err = dup(STDERR_FILENO);
-
-    // 2) Aplica las redirecciones SOLO para este builtin
     if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
         process_redirections(cmd);
 
-    // 3) Construye argv como antes
-    if (cmd->arg)
-        while (cmd->arg[argc])
-            argc++;
+    /* AHORA quito comillas y expand variables */
+    perform_expansion(msh, &cmd);
+
+    /* Construir argv limpio */
+    while (cmd->arg && cmd->arg[argc])
+        argc++;
     argv = malloc(sizeof(char *) * (argc + 2));
     if (!argv)
     {
-        // En fallo, igual restaura antes de salir
         dup2(saved_out, STDOUT_FILENO);
         dup2(saved_err, STDERR_FILENO);
-        close(saved_out);
-        close(saved_err);
+        close(saved_out); close(saved_err);
         return;
     }
     argv[0] = cmd->cmd;
@@ -136,15 +126,12 @@ void execute_builtin(t_msh *msh, t_cmd *cmd)
         argv[j + 1] = cmd->arg[j];
     argv[argc + 1] = NULL;
 
-    // 4) Ejecuta el builtin “real”
     msh->error_value = exec_builtin(msh, argv);
     free(argv);
 
-    // 5) Restaura stdout y stderr al shell
     dup2(saved_out, STDOUT_FILENO);
     dup2(saved_err, STDERR_FILENO);
-    close(saved_out);
-    close(saved_err);
+    close(saved_out); close(saved_err);
 }
 
 
