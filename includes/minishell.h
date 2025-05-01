@@ -81,7 +81,6 @@ typedef struct s_msh
 }				t_msh;
 
 # include "../libft/libft.h"
-# include "env.h"
 # include "parser.h"
 # include "redirections.h"
 # include "signals.h"
