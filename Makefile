@@ -32,9 +32,9 @@ SRCS		=	src/builtins/builtins_utils.c \
 				src/parser/parser.c \
 				src/parser/parser_functions.c \
 				src/signals/signals.c \
-				src/clean_minishell.c \
-				src/ft_error.c \
-				src/initialize_minishell.c \
+				src/shell/clean_minishell.c \
+				src/shell/ft_error.c \
+				src/shell/initialize_minishell.c \
 				src/minishell.c \
 				utils/utils_1.c \
 				utils/redir_utils.c \

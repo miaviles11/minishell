@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
 
 /*Libera la memoria asignada a un nodo de comando y todos sus componentes. Puntero al nodo de comando a liberar*/
 void free_command_node(t_cmd *cmd)
