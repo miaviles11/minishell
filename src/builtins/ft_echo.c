@@ -14,8 +14,8 @@
 
 /*
  * handle_no_newline:
- * Comprueba la opción -n (uno o más 'n') en cmd->arg[0].
- * Si está, pone *no_newline = 1 y devuelve 1 para saltar ese arg.
+ *   detecta la opción -n (uno o más 'n') en arg[0].
+ *   devuelve 1 para saltar ese argumento y pone no_newline=1.
  */
 int handle_no_newline(t_cmd *cmd, int *no_newline)
 {
@@ -38,63 +38,47 @@ int handle_no_newline(t_cmd *cmd, int *no_newline)
 }
 
 /*
- * print_echo_arg:
- * Si el argumento empieza y acaba con ' o ", lo imprime sin esas comillas.
- * En otro caso, lo imprime tal cual.
+ * print_arguments:
+ *   imprime cada cmd->arg[i] con ft_printf("%s", …),
+ *   separando por espacios.
  */
-static void print_echo_arg(char *s)
+static void print_arguments(t_cmd *cmd, int start)
 {
-    int len;
-
-    if (!s)
-        return;
-    len = ft_strlen(s);
-    if ((len >= 2 && s[0] == '"'  && s[len - 1] == '"') ||
-        (len >= 2 && s[0] == '\'' && s[len - 1] == '\''))
+    int i = start;
+    while (cmd->arg[i])
     {
-        /* Imprime el contenido entre comillas */
-        ft_printf("%.*s", len - 2, s + 1);
-    }
-    else
-    {
-        ft_printf("%s", s);
+        ft_printf("%s", cmd->arg[i]);
+        if (cmd->arg[i + 1])
+            ft_printf(" ");
+        i++;
     }
 }
 
 /*
  * minishell_echo:
- * - Soporta echo sin args -> solo newline.
- * - Opcional -n (no newline).
- * - Imprime args separados por espacio.
- * - Quita comillas envolventes de cada arg.
+ *  - sin args       → sólo newline
+ *  - -n             → sin newline final
+ *  - args sin modificar (el parser ya lleva la expansión/quotes)
  */
 int minishell_echo(t_msh *msh)
 {
-    t_cmd *cmd;
-    int    i;
+    t_cmd *cmd = msh->cmd;
     int    no_newline;
+    int    i;
 
-    cmd = msh->cmd;
-    /* Si no hay args, solo salto de línea */
     if (!cmd || !cmd->arg || !cmd->arg[0])
     {
         ft_printf("\n");
         return (0);
     }
 
-    /* 1) Verificar -n */
+    /* 1) comprueba -n */
     i = handle_no_newline(cmd, &no_newline);
 
-    /* 2) Imprimir cada argumento */
-    while (cmd->arg[i])
-    {
-        print_echo_arg(cmd->arg[i]);
-        if (cmd->arg[i + 1])
-            ft_printf(" ");
-        i++;
-    }
+    /* 2) imprime todos los argumentos, tal cual los recibió */
+    print_arguments(cmd, i);
 
-    /* 3) Salto de línea si no hubo -n */
+    /* 3) newline si no hubo -n */
     if (!no_newline)
         ft_printf("\n");
 

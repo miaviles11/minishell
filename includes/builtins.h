@@ -23,7 +23,6 @@ char    **ft_split_sort_env(char **env);
 
 int		minishell_cd(t_msh *msh, char **argv);
 
-void	print_arguments(t_cmd *cmd, int i);
 int		handle_no_newline(t_cmd *cmd, int *no_newline);
 int		minishell_echo(t_msh *msh);
 
