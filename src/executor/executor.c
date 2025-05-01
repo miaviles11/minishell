@@ -220,7 +220,7 @@ static void process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
         }
         else
         {
-            char **argv = prepare_argv(cmd);/
+            char **argv = prepare_argv(cmd);
             char *exe   = find_executable(cmd->cmd);
             execve(exe, argv, msh->env);
             perror("execve");
