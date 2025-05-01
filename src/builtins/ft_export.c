@@ -12,11 +12,6 @@
 
 #include "../../includes/minishell.h"
 
-/*
-** ft_split_sort_env:
-**   Duplica el array de entorno 'env', lo ordena lexicográficamente
-**   y devuelve el nuevo array terminado en NULL.
-*/
 char    **ft_split_sort_env(char **env)
 {
     char    **sorted;
@@ -61,7 +56,6 @@ char    **ft_split_sort_env(char **env)
     return (sorted);
 }
 
-// Maneja el caso en el que no hay '=' en el argumento
 void	handle_no_equal(t_msh *msh, const char *arg)
 {
 	char *key;
@@ -73,13 +67,12 @@ void	handle_no_equal(t_msh *msh, const char *arg)
 
 	existing_value = getenv(key);
 	if (existing_value)
-		set_env_var(msh, key, existing_value); // Usar valor existente
+		set_env_var(msh, key, existing_value);
 	else
-		set_env_var(msh, key, ""); // Usar valor vacío
+		set_env_var(msh, key, "");
 	free(key);
 }
 
-// Función auxiliar para actualizar o añadir una variable de entorno
 void	update_env(t_msh *msh, const char *arg)
 {
 	char *key;
@@ -87,13 +80,11 @@ void	update_env(t_msh *msh, const char *arg)
 	char *equal_pos;
 
 	equal_pos = ft_strchr(arg, '=');
-	if (!equal_pos) // Si no hay '=', delegamos a handle_no_equal
+	if (!equal_pos)
 	{
 		handle_no_equal(msh, arg);
 		return;
 	}
-
-	// Caso normal con '='
 	key = ft_substr(arg, 0, equal_pos - arg);
 	value = ft_strdup(equal_pos + 1);
 
@@ -112,7 +103,6 @@ int minishell_export(t_msh *msh, char **argv)
 {
     int i;
 
-    /* SIN ARGUMENTOS: listar variables exportadas */
     if (!argv[1])
     {
         char **sorted = ft_split_sort_env(msh->env);
@@ -120,18 +110,15 @@ int minishell_export(t_msh *msh, char **argv)
 
         while (sorted[j])
         {
-            /* copiar nombre y posible valor */
             char *eq = ft_strchr(sorted[j], '=');
             if (eq)
             {
-                /* name="value" */
                 *eq = '\0';
                 printf("declare -x %s=\"%s\"\n", sorted[j], eq + 1);
                 *eq = '=';
             }
             else
             {
-                /* name */
                 printf("declare -x %s\n", sorted[j]);
             }
             j++;
@@ -139,8 +126,6 @@ int minishell_export(t_msh *msh, char **argv)
         ft_free_split(sorted);
         return (0);
     }
-
-    /* CON ARGUMENTOS: comportamiento actual */
     i = 1;
     while (argv[i])
     {

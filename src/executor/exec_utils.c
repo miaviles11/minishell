@@ -6,13 +6,11 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 17:19:08 by miaviles          #+#    #+#             */
-/*   Updated: 2025/04/17 16:25:01 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/05/01 23:52:13 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-/*Espera a que terminen todos los procesos hijos pendientes*/
 
 void	wait_for_children(void)
 {
@@ -25,7 +23,6 @@ void	wait_for_children(void)
 
 char	*check_command_path(char *cmd)
 {
-    // Si es una ruta absoluta o relativa
     if (cmd[0] == '/' || cmd[0] == '.' || ft_strchr(cmd, '/'))
     {
         if (access(cmd, X_OK) == 0)
@@ -34,7 +31,6 @@ char	*check_command_path(char *cmd)
     return (NULL);
 }
 
-/* Busca el ejecutable en los directorios del PATH */
 char	*search_in_path(char *cmd)
 {
     char *path_env;

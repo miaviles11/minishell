@@ -12,7 +12,6 @@
 
 #include "../../includes/minishell.h"
 
-// Función auxiliar para eliminar una variable de entorno
 void	remove_env_var(t_msh *msh, const char *key)
 {
 	int i;
@@ -38,7 +37,6 @@ void	remove_env_var(t_msh *msh, const char *key)
 	}
 }
 
-// Implementación de ft_unset
 int minishell_unset(t_msh *msh, char **args)
 {
     int i = 1;
@@ -53,7 +51,6 @@ int minishell_unset(t_msh *msh, char **args)
             i++;
             continue;
         }
-        // Si eliminamos PATH, también quitamos la variable del entorno real
         if (ft_strcmp(args[i], "PATH") == 0)
             unsetenv("PATH");
 

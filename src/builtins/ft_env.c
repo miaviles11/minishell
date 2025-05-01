@@ -21,7 +21,7 @@ int	minishell_env(t_msh *msh)
 	while (msh->env[i] != NULL)
 	{
 		equal_sign = ft_strchr(msh->env[i], '=');
-		if (equal_sign != NULL && *(equal_sign + 1) != '\0') // Verifica que haya algo después del '='
+		if (equal_sign != NULL && *(equal_sign + 1) != '\0')
 			ft_printf("%s\n", msh->env[i]);
 		i++;
 	}

@@ -11,30 +11,11 @@
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-/*
-** is_redirect_operator:
-**   Retorna 1 si el carácter 'c' es un operador de redirección ('>' o '<'),
-**   o 0 en caso contrario.
-*/
+
 int	is_redirect_operator(char c)
 {
 	return (c == '>' || c == '<');
 }
-
-/*
-** get_redirect_type:
-**   Recorre la cadena 'str' (ignorando contenido entre comillas) y detecta
-**   el primer operador de redirección válido. Retorna:
-**     1  para '>' simple,
-**     2  para '>>',
-**     3  para '<' simple,
-**     4  para '<<',
-**     5  para '2>' (redirección de error simple),
-**     6  para '2>>',
-**    -1  si se detecta un operador mal formado,
-**     0  si no se encuentra ningún operador.
-*/
-#include "../includes/minishell.h"
 
 int	get_redirect_type(char *s)
 {
@@ -64,14 +45,6 @@ int	get_redirect_type(char *s)
 	return (0);
 }
 
-
-
-/*
-** find_first_redirect_index:
-**   Recorre el arreglo de cadenas 'args' y retorna el índice del primer
-**   elemento que contenga un operador de redirección válido (según get_redirect_type).
-**   Retorna -1 si no se encuentra ninguno.
-*/
 int	find_first_redirect_index(char **args)
 {
 	int	i = 0;
@@ -85,13 +58,6 @@ int	find_first_redirect_index(char **args)
 	return (-1);
 }
 
-/*
-** get_operator_for_type:
-**   Dado un tipo de redirección (n), retorna el carácter base:
-**     '>' para tipos 1, 2, 5 y 6;
-**     '<' para tipos 3 y 4;
-**     0 en caso contrario.
-*/
 char	get_operator_for_type(int n)
 {
 	if (n == 1 || n == 2 || n == 5 || n == 6)
@@ -101,12 +67,6 @@ char	get_operator_for_type(int n)
 	return (0);
 }
 
-/*
-** find_next_redirect_operator_index:
-**   A partir del índice 'i' en la cadena 'str', avanza hasta encontrar
-**   el siguiente carácter que sea un operador de redirección.
-**   Retorna el índice encontrado o el final de la cadena.
-*/
 int	find_next_redirect_operator_index(int i, char *str)
 {
 	while (str[i] && !is_redirect_operator(str[i]))

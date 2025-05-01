@@ -11,13 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
-/*
-** check_variable_and_digit:
-**   Recorre la cadena 's' hasta encontrar el primer signo '$'. 
-**   Si lo encuentra y el carácter inmediatamente siguiente es un dígito 
-**   (según ft_isdigit_special), retorna 0 (indicando que se encontró un patrón '$' seguido de dígito).
-**   En caso contrario, retorna 1.
-*/
+
 int	check_variable_and_digit(const char *s)
 {
 	int	i = 0;
@@ -28,20 +22,7 @@ int	check_variable_and_digit(const char *s)
 		return (0);
 	return (1);
 }
-/*
-** quit_variable_and_digit:
-**   Procesa la cadena 's' eliminando todas las ocurrencias del patrón:
-**   un signo '$' seguido de un dígito (según ft_isdigit_special).
-**
-**   Por ejemplo, "$1a $2b" se transforma en "a b".
-**
-** Parámetros:
-**   s: Cadena de entrada que puede contener variables a eliminar.
-**   dummy1, dummy2: Parámetros no utilizados (para mantener la firma original).
-**
-** Retorna:
-**   Una nueva cadena con los patrones eliminados. Se libera la cadena original.
-*/
+
 char	*quit_variable_and_digit(char *s)
 {
 	int		i;
@@ -57,7 +38,6 @@ char	*quit_variable_and_digit(char *s)
 	j = 0;
 	while (s[i])
 	{
-		// Si se detecta un '$' seguido de un dígito, lo salta.
 		if (s[i] == '$' && s[i + 1] && is_digit_special(s[i + 1]) == 1)
 		{
 			i += 2;
@@ -69,12 +49,7 @@ char	*quit_variable_and_digit(char *s)
 	free(s);
 	return (result);
 }
-/*
-** is_digit_special:
-**   Retorna 1 si el carácter 'c' es un dígito (entre '0' y '9') o si es uno de los caracteres especiales:
-**   '*', '@' o '\' (ASCII 92). 
-**   De lo contrario, retorna 0.
-*/
+
 int	is_digit_special(int c)
 {
 	if (c == '*' || c == '@' || c == '\\')
@@ -84,11 +59,6 @@ int	is_digit_special(int c)
 	return (0);
 }
 
-
-/* ———————————————————————————————————————————— */
-/* is_literal_dollar:
-**   Determina si line es un '$' literal (sin nombre de variable).
-*/
 static int is_literal_dollar(const char *line)
 {
     if (!line || line[0] != '$')
@@ -100,11 +70,6 @@ static int is_literal_dollar(const char *line)
     return (0);
 }
 
-/* ———————————————————————————————————————————— */
-/* detect_translation:
-**   Si la línea empieza con $" y encuentra '"',
-**   devuelve 1 y pone en *end el índice de esa '"'.
-*/
 static int detect_translation(const char *line, int *end)
 {
     int i;
@@ -118,10 +83,6 @@ static int detect_translation(const char *line, int *end)
     return (1);
 }
 
-/* ———————————————————————————————————————————— */
-/* expand_translation:
-**   Extrae el contenido entre $"..." y concatena con el sufijo.
-*/
 static char *expand_translation(t_msh *msh, char *line)
 {
     char *inside;
@@ -141,10 +102,6 @@ static char *expand_translation(t_msh *msh, char *line)
     return (res);
 }
 
-/* ———————————————————————————————————————————— */
-/* parse_braced:
-**   Detecta índices de ${VAR:offset} y su cierre '}'.
-*/
 static int parse_braced(const char *line, int *colon, int *end)
 {
     int i;
@@ -165,10 +122,6 @@ static int parse_braced(const char *line, int *colon, int *end)
     return (1);
 }
 
-/* ———————————————————————————————————————————— */
-/* expand_braced_substring:
-**   Extrae VAR, aplica offset y concatena sufijo.
-*/
 static char *expand_braced_substring(t_msh *msh, char *line)
 {
     char *name;
@@ -199,35 +152,22 @@ static char *expand_braced_substring(t_msh *msh, char *line)
     return (res);
 }
 
-/* ———————————————————————————————————————————— */
-/* substitute_variable_value:
-**   0) Si es '$' literal, lo deja
-**   1) Expande $"..."
-**   2) Expande ${VAR:offset}
-**   3) Maneja $?
-**   4) Expansión normal de $VAR
-*/
 char *substitute_variable_value(t_msh *msh, t_cmd *cmd, char *line, char **varReminder)
 {
     char *varName;
     char *tmp;
     int   i;
 
-    /* 0) '$' literal */
     if (is_literal_dollar(line))
         return (line);
-    /* 1) traducción $"..." */
     tmp = expand_translation(msh, line);
     if (tmp != line)
         return (tmp);
-    /* 2) ${VAR:offset} */
     tmp = expand_braced_substring(msh, line);
     if (tmp != line)
         return (tmp);
-    /* 3) $? */
     if (ft_strnstr(line, "$?", ft_strlen(line)))
         return (replace_special_value(line, msh->error_value));
-    /* 4) $VAR normal */
     if (!cmd->flags)
     {
         cmd->flags = calloc(1, sizeof(*(cmd->flags)));

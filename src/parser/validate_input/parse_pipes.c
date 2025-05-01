@@ -12,28 +12,16 @@
 
 #include "../../../includes/minishell.h"
 
-/*
-** skip_quoted_segment:
-**   Avanza el índice 'i' en la cadena 's' para saltar el contenido delimitado
-**   por la comilla 'quote'. Se asume que s[i] es la comilla de apertura.
-**   Retorna el nuevo valor de i, que apunta justo después de la comilla de cierre.
-*/
 static int	skip_quoted_segment(const char *s, int i, char quote)
 {
-	i++;  // Salta la comilla de apertura
+	i++;
 	while (s[i] && s[i] != quote)
 		i++;
 	if (s[i] == quote)
-		i++;  // Salta la comilla de cierre
+		i++;
 	return (i);
 }
 
-/* 
-** count_valid_pipes:
-**   Recorre la cadena 'inputLine' ignorando el contenido entre comillas,
-**   valida la sintaxis de los pipes y cuenta los pipes válidos.
-**   Retorna el número de pipes encontrados o -1 en caso de error.
-*/
 static int	count_valid_pipes(const char *inputLine, t_msh *msh)
 {
     int	i = 0;
@@ -51,7 +39,7 @@ static int	count_valid_pipes(const char *inputLine, t_msh *msh)
             if (inputLine[i + 1] == '|' || inputLine[i + 1] == '\0')
             {
                 put_error("bash", NULL, "syntax error near unexpected token `|'");
-                msh->error_value = 258; // Usar msh->error_value
+                msh->error_value = 258;
                 return (-1);
             }
             pipeCount++;
@@ -61,17 +49,12 @@ static int	count_valid_pipes(const char *inputLine, t_msh *msh)
     return (pipeCount);
 }
 
-/*
-** count_pipes:
-**   Verifica que la línea no comience con un pipe y luego cuenta los pipes válidos.
-**   Retorna el número de pipes o -1 si ocurre un error de sintaxis.
-*/
 int	count_pipes(const char *inputLine, t_msh *msh)
 {
     if (inputLine[0] == '|')
     {
         put_error("bash", NULL, "syntax error near unexpected token `|'");
-        msh->error_value = 258; // Usar msh->error_value
+        msh->error_value = 258;
         return (-1);
     }
     return (count_valid_pipes(inputLine, msh));
@@ -92,7 +75,7 @@ char	**split_pipes(char *inputLine, t_msh *msh)
         if (validate_pipe_segment(segments[i]) == -1 ||
             validate_redirection_syntax(segments, i) == -1)
         {
-            msh->error_value = 258; // Usar msh->error_value
+            msh->error_value = 258;
             while (i >= 0)
                 free(segments[i--]);
             free(segments);

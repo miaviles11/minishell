@@ -6,14 +6,11 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 19:44:22 by miaviles          #+#    #+#             */
-/*   Updated: 2025/04/23 16:26:10 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/05/01 23:51:50 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-/* Busca el ejecutable del comando en los directorios del PATH */
-/* Función principal que busca el ejecutable */
 
 char *find_executable(char *cmd)
 {
@@ -24,7 +21,6 @@ char *find_executable(char *cmd)
     return (search_in_path(cmd));
 }
 
-/* Prepara los argumentos para execve */
 char	**prepare_argv(t_cmd *cmd)
 {
     char	**argv;
@@ -48,7 +44,6 @@ char	**prepare_argv(t_cmd *cmd)
     return (argv);
 }
 
-/* Redirige entrada y salida según los descriptores de archivo */
 static void	setup_redirections(int input_fd, int output_fd)
 {
     if (input_fd != STDIN_FILENO)
@@ -63,12 +58,10 @@ static void	setup_redirections(int input_fd, int output_fd)
     }
 }
 
-/* Ejecuta un comando en un proceso hijo con los descriptores especificados */
 void child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 {
     (void)msh;
     setup_child_signals();
-    /* here-doc sin comando: procesar redirecciones y salir */
     if (!cmd->cmd || cmd->cmd[0] == '\0')
     {
         if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)

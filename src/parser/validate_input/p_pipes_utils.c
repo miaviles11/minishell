@@ -11,11 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
-/*
-** count_redirections:
-**   Cuenta el número de operadores de redirección en la cadena,
-**   incluyendo >, >>, <, <<, 2>, 2>>.
-*/
+
 int count_redirections(const char *s)
 {
     int count = 0;
@@ -47,11 +43,6 @@ int count_redirections(const char *s)
     return (count);
 }
 
-/*
-** extract_redirect_token:
-**   Extrae la secuencia de operadores de redirección consecutivos
-**   (por ejemplo, ">>>" o "<<<") para el mensaje de error.
-*/
 char *extract_redirect_token(char *s)
 {
     int  i = 0;
@@ -117,7 +108,6 @@ int	validate_redirection_syntax(char **segments, int index)
     char *tmp;
     char *msg;
 
-    /* Caso de operador mal formado (<<<, >|, etc.) */
     if (rt == -1)
     {
         token = extract_redirect_token(segment);

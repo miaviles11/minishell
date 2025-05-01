@@ -11,21 +11,12 @@
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
-/*
-** has_variable:
-**   Recorre la cadena 's' y retorna 1 si detecta la presencia de un
-**   signo '$' que indica una variable de entorno (y cuyo siguiente carácter
-**   no es un espacio). Ignora el contenido entre comillas simples cuando estamos
-**   fuera de comillas dobles, ya que las variables no se expanden en ellas.
-**
-** Retorna:
-**   1 si se encuentra una variable, o 0 si no.
-*/
+
 int has_variable(const char *s)
 {
     int i = 0;
-    int in_dq = 0;  // dentro de comillas dobles
-    int in_sq = 0;  // dentro de comillas simples
+    int in_dq = 0;
+    int in_sq = 0;
 
     while (s[i])
     {
@@ -52,15 +43,12 @@ char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder)
     }
 	if (check_variable_and_digit(s) == 0)
 		s = quit_variable_and_digit(s);
-	// Mientras se detecte una variable en la cadena...
 	char *prev_s = NULL;
 	while (has_variable(s))
 	{
 		cmd->flags->dollar_special = 0;
-		// Guarda el estado anterior de 's' para comparar
 		prev_s = ft_strdup(s);
 		s = substitute_variable_value(msh, cmd, s, varReminder);
-		// Si se activó un caso especial, concatena varReminder.
 		if (cmd->flags->dollar_special == 1 && varReminder && *varReminder)
 		{
 			temp = join_special(s, *varReminder);
@@ -70,26 +58,16 @@ char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder)
 			*varReminder = NULL;
 			cmd->flags->dollar_special = 0;
 		}
-		// Verifica si 's' no cambió, lo que indica un posible bucle infinito
 		if (ft_strcmp(prev_s, s) == 0)
 		{
 			free(prev_s);
-			break; // Sal del bucle para evitar el infinito
+			break;
 		}
 		free(prev_s);
 	}
 	return (s);
 }
 
-/*
-** join_special:
-**   Concatena dos cadenas, s1 y s2, pero si s1 termina en una comilla (simple o doble),
-**   esa comilla final se descarta antes de la concatenación.
-**
-** Retorna:
-**   Una nueva cadena que es la unión de s1 (sin la comilla final, si existiera)
-**   y s2. Se espera que ambas cadenas estén correctamente terminadas.
-*/
 char	*join_special(const char *s1, const char *s2)
 {
 	size_t	len1;
@@ -98,22 +76,18 @@ char	*join_special(const char *s1, const char *s2)
 	size_t	i, j;
 
 	len1 = ft_strlen(s1);
-	// Si s1 termina en comilla doble (") o comilla simple ('), descarta ese carácter.
 	if (len1 > 0 && (s1[len1 - 1] == '"' || s1[len1 - 1] == '\''))
 		len1--;
 	len2 = ft_strlen(s2);
-	// Reserva memoria para la cadena resultante (len1 + len2 + 1 para el '\0').
 	result = malloc(sizeof(char) * (len1 + len2 + 1));
 	if (!result)
 		exit_error("Error malloc", 51);
-	// Copia s1 (hasta len1) en result.
 	i = 0;
 	while (i < len1)
 	{
 		result[i] = s1[i];
 		i++;
 	}
-	// Copia s2 a continuación.
 	j = 0;
 	while (j < len2)
 	{
@@ -123,12 +97,7 @@ char	*join_special(const char *s1, const char *s2)
 	result[i + j] = '\0';
 	return (result);
 }
-/*
-** needs_home_expansion:
-**   Retorna 1 si la cadena 's' comienza con '~' y el siguiente carácter es '/' o es el fin de la cadena.
-**   Esto indica que se debe reemplazar '~' por el directorio HOME.
-**   En caso contrario, retorna 0.
-*/
+
 int	needs_home_expansion(const char *s)
 {
 	if (s && s[0] == '~' && (!s[1] || s[1] == '/'))
@@ -136,24 +105,16 @@ int	needs_home_expansion(const char *s)
 	return (0);
 }
 
-/*
-** expand_home_directory:
-**   Reemplaza el carácter '~' al inicio de la cadena 's' por el valor de la variable de entorno HOME.
-**   Se asume que 's' comienza con '~'. Libera la cadena original y retorna la nueva cadena.
-*/
 char	*expand_home_directory(char *s)
 {
 	char	*home;
 	char	*rest;
 	char	*result;
 
-	// Obtiene el resto de la cadena, omitiendo el '~'
 	rest = ft_strdup(s + 1);
-	// Obtiene el valor de HOME (se duplica para garantizar que se pueda liberar luego)
 	home = ft_strdup(getenv("HOME"));
 	if (!home)
 		exit_error("Error malloc", 50);
-	// Une el directorio HOME con el resto de la cadena
 	result = ft_strjoin(home, rest);
 	free(home);
 	free(rest);

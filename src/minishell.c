@@ -13,7 +13,7 @@
 #include "../includes/minishell.h"
 
 
-volatile sig_atomic_t g_interactive = 1;  // 1 = esperando prompt; 0 = ejecutando comando
+volatile sig_atomic_t g_interactive = 1;
 
 static void handle_extra_arguments(char **argv)
 {
@@ -28,14 +28,12 @@ char *preprocess_redirections(const char *line)
     char *out;
     char quote = 0;
 
-    /* Reservamos hasta doble tamaño + '\0' */
     out = malloc(ft_strlen(line) * 2 + 1);
     if (!out)
         exit_error("Error malloc", 1);
 
     while (line[i])
     {
-        /* Gestión de comillas */
         if (!quote && (line[i] == '"' || line[i] == '\''))
         {
             quote = line[i++];
@@ -53,7 +51,6 @@ char *preprocess_redirections(const char *line)
             out[j++] = line[i++];
             continue;
         }
-        /* Inserción de espacios en redirecciones fuera de comillas */
         if (line[i] == '<' && line[i+1] == '<')
         {
             out[j++] = '<'; out[j++] = '<'; i += 2;
@@ -84,7 +81,6 @@ char *preprocess_redirections(const char *line)
                 out[j++] = ' ';
             continue;
         }
-        /* Copia normal */
         out[j++] = line[i++];
     }
     out[j] = '\0';
@@ -111,18 +107,15 @@ void run_shell_loop(t_msh *shell)
             raw_line = get_next_line(STDIN_FILENO);
         }
 
-        /* EOF: salir */
         if (!raw_line)
             break;
 
-        /* Eliminar posible '\n' final para parse */
         {
             size_t len = ft_strlen(raw_line);
             if (len > 0 && raw_line[len - 1] == '\n')
                 raw_line[len - 1] = '\0';
         }
 
-        /* Línea vacía: continuar */
         if (is_line_empty(raw_line))
         {
             free(raw_line);
@@ -132,7 +125,6 @@ void run_shell_loop(t_msh *shell)
         if (interactive)
             add_history(raw_line);
 
-        /* Preprocesar redirecciones */
         line = preprocess_redirections(raw_line);
         free(raw_line);
 
@@ -141,7 +133,6 @@ void run_shell_loop(t_msh *shell)
         {
             g_interactive = 0;
 
-            /* Gestión explícita de exit */
             if (shell->cmd && shell->cmd->cmd
                 && !ft_strncmp(shell->cmd->cmd, "exit", 5))
             {
@@ -168,7 +159,6 @@ void run_shell_loop(t_msh *shell)
                 exit(code);
             }
 
-            /* Ejecutar built-in en padre */
             if (!shell->pipe
                 && shell->cmd
                 && shell->cmd->cmd
@@ -208,6 +198,5 @@ int main(int argc, char **argv, char **envp)
     run_shell_loop(shell);
     cleanup_shell(shell);
 
-    /* Devolver código final (en caso de EOF sin exit) */
     return (shell->error_value);
 }

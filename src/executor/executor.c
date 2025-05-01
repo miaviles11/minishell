@@ -12,16 +12,12 @@
 
 #include "../../includes/minishell.h"
 
-/*Ejecuta el proceso hijo: aplica redirecciones, prepara argv y ejecuta el comando.*/
-
 static void exec_child(t_msh *msh, t_cmd *cmd, char *executable)
 {
     setup_child_signals();
 
     if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
         process_redirections(cmd);
-
-    /* Quitar comillas y expandir ahora que ya procesamos here-doc */
     perform_expansion(msh, &cmd);
 
     char **argv = prepare_argv(cmd);
@@ -70,10 +66,6 @@ static void consume_here_docs(char **args)
     }
 }
 
-/*
- * Ejecuta un comando único (sin pipes). Antes expandimos variables,
- * luego buscamos el ejecutable y finalmente delegamos en exec_child.
- */
 static void execute_single_command(t_msh *msh, t_cmd *cmd)
 {
     pid_t pid;
@@ -113,16 +105,6 @@ static void execute_single_command(t_msh *msh, t_cmd *cmd)
     free(executable);
 }
 
-/* -------------------------------------------------- */
-/* Comando intermedio en un pipeline                  */
-/* -------------------------------------------------- */
-/*
- *  Comando intermedio de un pipeline:
- *   - stdin  ← prev_pipe (si != STDIN_FILENO)
- *   - stdout → pipe_fd[1]
- *   - luego: aplica redirecciones de archivo, expande variables y quita comillas
- *   - ejecuta builtin o execve
- */
 static void process_cmd_with_pipe(t_msh *msh, t_cmd *cmd, int prev_pipe, int *pipe_fd)
 {
     pid_t pid;
@@ -136,26 +118,17 @@ static void process_cmd_with_pipe(t_msh *msh, t_cmd *cmd, int prev_pipe, int *pi
     }
     if (pid == 0)
     {
-        /* --- HIJO --- */
-        /* 1) stdin desde pipe anterior */
         if (prev_pipe != STDIN_FILENO)
         {
             dup2(prev_pipe, STDIN_FILENO);
             close(prev_pipe);
         }
-        /* 2) stdout al siguiente pipe */
         close(pipe_fd[0]);
         dup2(pipe_fd[1], STDOUT_FILENO);
         close(pipe_fd[1]);
-
-        /* 3) redirecciones > < >> << */
         if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
             process_redirections(cmd);
-
-        /* 4) expandir variables y quitar comillas */
         perform_expansion(msh, &cmd);
-
-        /* 5) ejecutar builtin o externo */
         if (is_builtin(cmd->cmd))
         {
             execute_builtin_with_redirection(msh, cmd, STDOUT_FILENO);
@@ -170,24 +143,14 @@ static void process_cmd_with_pipe(t_msh *msh, t_cmd *cmd, int prev_pipe, int *pi
             _exit(1);
         }
     }
-
-    /* --- PADRE --- */
     if (prev_pipe != STDIN_FILENO)
         close(prev_pipe);
     close(pipe_fd[1]);
-
-    /* esperamos siempre para que el archivo (si hubo >) exista antes de la siguiente etapa */
     waitpid(pid, &status, 0);
     if (WIFEXITED(status))
         msh->error_value = WEXITSTATUS(status);
 }
 
-/*
- *  Último (o único) comando:
- *   - stdin  ← prev_pipe
- *   - stdout → STDOUT_FILENO
- *   - luego redirecciones, expansión y ejecución
- */
 static void process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
 {
     pid_t pid;
@@ -201,21 +164,17 @@ static void process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
     }
     if (pid == 0)
     {
-        /* --- HIJO --- */
         if (prev_pipe != STDIN_FILENO)
         {
             dup2(prev_pipe, STDIN_FILENO);
             close(prev_pipe);
         }
 
-        /* redirecciones */
         if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
             process_redirections(cmd);
 
-        /* expansión y quitar comillas */
         perform_expansion(msh, &cmd);
 
-        /* ejecutar */
         if (is_builtin(cmd->cmd))
         {
             execute_builtin_with_redirection(msh, cmd, STDOUT_FILENO);
@@ -229,8 +188,6 @@ static void process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
             _exit(1);
         }
     }
-
-    /* --- PADRE --- */
     if (prev_pipe != STDIN_FILENO)
         close(prev_pipe);
     if (!cmd->background)
@@ -241,9 +198,6 @@ static void process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
     }
 }
 
-/**
- * Ejecuta una lista de comandos con pipes
- */
 void execute_commands(t_msh *msh)
 {
     t_cmd *current;
@@ -283,34 +237,3 @@ void execute_commands(t_msh *msh)
     if (!msh->cmd->background)
         wait_for_children();
 }
-
-/**
- * Maneja la redirección de entrada y salida para un comando
- 
-void	handle_redirection(t_cmd *cmd)
-{
-	int	fd;
-
-	if (cmd->input_file)
-	{
-		fd = open(cmd->input_file, O_RDONLY);
-		if (fd == -1)
-		{
-			perror("open input_file");
-			_exit(1);
-		}
-		dup2(fd, STDIN_FILENO);
-		close(fd);
-	}
-	if (cmd->output_file)
-	{
-		fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd == -1)
-		{
-			perror("open output_file");
-			_exit(1);
-		}
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
-	}
-}*/

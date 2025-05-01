@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_arguments_3.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
+/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:14:06 by carlsanc          #+#    #+#             */
-/*   Updated: 2025/04/23 13:14:06 by carlsanc         ###   ########.fr       */
+/*   Updated: 2025/05/01 23:54:55 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,11 @@ int skip_initial_redirections(const char *s, int i)
     while ((rtype = get_redirect_type((char *)s + i)) > 0)
     {
         int len = get_operator_length(rtype);
-        /* Saltar operador y espacios */
         i += len;
         i = skip_spaces(s, i);
-        /* Saltar nombre de fichero o delimitador */
         while (s[i] && get_redirect_type((char *)s + i) == 0
                && s[i] != ' ' && !(s[i] >= 9 && s[i] <= 13))
             i = skip_token(s, i);
-        /* Volver a saltar espacios antes del comando */
         i = skip_spaces(s, i);
     }
     return (i);

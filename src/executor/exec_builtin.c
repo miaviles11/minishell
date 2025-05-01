@@ -64,7 +64,6 @@ void execute_builtin_with_redirection(t_msh *msh, t_cmd *cmd, int out_fd)
 
 int	exec_builtin(t_msh *msh, char **argv)
 {
-	// Verificar que los punteros no sean NULL
 	if (!msh || !argv || !argv[0])
 		return (1);
 	if (ft_strncmp(argv[0], "cd", 3) == 0)
@@ -88,7 +87,6 @@ int	is_builtin(char *cmd_name)
 {
 	if (!cmd_name)
 		return (0);
-	// Lista de builtins
 	if (ft_strncmp(cmd_name, "cd", 3) == 0 || ft_strncmp(cmd_name, "pwd", 4) == 0 ||
 		ft_strncmp(cmd_name, "echo", 5) == 0 || ft_strncmp(cmd_name, "exit", 5) == 0 ||
 		ft_strncmp(cmd_name, "env", 4) == 0 || ft_strncmp(cmd_name, "export", 7) == 0 ||
@@ -107,10 +105,7 @@ void execute_builtin(t_msh *msh, t_cmd *cmd)
     if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
         process_redirections(cmd);
 
-    /* AHORA quito comillas y expand variables */
     perform_expansion(msh, &cmd);
-
-    /* Construir argv limpio */
     while (cmd->arg && cmd->arg[argc])
         argc++;
     argv = malloc(sizeof(char *) * (argc + 2));

@@ -18,14 +18,13 @@ char	*quit_null_space(char *s, int index)
 	int		i;
 	int		j;
 
-	new_str = malloc(ft_strlen(s) - 2 + 1); // Elimina dos caracteres (las comillas consecutivas)
-	if (!new_str)
+	new_str = malloc(ft_strlen(s) - 2 + 1);
 		exit_error("Error malloc", 15);
 	i = 0;
 	j = 0;
 	while (s[i])
 	{
-		if (i == index || i == index + 1) // Salta las comillas consecutivas
+		if (i == index || i == index + 1)
 			i++;
 		else
 			new_str[j++] = s[i++];
@@ -41,14 +40,14 @@ char	*quit_null(char *s, int index)
     int		i;
     int		j;
 
-    new_str = malloc(ft_strlen(s) - 2 + 1); // Elimina dos caracteres (las comillas consecutivas)
+    new_str = malloc(ft_strlen(s) - 2 + 1);
     if (!new_str)
         exit_error("Error malloc", 16);
     i = 0;
     j = 0;
     while (s[i])
     {
-        if (i == index || i == index + 1) // Salta las comillas consecutivas
+        if (i == index || i == index + 1)
             i++;
         else
             new_str[j++] = s[i++];
