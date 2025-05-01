@@ -14,13 +14,16 @@
 
 int	minishell_env(t_msh *msh)
 {
-    int	i;
+	int		i;
+	char	*equal_sign;
 
-    i = 0;
-    while (msh->env[i] != NULL)
-    {
-        ft_printf("%s\n", msh->env[i]);
-        i++;
-    }
-    return (0);
+	i = 0;
+	while (msh->env[i] != NULL)
+	{
+		equal_sign = ft_strchr(msh->env[i], '=');
+		if (equal_sign != NULL && *(equal_sign + 1) != '\0') // Verifica que haya algo después del '='
+			ft_printf("%s\n", msh->env[i]);
+		i++;
+	}
+	return (0);
 }
