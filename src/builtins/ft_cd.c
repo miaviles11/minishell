@@ -16,8 +16,12 @@ static int change_to_oldpwd(t_msh *msh, char *oldpwd, char *current_pwd)
 {
 	if (getcwd(current_pwd, 1024) == NULL)
 	{
-		perror("getcwd");
-		return (1);
+		if (!getenv("PWD"))
+		{
+			ft_printf("cd: PWD no disponible\n");
+			return (1);
+		}
+		ft_strlcpy(current_pwd, getenv("PWD"), 1024);
 	}
 	if (chdir(oldpwd) != 0)
 	{
@@ -34,11 +38,15 @@ static int change_directory(t_msh *msh, char *path, char *cwd)
 {
     char old_cwd[1024];
 
-    if (getcwd(old_cwd, sizeof(old_cwd)) == NULL)
-    {
-        perror("getcwd");
-        return (1);
-    }
+	if (getcwd(old_cwd, sizeof(old_cwd)) == NULL)
+	{
+		if (!getenv("PWD"))
+		{
+			ft_printf("cd: PWD no disponible\n");
+			return (1);
+		}
+		ft_strlcpy(old_cwd, getenv("PWD"), sizeof(old_cwd));
+	}
     if (chdir(path) != 0)
     {
         perror("cd");
