@@ -70,21 +70,23 @@ static void consume_here_docs(char **args)
     }
 }
 
+/*
+ * Ejecuta un comando único (sin pipes). Antes expandimos variables,
+ * luego buscamos el ejecutable y finalmente delegamos en exec_child.
+ */
 static void execute_single_command(t_msh *msh, t_cmd *cmd)
 {
-    /* here-doc sin comando: solo consumir y descartar el contenido */
+    pid_t pid;
+    int   status;
+    char *executable;
+
     if (!cmd->cmd || cmd->cmd[0] == '\0')
     {
         consume_here_docs(cmd->arg);
         msh->error_value = 0;
         return;
     }
-
-    /* resto de la función sin cambios… */
-    char    *executable;
-    pid_t   pid;
-    int     status;
-
+    perform_expansion(msh, &cmd);
     executable = find_executable(cmd->cmd);
     if (!executable)
     {
@@ -92,9 +94,8 @@ static void execute_single_command(t_msh *msh, t_cmd *cmd)
         msh->error_value = 127;
         return;
     }
-
     pid = fork();
-    if (pid == -1)
+    if (pid < 0)
     {
         perror("fork");
         free(executable);
@@ -102,13 +103,14 @@ static void execute_single_command(t_msh *msh, t_cmd *cmd)
         return;
     }
     if (pid == 0)
-        exec_child(msh, cmd, executable);
-    else if (pid > 0 && !cmd->background)
     {
-        waitpid(pid, &status, 0);
-        if (WIFEXITED(status))
-            msh->error_value = WEXITSTATUS(status);
+        exec_child(msh, cmd, executable);
     }
+    waitpid(pid, &status, 0);
+    if (WIFEXITED(status))
+        msh->error_value = WEXITSTATUS(status);
+
+    free(executable);
 }
 
 /* -------------------------------------------------- */

@@ -18,7 +18,7 @@
 # include <unistd.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-
+#define CWD_SIZE 1024
 /*
 ** t_pipe: Estructura para el manejo de pipes.
 ** Se utiliza para almacenar dos conjuntos de descriptores (para alternar entre ellos),
