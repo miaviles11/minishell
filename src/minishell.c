@@ -103,7 +103,7 @@ void run_shell_loop(t_msh *shell)
         if (interactive)
         {
             g_interactive = 1;
-            raw_line = readline(WHITE_T "minishell-> " RESET_COLOR);
+            raw_line = readline("minishell-> ");
         }
         else
         {

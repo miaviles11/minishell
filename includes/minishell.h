@@ -19,9 +19,6 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
-# define WHITE_T "\033[1;37m"
-# define RESET_COLOR "\033[0m"
-
 /*
 ** t_pipe: Estructura para el manejo de pipes.
 ** Se utiliza para almacenar dos conjuntos de descriptores (para alternar entre ellos),
