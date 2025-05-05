@@ -6,48 +6,50 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:14:06 by carlsanc          #+#    #+#             */
-/*   Updated: 2025/05/01 23:54:55 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/05/05 17:59:07 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-int skip_spaces(const char *s, int i)
+int	skip_spaces(const char *s, int i)
 {
-    while (s[i] == ' ' || (s[i] >= 9 && s[i] <= 13))
-        i++;
-    return (i);
+	while (s[i] == ' ' || (s[i] >= 9 && s[i] <= 13))
+		i++;
+	return (i);
 }
 
-int skip_token(const char *s, int i)
+int	skip_token(const char *s, int i)
 {
-    if (s[i] == '\"' || s[i] == '\'')
-        return (get_next_quote(i + 1, (char *)s, s[i]) + 1);
-    return (i + 1);
+	if (s[i] == '\"' || s[i] == '\'')
+		return (get_next_quote(i + 1, (char *)s, s[i]) + 1);
+	return (i + 1);
 }
 
-int get_operator_length(int rtype)
+int	get_operator_length(int rtype)
 {
-    if (rtype == 1 || rtype == 3)
-        return (1);
-    if (rtype == 2 || rtype == 4 || rtype == 5)
-        return (2);
-    return (3);
+	if (rtype == 1 || rtype == 3)
+		return (1);
+	if (rtype == 2 || rtype == 4 || rtype == 5)
+		return (2);
+	return (3);
 }
 
-int skip_initial_redirections(const char *s, int i)
+int	skip_initial_redirections(const char *s, int i)
 {
-    int rtype;
+	int	rtype;
+	int	len;
 
-    while ((rtype = get_redirect_type((char *)s + i)) > 0)
-    {
-        int len = get_operator_length(rtype);
-        i += len;
-        i = skip_spaces(s, i);
-        while (s[i] && get_redirect_type((char *)s + i) == 0
-               && s[i] != ' ' && !(s[i] >= 9 && s[i] <= 13))
-            i = skip_token(s, i);
-        i = skip_spaces(s, i);
-    }
-    return (i);
+	rtype = get_redirect_type((char *)s + i);
+	while (rtype > 0)
+	{
+		len = get_operator_length(rtype);
+		i += len;
+		i = skip_spaces(s, i);
+		while (s[i] && get_redirect_type((char *)s + i) == 0 && s[i] != ' '
+			&& !(s[i] >= 9 && s[i] <= 13))
+			i = skip_token(s, i);
+		i = skip_spaces(s, i);
+	}
+	return (i);
 }
