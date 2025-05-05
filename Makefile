@@ -17,7 +17,10 @@ SRCS		=	src/builtins/builtins_utils_export.c \
 				src/builtins/ft_unset.c \
 				src/executor/child_process.c \
 				src/executor/exec_builtin.c \
+				src/executor/exec_utils_builtin.c \
 				src/executor/exec_utils.c \
+				src/executor/executor_heredoc.c \
+				src/executor/executor_pipe.c \
 				src/executor/executor.c \
 				src/parser/create_command_node/process_arguments_1.c \
 				src/parser/create_command_node/process_arguments_2.c \

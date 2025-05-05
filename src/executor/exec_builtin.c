@@ -5,61 +5,59 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/15 15:08:26 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/18 19:38:13 by miaviles         ###   ########.fr       */
+/*   Created: 2025/05/05 16:51:04 by miaviles          #+#    #+#             */
+/*   Updated: 2025/05/05 16:51:04 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-
-void exit_child(t_cmd *cmd)
+void	exit_child(t_cmd *cmd)
 {
-    int code;
+	int	code;
 
-    code = 0;
-    if (cmd->arg && cmd->arg[1])
-    {
-        if (!is_numeric(cmd->arg[1]))
-        {
-            ft_printf("exit: %s: numeric argument required\n",
-                      cmd->arg[1]);
-            code = 255;
-        }
-        else if (cmd->arg[2])
-        {
-            ft_printf("exit: too many arguments\n");
-            _exit(1);
-        }
-        else
-            code = ft_atoi(cmd->arg[1]);
-    }
-    _exit(code);
+	code = 0;
+	if (cmd->arg && cmd->arg[1])
+	{
+		if (!is_numeric(cmd->arg[1]))
+		{
+			ft_printf("exit: %s: numeric argument required\n", cmd->arg[1]);
+			code = 255;
+		}
+		else if (cmd->arg[2])
+		{
+			ft_printf("exit: too many arguments\n");
+			_exit(1);
+		}
+		else
+			code = ft_atoi(cmd->arg[1]);
+	}
+	_exit(code);
 }
 
-void execute_builtin_with_redirection(t_msh *msh, t_cmd *cmd, int out_fd)
+void	execute_builtin_with_redirection(t_msh *msh, t_cmd *cmd, int out_fd)
 {
-    if (out_fd != STDOUT_FILENO && dup2(out_fd, STDOUT_FILENO) == -1)
-        exit_error("dup2 failed", 1);
-    if (out_fd != STDOUT_FILENO)
-        close(out_fd);
-    if (!ft_strncmp(cmd->cmd, "exit", 5))
-        exit_child(cmd);
-    else if (!ft_strncmp(cmd->cmd, "env", 4))
-        minishell_env(msh);
-    else if (!ft_strncmp(cmd->cmd, "echo", 5))
-        minishell_echo(msh);
-    else if (!ft_strncmp(cmd->cmd, "cd", 3))
-        minishell_cd(msh, cmd->arg);
-    else if (!ft_strncmp(cmd->cmd, "pwd", 4))
-        minishell_pwd(msh);
-    else if (!ft_strncmp(cmd->cmd, "export", 7))
-        minishell_export(msh, cmd->arg);
-    else if (!ft_strncmp(cmd->cmd, "unset", 6))
-        minishell_unset(msh, cmd->arg);
-    else
-        ft_printf("Command not found: %s\n", cmd->cmd);
-    _exit(msh->error_value);
+	if (out_fd != STDOUT_FILENO && dup2(out_fd, STDOUT_FILENO) == -1)
+		exit_error("dup2 failed", 1);
+	if (out_fd != STDOUT_FILENO)
+		close(out_fd);
+	if (!ft_strncmp(cmd->cmd, "exit", 5))
+		exit_child(cmd);
+	else if (!ft_strncmp(cmd->cmd, "env", 4))
+		minishell_env(msh);
+	else if (!ft_strncmp(cmd->cmd, "echo", 5))
+		minishell_echo(msh);
+	else if (!ft_strncmp(cmd->cmd, "cd", 3))
+		minishell_cd(msh, cmd->arg);
+	else if (!ft_strncmp(cmd->cmd, "pwd", 4))
+		minishell_pwd(msh);
+	else if (!ft_strncmp(cmd->cmd, "export", 7))
+		minishell_export(msh, cmd->arg);
+	else if (!ft_strncmp(cmd->cmd, "unset", 6))
+		minishell_unset(msh, cmd->arg);
+	else
+		ft_printf("Command not found: %s\n", cmd->cmd);
+	_exit(msh->error_value);
 }
 
 int	exec_builtin(t_msh *msh, char **argv)
@@ -87,46 +85,33 @@ int	is_builtin(char *cmd_name)
 {
 	if (!cmd_name)
 		return (0);
-	if (ft_strncmp(cmd_name, "cd", 3) == 0 || ft_strncmp(cmd_name, "pwd", 4) == 0 ||
-		ft_strncmp(cmd_name, "echo", 5) == 0 || ft_strncmp(cmd_name, "exit", 5) == 0 ||
-		ft_strncmp(cmd_name, "env", 4) == 0 || ft_strncmp(cmd_name, "export", 7) == 0 ||
-		ft_strncmp(cmd_name, "unset", 6) == 0)
+	if (ft_strncmp(cmd_name, "cd", 3) == 0 || ft_strncmp(cmd_name, "pwd",
+			4) == 0 || ft_strncmp(cmd_name, "echo", 5) == 0
+		|| ft_strncmp(cmd_name, "exit", 5) == 0 || ft_strncmp(cmd_name, "env",
+			4) == 0 || ft_strncmp(cmd_name, "export", 7) == 0
+		|| ft_strncmp(cmd_name, "unset", 6) == 0)
 		return (1);
 	return (0);
 }
 
-void execute_builtin(t_msh *msh, t_cmd *cmd)
+void	execute_builtin(t_msh *msh, t_cmd *cmd)
 {
-    int   saved_out = dup(STDOUT_FILENO);
-    int   saved_err = dup(STDERR_FILENO);
-    char  **argv;
-    int    argc = 0, j;
+	int		saved_out;
+	int		saved_err;
+	char	**argv;
 
-    if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
-        process_redirections(cmd);
-
-    perform_expansion(msh, &cmd);
-    while (cmd->arg && cmd->arg[argc])
-        argc++;
-    argv = malloc(sizeof(char *) * (argc + 2));
-    if (!argv)
-    {
-        dup2(saved_out, STDOUT_FILENO);
-        dup2(saved_err, STDERR_FILENO);
-        close(saved_out); close(saved_err);
-        return;
-    }
-    argv[0] = cmd->cmd;
-    for (j = 0; j < argc; j++)
-        argv[j + 1] = cmd->arg[j];
-    argv[argc + 1] = NULL;
-
-    msh->error_value = exec_builtin(msh, argv);
-    free(argv);
-
-    dup2(saved_out, STDOUT_FILENO);
-    dup2(saved_err, STDERR_FILENO);
-    close(saved_out); close(saved_err);
+	saved_out = dup(STDOUT_FILENO);
+	saved_err = dup(STDERR_FILENO);
+	argv = NULL;
+	if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
+		process_redirections(cmd);
+	setup_builtin_args(msh, cmd, &argv);
+	if (!argv)
+	{
+		cleanup_builtin(saved_out, saved_err);
+		return ;
+	}
+	msh->error_value = exec_builtin(msh, argv);
+	free(argv);
+	cleanup_builtin(saved_out, saved_err);
 }
-
-

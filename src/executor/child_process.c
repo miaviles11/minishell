@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 19:44:22 by miaviles          #+#    #+#             */
-/*   Updated: 2025/05/05 15:54:04 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/05/05 16:50:07 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@ char	*find_executable(char *cmd)
 {
 	char	*path;
 
-	if ((path = check_command_path(cmd)))
+	path = check_command_path(cmd);
+	if (path)
 		return (path);
 	return (search_in_path(cmd));
 }
@@ -58,11 +59,8 @@ static void	setup_redirections(int input_fd, int output_fd)
 	}
 }
 
-void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
+void	setup_child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 {
-	char	*executable;
-	char	**argv;
-
 	(void)msh;
 	setup_child_signals();
 	if (!cmd->cmd || cmd->cmd[0] == '\0')
@@ -74,6 +72,14 @@ void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
 	setup_redirections(input_fd, output_fd);
 	if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
 		process_redirections(cmd);
+}
+
+void	child_process(t_msh *msh, t_cmd *cmd, int input_fd, int output_fd)
+{
+	char	*executable;
+	char	**argv;
+
+	setup_child_process(msh, cmd, input_fd, output_fd);
 	executable = find_executable(cmd->cmd);
 	if (!executable)
 	{
