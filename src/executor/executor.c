@@ -16,11 +16,11 @@ void	exec_child(t_msh *msh, t_cmd *cmd, char *executable)
 {
 	char	**argv;
 
-	argv = prepare_argv(cmd);
 	setup_child_signals();
 	if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
 		process_redirections(cmd);
 	perform_expansion(msh, &cmd);
+	argv = prepare_argv(cmd);
 	if (!argv)
 	{
 		free(executable);
