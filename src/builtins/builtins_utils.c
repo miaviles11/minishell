@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/17 12:45:01 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/17 18:51:58 by miaviles         ###   ########.fr       */
+/*   Created: 2025/05/05 15:44:14 by miaviles          #+#    #+#             */
+/*   Updated: 2025/05/05 15:44:14 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	update_existing_env_var(t_msh *msh, const char *name, const char *value)
 	return (1);
 }
 
-int add_new_env_var(t_msh *msh, const char *name, const char *value)
+int	add_new_env_var(t_msh *msh, const char *name, const char *value)
 {
 	int		i;
 	char	*temp;
@@ -48,10 +48,9 @@ int add_new_env_var(t_msh *msh, const char *name, const char *value)
 	temp = ft_strjoin(name, "=");
 	new_var = ft_strjoin(temp, value);
 	free(temp);
-	new_env = malloc(sizeof(char *) * (msh->num_env + 2)); // +1 para la nueva, +1 para NULL
+	new_env = malloc(sizeof(char *) * (msh->num_env + 2));
 	if (!new_env)
 		return (1);
-
 	i = 0;
 	while (i < msh->num_env)
 	{
@@ -71,12 +70,12 @@ int	set_env_var(t_msh *msh, const char *name, const char *value)
 {
 	if (update_existing_env_var(msh, name, value) == 0)
 		return (0);
-	return add_new_env_var(msh, name, value);
+	return (add_new_env_var(msh, name, value));
 }
 
 int	is_valid_identifier(const char *var)
 {
-	int i;
+	int	i;
 
 	i = 1;
 	if (!ft_isalpha(var[0]) && var[0] != '_')

@@ -15,6 +15,10 @@
 
 # include "minishell.h"
 
+char	**ft_duplicate_env(char **env, int *len);
+char	**ft_sort_env_array(char **sorted, int len);
+char	**ft_split_sort_env(char **env);
+
 int		update_existing_env_var(t_msh *msh, const char *name, const char *value);
 int		add_new_env_var(t_msh *msh, const char *name, const char *value);
 int		set_env_var(t_msh *msh, const char *name, const char *value);
@@ -36,6 +40,8 @@ int		minishell_env(t_msh *msh);
 int		minishell_export(t_msh *msh, char **argv);
 void	update_env(t_msh *msh, const char *arg);
 void	handle_no_equal(t_msh *msh, const char *arg);
+void	print_sorted_env(char **sorted);
+int		export_no_args(t_msh *msh);
 
 int		minishell_unset(t_msh *msh, char **args);
 void	remove_env_var(t_msh *msh, const char *key);

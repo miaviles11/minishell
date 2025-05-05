@@ -6,7 +6,8 @@ CFLAGS		= -Wall -Wextra -Werror -g
 LIBFT_DIR	= libft
 LIBFT		= $(LIBFT_DIR)/libft.a
 
-SRCS		=	src/builtins/builtins_utils.c \
+SRCS		=	src/builtins/builtins_utils_export.c \
+				src/builtins/builtins_utils.c \
 				src/builtins/ft_cd.c \
 				src/builtins/ft_echo.c \
 				src/builtins/ft_env.c \

@@ -2,26 +2,23 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   ft_echo.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+
-	+:+     */
-/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+
-	+#+        */
-/*                                                +#+#+#+#+#+
-	+#+           */
-/*   Created: 2025/03/13 17:17:45 by miaviles          #+#    #+#             */
-/*   Updated: 2025/03/17 19:24:53 by miaviles         ###   ########.fr       */
+/*                                                    +:+ +:+         +:+     */
+/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/05 15:44:32 by miaviles          #+#    #+#             */
+/*   Updated: 2025/05/05 15:44:32 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-
 int	handle_no_newline(t_cmd *cmd, int *no_newline)
 {
-	int i = 0;
-	int j;
-	*no_newline = 0;
+	int	i;
+	int	j;
 
+	i = 0;
+	*no_newline = 0;
 	while (cmd->arg[i] && cmd->arg[i][0] == '-')
 	{
 		j = 1;
@@ -35,13 +32,14 @@ int	handle_no_newline(t_cmd *cmd, int *no_newline)
 		else
 			break ;
 	}
-
 	return (i);
 }
 
 static void	print_arguments(t_cmd *cmd, int start)
 {
-	int i = start;
+	int	i;
+
+	i = start;
 	while (cmd->arg[i])
 	{
 		ft_printf("%s", cmd->arg[i]);
@@ -53,10 +51,11 @@ static void	print_arguments(t_cmd *cmd, int start)
 
 int	minishell_echo(t_msh *msh)
 {
-	t_cmd *cmd = msh->cmd;
-	int no_newline;
-	int i;
+	t_cmd	*cmd;
+	int		no_newline;
+	int		i;
 
+	cmd = msh->cmd;
 	if (!cmd || !cmd->arg || !cmd->arg[0])
 	{
 		ft_printf("\n");
