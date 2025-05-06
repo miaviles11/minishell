@@ -32,32 +32,50 @@ int skip_initial_redirections(const char *s, int i);
 char	*quit_null_space(char *s, int index);
 char	*quit_null(char *s, int index);
 
-/*expansion_utils_1.c*/
+/*variable_braced.c*/
+int		parse_braced(const char *line, int *colon, int *end);
+char	*expand_braced_substring(t_msh *msh, char *line);
+char	*process_braced_value(char *value, int offset, char *suffix);
+char	*compare_variable_name(t_msh *msh, char *line, char *nameVar);
+char	*replace_variable_in_line(char *line, char *var);
+
+/*variable_detection.c*/
 int		has_variable(const char *s);
-char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s, char **varReminder);
-char	*join_special(const char *s1, const char *s2);
-int		needs_home_expansion(const char *s);
-char	*expand_home_directory(char *s);
-
-/*expansion_utils_2.c*/
 int		check_variable_and_digit(const char *s);
-char	*quit_variable_and_digit(char *s);
 int		is_digit_special(int c);
-char	*substitute_variable_value(t_msh *msh, t_cmd *cmd, char *line, char **varReminder);
-
-/*expansion_utils_3.c*/
-char	*replace_special_value(char *s, int error_value);
-char	*replace_special_value_helper(char *s, int i, int error_value);
 char	*extract_variable_name(char *line);
 int		find_next_dollar(const char *s, int start);
-char	*split_variable_reminder(char *line, int index, t_cmd *cmd);
 
-/*expansion_utils_4.c*/
-int		special_char_check(char c);
-char	*compare_variable_name(t_msh *msh, char *line, char *nameVar);
+/*variable_env.c*/
 int		compare_env_variable_name(const char *s1, const char *s2);
 char	*extract_env_value(const char *envVar);
-char	*replace_variable_in_line(char *line, char *var);
+char	*split_variable_reminder(char *line, int index, t_cmd *cmd);
+char	*replace_special_value_helper(char *s, int i, int error_value);
+
+/*variable_expansion.c*/
+int		needs_home_expansion(const char *s);
+char	*expand_home_directory(char *s);
+char	*expand_translation(t_msh *msh, char *line);
+int		detect_translation(const char *line, int *end);
+char	*replace_special_value(char *s, int error_value);
+
+/*variable_processing.c*/
+char	*quit_variable_and_digit(char *s);
+int		is_literal_dollar(const char *line);
+void	init_flags(t_cmd *cmd);
+int		special_char_ck(char c);
+char	*join_special(const char *s1, const char *s2);
+
+/*variable_substitution.c*/
+char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s,
+		char **varReminder);
+char	*substitute_variable_value(t_msh *msh, t_cmd *cmd, char *line,
+		char **varReminder);
+void	handle_special_case(t_cmd *cmd, char **s, char **varReminder);
+char	*handle_special_variable(t_msh *msh, t_cmd *cmd, char *line,
+		char **varReminder);
+int		handle_special_chars(char *line, int i, char **varReminder, t_cmd *cmd);
+
 
 /*p_pipes_utils.c*/
 char	**extract_pipe_segments(char *s, char **segments);

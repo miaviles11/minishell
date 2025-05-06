@@ -26,10 +26,12 @@ SRCS		=	src/builtins/builtins_utils_export.c \
 				src/parser/create_command_node/process_arguments_2.c \
 				src/parser/create_command_node/process_arguments_3.c \
 				src/parser/create_command_node/process_arguments_utils.c \
-				src/parser/perform_expansion/expansion_utils_1.c \
-				src/parser/perform_expansion/expansion_utils_2.c \
-				src/parser/perform_expansion/expansion_utils_3.c \
-				src/parser/perform_expansion/expansion_utils_4.c \
+				src/parser/perform_expansion/variable_braced.c \
+				src/parser/perform_expansion/variable_detection.c \
+				src/parser/perform_expansion/variable_env.c \
+				src/parser/perform_expansion/variable_expansion.c \
+				src/parser/perform_expansion/variable_processing.c \
+				src/parser/perform_expansion/variable_substitution.c \
 				src/parser/validate_input/p_pipes_utils.c \
 				src/parser/validate_input/parse_pipes.c \
 				src/parser/validate_input/parse_quotes.c \
