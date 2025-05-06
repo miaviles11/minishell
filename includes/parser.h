@@ -76,7 +76,6 @@ char	*handle_special_variable(t_msh *msh, t_cmd *cmd, char *line,
 		char **varReminder);
 int		handle_special_chars(char *line, int i, char **varReminder, t_cmd *cmd);
 
-
 /*p_pipes_utils.c*/
 char	**extract_pipe_segments(char *s, char **segments);
 int		validate_pipe_segment(char *segment);
