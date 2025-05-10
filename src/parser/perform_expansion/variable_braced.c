@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 17:51:47 by miaviles          #+#    #+#             */
-/*   Updated: 2025/05/06 18:24:55 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/05/10 12:01:54 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ char	*expand_braced_substring(t_msh *msh, char *line)
 	char	*res;
 	int		colon;
 	int		end;
+
 	if (!parse_braced(line, &colon, &end))
 		return (line);
 	name = ft_substr(line + 2, 0, colon - 2);
@@ -46,8 +47,8 @@ char	*expand_braced_substring(t_msh *msh, char *line)
 	free(name);
 	if (!value)
 		value = ft_strdup("");
-	res = process_braced_value(value, ft_atoi(line + colon + 1), 
-		ft_strdup(line + end + 1));
+	res = process_braced_value(value, ft_atoi(line + colon + 1),
+			ft_strdup(line + end + 1));
 	free(value);
 	free(line);
 	return (res);
