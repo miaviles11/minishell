@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_quotes.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
+/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/15 13:14:06 by carlsanc          #+#    #+#             */
-/*   Updated: 2025/03/15 13:14:06 by carlsanc         ###   ########.fr       */
+/*   Created: 2025/05/10 11:26:10 by miaviles          #+#    #+#             */
+/*   Updated: 2025/05/10 11:26:10 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	check_quotes_balance(const char *s, t_msh *shell)
 	double_count = 0;
 	while (s[i])
 	{
-		if (s[i] == '"' )
+		if (s[i] == '"')
 			double_count += both_quotes_exist(s, &i, '"');
 		else if (s[i] == '\'')
 			simple_count += both_quotes_exist(s, &i, '\'');
