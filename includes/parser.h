@@ -23,10 +23,12 @@ int		count_arguments_parser(char *s);
 int		check_null_args(char *s);
 char	*change_null_args(char *s, t_cmd *cmd);
 char	**extract_arguments(t_msh *shell, char *segment, t_cmd *command);
-int skip_spaces(const char *s, int i);
-int skip_token(const char *s, int i);
-int get_operator_length(int rtype);
-int skip_initial_redirections(const char *s, int i);
+
+/*process_arguments_3.c*/
+int		skip_spaces(const char *s, int i);
+int		skip_token(const char *s, int i);
+int		get_operator_length(int rtype);
+int		skip_initial_redirections(const char *s, int i);
 
 /*process_arguments_utils.c*/
 char	*quit_null_space(char *s, int index);
@@ -68,19 +70,23 @@ char	*join_special(const char *s1, const char *s2);
 
 /*variable_substitution.c*/
 char	*substitute_variables(t_msh *msh, t_cmd *cmd, char *s,
-		char **varReminder);
+			char **varReminder);
 char	*substitute_variable_value(t_msh *msh, t_cmd *cmd, char *line,
-		char **varReminder);
+			char **varReminder);
 void	handle_special_case(t_cmd *cmd, char **s, char **varReminder);
 char	*handle_special_variable(t_msh *msh, t_cmd *cmd, char *line,
-		char **varReminder);
+			char **varReminder);
 int		handle_special_chars(char *line, int i, char **varReminder, t_cmd *cmd);
+
+/*p_pipes_redir.c*/
+int		process_redirection(const char *s, int i, int *count);
+int		count_redirections(const char *s);
+char	*extract_redirect_token(char *s);
+int		validate_redirection_syntax(char **segments, int index);
 
 /*p_pipes_utils.c*/
 char	**extract_pipe_segments(char *s, char **segments);
 int		validate_pipe_segment(char *segment);
-int		validate_redirection_syntax(char **segments, int index);
-int count_redirections(const char *s);
 
 /*parse_pipes.c*/
 int		count_pipes(const char *inputLine, t_msh *msh);
@@ -91,12 +97,16 @@ int		check_quotes_balance(const char *s, t_msh *shell);
 int		get_next_quote(int i, char *str, char c);
 
 /*parser_functions.c*/
-int		validate_and_split_input(t_msh *shell, char *inputLine, char ***segments);
+void	setup_command_node(t_cmd *node, t_msh *shell, int cmd_idx);
 t_cmd	*create_command_node(t_msh *shell, char *segment);
+void	expand_command_arguments(t_msh *msh, t_cmd **command,
+			char *var_reminder);
 void	perform_expansion(t_msh *msh, t_cmd **command);
 t_cmd	*get_last_command_node(t_cmd **cmd);
 
 /*parser.c*/
+int		validate_and_split_input(t_msh *shell, char *inputLine,
+			char ***segments);
 int		parse_input_line(t_msh *shell, t_cmd **commandList, char *inputLine);
 
 #endif

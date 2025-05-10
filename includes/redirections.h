@@ -1,14 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirections.h                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/10 12:18:01 by miaviles          #+#    #+#             */
+/*   Updated: 2025/05/10 12:18:01 by miaviles         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef REDIRECTIONS_H
 # define REDIRECTIONS_H
 
 # include	<fcntl.h>
+
+/*redirect_heredoc.c*/
+void	read_here_doc_loop(const char *delimiter, int write_fd, int tty_fd);
+void	read_here_doc_to_pipe(const char *delimiter, int write_fd);
+void	setup_heredoc_pipe(int *heredoc_pipe, int *has_heredoc);
 
 int		is_redirect_operator(char c);
 int		get_redirect_type(char *str);
 int		find_first_redirect_index(char **args);
 char	get_operator_for_type(int n);
 int		find_next_redirect_operator_index(int i, char *str);
+
+/*redirect.c*/
 void	process_redirections(t_cmd *cmd);
+
 void	handle_output_redirection(int redirType, t_cmd *command, char *filename);
 void	handle_here_document(t_cmd *command, char *delimiter);
 int	redirect_input_from_file(t_cmd *command, char *fileName, int argIndex);

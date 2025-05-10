@@ -32,6 +32,7 @@ SRCS		=	src/builtins/builtins_utils_export.c \
 				src/parser/perform_expansion/variable_expansion.c \
 				src/parser/perform_expansion/variable_processing.c \
 				src/parser/perform_expansion/variable_substitution.c \
+				src/parser/validate_input/p_pipes_redir.c \
 				src/parser/validate_input/p_pipes_utils.c \
 				src/parser/validate_input/parse_pipes.c \
 				src/parser/validate_input/parse_quotes.c \
@@ -44,6 +45,7 @@ SRCS		=	src/builtins/builtins_utils_export.c \
 				src/minishell.c \
 				utils/utils_1.c \
 				utils/redir_utils.c \
+				src/redirections/redirect_heredoc.c \
 				src/redirections/redirect.c \
 				src/redirections/redirection_utils_1.c \
 				src/redirections/redirection_utils_2.c \
