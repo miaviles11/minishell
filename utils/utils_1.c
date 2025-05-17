@@ -12,26 +12,25 @@
 
 #include "../includes/minishell.h"
 
-int is_line_empty(const char *s)
+int	is_line_empty(const char *s)
 {
-    int i = 0;
-    int whitespace_count = 0;
+	int	i;
+	int	whitespace_count;
 
-    if (!s || s[0] == '\0')
-        return 1;
-
-    while (s[i])
-    {
-        if (s[i] == ' ' || s[i] == '\t' || s[i] == '\n' ||
-            s[i] == '\v' || s[i] == '\f' || s[i] == '\r')
-            whitespace_count++;
-        i++;
-    }
-    
-    if (whitespace_count == i)
-        return 1;
-    
-    return 0;
+	i = 0;
+	whitespace_count = 0;
+	if (!s || s[0] == '\0')
+		return (1);
+	while (s[i])
+	{
+		if (s[i] == ' ' || s[i] == '\t' || s[i] == '\n'
+			|| s[i] == '\v' || s[i] == '\f' || s[i] == '\r')
+			whitespace_count++;
+		i++;
+	}
+	if (whitespace_count == i)
+		return (1);
+	return (0);
 }
 
 char	*str_noquotes(char *str)

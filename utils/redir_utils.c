@@ -19,7 +19,9 @@ int	is_redirect_operator(char c)
 
 int	get_redirect_type(char *s)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	while (s[i])
 	{
 		if (s[i] == '"' || s[i] == '\'')
@@ -47,8 +49,9 @@ int	get_redirect_type(char *s)
 
 int	find_first_redirect_index(char **args)
 {
-	int	i = 0;
+	int	i;
 
+	i = 0;
 	while (args[i])
 	{
 		if (get_redirect_type(args[i]))
