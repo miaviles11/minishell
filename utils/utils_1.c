@@ -60,3 +60,44 @@ char	*str_noquotes(char *str)
 	}
 	return (temp);
 }
+int	count_args(char **args)
+{
+	int	i;
+
+	i = 0;
+	while (args[i])
+		i++;
+	return (i);
+}
+
+void	init_here_doc(int p[2], int *tty_fd)
+{
+	if (pipe(p) == -1)
+		exit_error("Error al crear pipe para here-document", 47);
+	*tty_fd = open("/dev/tty", O_RDONLY);
+	if (*tty_fd < 0)
+		exit_error("Error al abrir /dev/tty para here-document", 52);
+}
+
+void	read_here_doc(int write_fd, int tty_fd, char *delimiter)
+{
+	char	*inputLine;
+
+	while (1)
+	{
+		if (write(STDERR_FILENO, "> ", 2) == -1)
+			exit_error("Error de escritura en prompt", 48);
+		inputLine = get_next_line(tty_fd);
+		if (!inputLine)
+			exit_error("EOF inesperado en here-document", 53);
+		if (!ft_strncmp(inputLine, delimiter, ft_strlen(delimiter))
+			&& inputLine[ft_strlen(delimiter)] == '\n')
+		{
+			free(inputLine);
+			break;
+		}
+		if (write(write_fd, inputLine, ft_strlen(inputLine)) == -1)
+			exit_error("Error al escribir en pipe de here-document", 54);
+		free(inputLine);
+	}
+}

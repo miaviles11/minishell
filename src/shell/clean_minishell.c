@@ -12,16 +12,14 @@
 
 #include "../../includes/minishell.h"
 
-void free_command_node(t_cmd *cmd)
+void	free_command_node(t_cmd *cmd)
 {
-	int i;
-	
+	int	i;
+
 	if (!cmd)
-		return;
-	
+		return ;
 	if (cmd->cmd)
 		free(cmd->cmd);
-	
 	if (cmd->arg)
 	{
 		i = 0;
@@ -36,14 +34,13 @@ void free_command_node(t_cmd *cmd)
 		free(cmd->input_file);
 	if (cmd->output_file)
 		free(cmd->output_file);
-	
 	free(cmd);
 }
 
-void free_command_list(t_cmd *cmd)
+void	free_command_list(t_cmd *cmd)
 {
-	t_cmd *temp;
-	
+	t_cmd	*temp;
+
 	while (cmd)
 	{
 		temp = cmd->next;
@@ -52,13 +49,12 @@ void free_command_list(t_cmd *cmd)
 	}
 }
 
-void cleanup_shell(t_msh *shell)
+void	cleanup_shell(t_msh *shell)
 {
-	int i;
-	
+	int	i;
+
 	if (!shell)
-		return;
-	
+		return ;
 	free_command_list(shell->cmd);
 	if (shell->env)
 	{
@@ -72,7 +68,6 @@ void cleanup_shell(t_msh *shell)
 	}
 	if (shell->path)
 		free(shell->path);
-	
 	free(shell);
 	rl_clear_history();
 }

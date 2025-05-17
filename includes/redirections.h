@@ -38,5 +38,8 @@ char **keep_argument(char **arg, int j, char c);
 int	count_arguments_redirections(char **args);
 int	get_next_diff_op(int i, char *str);
 char *extract_redirect_token(char *s);
+int	count_args(char **args);
+void	read_here_doc(int write_fd, int tty_fd, char *delimiter);
+void	init_here_doc(int p[2], int *tty_fd);
 
 #endif
