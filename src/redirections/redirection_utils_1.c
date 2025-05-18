@@ -66,10 +66,10 @@ int	redirect_input_from_file(t_cmd *command, char *fileName, int argIndex)
 		put_error("bash", fileName, "No such file or directory");
 		if (pipe(pipedescriptors) == -1)
 			exit_error("Error al crear pipe para redirección de entrada", 47);
-		if (dup2(pipeDescriptors[1], STDOUT_FILENO) == -1)
+		if (dup2(pipedescriptors[1], STDOUT_FILENO) == -1)
 			exit_error("Error al redirigir salida, fallo de entrada", 50);
-		if (close(pipeDescriptors[0]) == -1
-			|| close(pipeDescriptors[1]) == -1)
+		if (close(pipedescriptors[0]) == -1
+			|| close(pipedescriptors[1]) == -1)
 			exit_error("Error al cerrar pipe para redirección", 51);
 		while (command->arg[argIndex])
 			command->arg = remove_argument_at_index(command->arg, argIndex);

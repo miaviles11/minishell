@@ -98,8 +98,7 @@ char	*handle_special_variable(t_msh *msh, t_cmd *cmd, char *line,
 	nameindex = i + 1;
 	namelen = ft_strlen(varname);
 	i = nameindex + namelen - 1;
-	if (handle_special_chars(line, i, varReminder, cmd))
-		;
+	(handle_special_chars(line, i, varReminder, cmd));
 	return (compare_variable_name(msh, line, varname));
 }
 
