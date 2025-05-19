@@ -49,6 +49,7 @@ SRCS		=	src/builtins/builtins_utils_export.c \
 				src/redirections/redirect.c \
 				src/redirections/redirection_utils_1.c \
 				src/redirections/redirection_utils_2.c \
+				src/redirections/redirection_utils_3.c \
 
 OBJS		= $(SRCS:.c=.o)
 

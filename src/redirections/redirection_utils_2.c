@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redirection_utils_2.c                                :+:      :+:    :+:   */
+/*   redirection_utils_2.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,90 +12,90 @@
 
 #include "../../includes/minishell.h"
 
-
-char **insert_argument_at_index(char **argList, char *newArg, int idx)
+static char	**alloc_and_clamp(char **argList, int *idx, int *count)
 {
-    int count = count_arguments_redirections(argList), i = 0, j;
-    char **newList;
-    if (idx < 0)
-        idx = 0;
-    if (idx > count)
-        idx = count;
-    newList = malloc(sizeof(char *) * (count + 2));
-    if (!newList)
-        exit_error("Error de asignación en insert_argument_at_index", 1);
-    while (i < idx)
-    {
-        newList[i] = argList[i];
-        i++;
-    }
-    newList[idx] = newArg;
-    j = idx;
-    while (i < count)
-    {
-        newList[++j] = argList[i++];
-    }
-    newList[count + 1] = NULL;
-    free(argList);
-    return newList;
-}
-int	count_arguments_redirections(char **args)
-{
-	int	count;
+	char	**newlist;
 
-	count = 0;
-	while (args && args[count])
-		count++;
-	return (count);
-}
-static char **get_filename(char **args, int index, char opChar, int offset)
-{
-    int i;
-    int k;
-
-    i = 0;
-    k = offset;
-    if (args[index][i] == '2' && args[index][i + 1] == '>')
-        i++;
-    while (args[index][i] == opChar)
-        i++;
-    if (!args[index][i])
-        return (args);
-    if (i == 0)
-        return (keep_argument(args, index, opChar));
-    args = insert_argument_at_index(args, ft_substr(args[index], 0, i),
-                                    index + k);
-    k++;
-    args = insert_argument_at_index(args, ft_substr(args[index], i,
-                                    get_next_diff_op(i, args[index]) - i),
-                                    index + k);
-    k++;
-    i = get_next_diff_op(i, args[index]);
-    if (args[index][i])
-    {
-        args = insert_argument_at_index(args, ft_substr(args[index], i,
-                                    ft_strlen(args[index]) - i),
-                                    index + k);
-        k++;
-    }
-    args = remove_argument_at_index(args, index);
-    return (args);
+	*count = count_arguments_redirections(argList);
+	if (*idx < 0)
+		*idx = 0;
+	if (*idx > *count)
+		*idx = *count;
+	newlist = malloc(sizeof(char *) * (*count + 2));
+	if (!newlist)
+		exit_error("Error de asignación en insert_argument_at_index", 1);
+	return (newlist);
 }
 
-char **keep_argument(char **arg, int j, char c)
+char	**insert_argument_at_index(char **argList, char *newArg, int idx)
 {
-    char *temp;
+	int		count;
+	char	**newlist;
+	int		i;
+	int		j;
 
-    arg = insert_argument_at_index(arg, 
-            ft_substr(arg[j], 0, get_next_diff_op(0, arg[j])), j + 1);
-    temp = ft_strdup(ft_strchr(arg[j], c));
-    free(arg[j]);
-    arg[j] = temp;
-    return (get_filename(arg, j, c, 2));
+	newlist = alloc_and_clamp(argList, &idx, &count);
+	i = 0;
+	while (i < idx)
+	{
+		newlist[i] = argList[i];
+		i++;
+	}
+	newlist[idx] = newArg;
+	j = idx + 1;
+	while (i < count)
+	{
+		newlist[j++] = argList[i++];
+	}
+	newlist[count + 1] = NULL;
+	free(argList);
+	return (newlist);
 }
-int	get_next_diff_op(int i, char *str)
+
+static int	get_skip(const char *str, char opChar)
 {
-	while (str[i] && !is_redirect_operator(str[i]))
+	int	i;
+
+	i = 0;
+	if (str[i] == '2' && str[i + 1] == '>')
+		i++;
+	while (str[i] == opChar)
 		i++;
 	return (i);
+}
+
+static char	**insert_splits(char **args, int index, int i, int offset)
+{
+	int	k;
+	int	next;
+
+	k = offset;
+	args = insert_argument_at_index(args,
+			ft_substr(args[index], 0, i),
+			index + k);
+	k++;
+	next = get_next_diff_op(i, args[index]);
+	args = insert_argument_at_index(args,
+			ft_substr(args[index], i, next - i),
+			index + k);
+	k++;
+	if (args[index][next])
+		args = insert_argument_at_index(args,
+				ft_substr(args[index], next,
+					ft_strlen(args[index]) - next),
+				index + k);
+	args = remove_argument_at_index(args, index);
+	return (args);
+}
+
+char	**get_filename(char **args, int index, char opChar, int offset)
+{
+	int	i;
+
+	i = get_skip(args[index], opChar);
+	if (!args[index][i])
+		return (args);
+	if (i == 0)
+		return (keep_argument(args, index, opChar));
+	return (insert_splits(args, index, i, offset));
 }

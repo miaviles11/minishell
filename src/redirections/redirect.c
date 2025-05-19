@@ -12,18 +12,21 @@
 
 #include "../../includes/minishell.h"
 
-static char	**process_complex_arg(char **args, int index, int i,
-		int *offset)
+static char	**process_complex_arg(char **args, int index, int i, int *offset)
 {
-	args = insert_argument_at_index(args, ft_substr(args[index], 0, i), index
-			+ (*offset)++);
-	args = insert_argument_at_index(args, ft_substr(args[index], i,
-				find_next_redirect_operator_index(i, args[index]) - i), index
-			+ (*offset)++);
+	args = insert_argument_at_index(args,
+			ft_substr(args[index], 0, i),
+			index + (*offset)++);
+	args = insert_argument_at_index(args,
+			ft_substr(args[index], i,
+				find_next_redirect_operator_index(i, args[index]) - i),
+			index + (*offset)++);
 	i = find_next_redirect_operator_index(i, args[index]);
 	if (args[index][i])
-		args = insert_argument_at_index(args, ft_substr(args[index], i,
-					ft_strlen(args[index]) - i), index + (*offset)++);
+		args = insert_argument_at_index(args,
+				ft_substr(args[index], i,
+					ft_strlen(args[index]) - i),
+				index + (*offset)++);
 	args = remove_argument_at_index(args, index);
 	return (args);
 }
@@ -59,7 +62,8 @@ static void	handle_redirection_by_type(t_cmd *cmd, int rtype, char *file,
 		handle_output_redirection(rtype, cmd, file);
 }
 
-static void	process_single_redirection(t_cmd *cmd, int *i, int heredoc_pipe[2])
+void	process_single_redirection(t_cmd *cmd, int *i,
+		int heredoc_pipe[2])
 {
 	int		idx;
 	int		rtype;
@@ -68,12 +72,15 @@ static void	process_single_redirection(t_cmd *cmd, int *i, int heredoc_pipe[2])
 	idx = find_first_redirect_index(cmd->arg + *i);
 	*i += idx;
 	cmd->arg = extract_filename_from_arg(cmd->arg, *i,
-			get_operator_for_type(get_redirect_type(cmd->arg[*i])), 1);
+			get_operator_for_type(get_redirect_type(cmd->arg[*i])),
+			1);
 	if (!get_redirect_type(cmd->arg[*i]))
 		(*i)++;
 	if (get_redirect_type(cmd->arg[*i + 1]))
 		cmd->arg = extract_filename_from_arg(cmd->arg, *i + 1,
-				get_operator_for_type(get_redirect_type(cmd->arg[*i + 1])), 1);
+				get_operator_for_type(
+					get_redirect_type(cmd->arg[*i + 1])),
+				1);
 	file = str_noquotes(cmd->arg[*i + 1]);
 	rtype = get_redirect_type(cmd->arg[*i]);
 	handle_redirection_by_type(cmd, rtype, file, heredoc_pipe);
@@ -83,24 +90,12 @@ static void	process_single_redirection(t_cmd *cmd, int *i, int heredoc_pipe[2])
 
 void	process_redirections(t_cmd *cmd)
 {
-	int	i;
-	int	idx;
 	int	heredoc_pipe[2];
 	int	has_heredoc;
 
-	i = 0;
 	has_heredoc = 0;
-	idx = find_first_redirect_index(cmd->arg + i);
-	while (idx != -1)
-	{
-		if (get_redirect_type(cmd->arg[i + idx]) == 4)
-			setup_heredoc_pipe(heredoc_pipe, &has_heredoc);
-		i += idx + 2;
-	}
-	i = 0;
-	idx = find_first_redirect_index(cmd->arg + i);
-	while (idx != -1)
-		process_single_redirection(cmd, &i, heredoc_pipe);
+	setup_heredocs_pre_scan(cmd, heredoc_pipe, &has_heredoc);
+	apply_redirections(cmd, heredoc_pipe);
 	if (has_heredoc)
 	{
 		close(heredoc_pipe[1]);
