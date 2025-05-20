@@ -12,8 +12,6 @@
 
 #include "../includes/minishell.h"
 
-volatile sig_atomic_t	g_interactive = 1;
-
 static void handle_extra_arguments(char **argv)
 {
 	ft_printf("Error: minishell no acepta argumentos adicionales\n");

@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 18:48:54 by miaviles          #+#    #+#             */
-/*   Updated: 2025/05/20 19:42:33 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/05/20 19:43:25 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ void	run_shell_loop(t_msh *shell)
 		write(STDOUT_FILENO, "exit\n", 5);
 }
 
-char *get_input_line(int interactive)
+char	*get_input_line(int interactive)
 {
-	char *raw_line;
+	char	*raw_line;
 
 	if (interactive)
 	{
@@ -57,12 +57,12 @@ char *get_input_line(int interactive)
 		g_interactive = 0;
 		raw_line = get_next_line(STDIN_FILENO);
 	}
-	return raw_line;
+	return (raw_line);
 }
 
-int process_raw_line(char **raw_line)
+int	process_raw_line(char **raw_line)
 {
-	size_t len;
+	size_t	len;
 
 	len = ft_strlen(*raw_line);
 	if (len > 0 && (*raw_line)[len - 1] == '\n')
@@ -76,7 +76,7 @@ int process_raw_line(char **raw_line)
 	return 0;
 }
 
-void process_command_line(t_msh *shell, char *line, t_cmd **old_cmd)
+void	process_command_line(t_msh *shell, char *line, t_cmd **old_cmd)
 {
 	*old_cmd = shell->cmd;
 	if (parse_input_line(shell, &shell->cmd, line))
