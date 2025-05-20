@@ -21,8 +21,8 @@ int	get_redirect_type(char *s)
 {
 	int	i;
 
-	i = 0;
-	while (s[i])
+	i = -1;
+	while (s[++i])
 	{
 		if (s[i] == '"' || s[i] == '\'')
 			i = get_next_quote(i + 1, s, s[i]);
@@ -42,7 +42,6 @@ int	get_redirect_type(char *s)
 			return (3);
 		if (is_redirect_operator(s[i]))
 			return (-1);
-		i++;
 	}
 	return (0);
 }

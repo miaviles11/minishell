@@ -20,11 +20,19 @@ void	read_here_doc_loop(const char *delimiter, int write_fd, int tty_fd);
 void	read_here_doc_to_pipe(const char *delimiter, int write_fd);
 void	setup_heredoc_pipe(int *heredoc_pipe, int *has_heredoc);
 
+/* redir_utils.c */
 int		is_redirect_operator(char c);
 int		get_redirect_type(char *str);
 int		find_first_redirect_index(char **args);
 char	get_operator_for_type(int n);
 int		find_next_redirect_operator_index(int i, char *str);
+
+/* redir_utils2.c */
+char	*preprocess_redirections(const char *line);
+int		handle_quotes(size_t *i, size_t *j, char *out, const char *line, char *quote);
+int		handle_double_redirections(size_t *i, size_t *j, char *out, const char *line);
+int		handle_stderr_redirection(size_t *i, size_t *j, char *out, const char *line);
+int		handle_single_redirection(size_t *i, size_t *j, char *out, const char *line);
 
 /*redirect.c*/
 void	process_redirections(t_cmd *cmd);

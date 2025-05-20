@@ -12,19 +12,19 @@
 
 #include "../../includes/minishell.h"
 
-int	validate_and_split_input(t_msh *shell, char *inputLine, char ***segments)
+int	validate_and_split_input(t_msh *shell, char *inputline, char ***segments)
 {
-	shell->quote = check_quotes_balance(inputLine, shell);
+	shell->quote = check_quotes_balance(inputline, shell);
 	if (shell->quote == 0)
 	{
 		return (1);
 	}
-	shell->pipe = count_pipes(inputLine, shell);
+	shell->pipe = count_pipes(inputline, shell);
 	if (shell->pipe == -1)
 	{
 		return (1);
 	}
-	*segments = split_pipes(inputLine, shell);
+	*segments = split_pipes(inputline, shell);
 	if (!(*segments))
 	{
 		return (1);
@@ -32,14 +32,14 @@ int	validate_and_split_input(t_msh *shell, char *inputLine, char ***segments)
 	return (0);
 }
 
-int	parse_input_line(t_msh *shell, t_cmd **commandList, char *inputLine)
+int	parse_input_line(t_msh *shell, t_cmd **commandList, char *inputline)
 {
 	int		i;
 	t_cmd	*newcommand;
 	char	**splitsegments;
 
 	shell->total_chars = 0;
-	if (validate_and_split_input(shell, inputLine, &splitsegments))
+	if (validate_and_split_input(shell, inputline, &splitsegments))
 		return (0);
 	*commandList = create_command_node(shell, splitsegments[0]);
 	i = 1;

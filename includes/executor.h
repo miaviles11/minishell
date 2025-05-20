@@ -15,6 +15,10 @@
 
 # include <sys/wait.h>
 
+/* exec_utils.c */
+int		is_exit_command(t_msh *shell);
+int		handle_exit_command(t_msh *shell, char **args, int code);
+
 /*child_process.c - Gestiona la configuración y ejecución de procesos hijo*/
 char	*find_executable(char *cmd);
 char	**prepare_argv(t_cmd *cmd);

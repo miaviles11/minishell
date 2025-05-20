@@ -25,55 +25,55 @@ static int	skip_quoted_segment(const char *s, int i, char quote)
 	return (i);
 }
 
-static int	count_valid_pipes(const char *inputLine, t_msh *msh)
+static int	count_valid_pipes(const char *inputline, t_msh *msh)
 {
 	int	i;
 	int	pipecount;
 
 	i = 0;
 	pipecount = 0;
-	while (inputLine[i])
+	while (inputline[i])
 	{
-		if (inputLine[i] == '"' || inputLine[i] == '\'')
+		if (inputline[i] == '"' || inputline[i] == '\'')
 		{
-			i = skip_quoted_segment(inputLine, i, inputLine[i]);
+			i = skip_quoted_segment(inputline, i, inputline[i]);
 			continue ;
 		}
-		if (inputLine[i] == '|' && (inputLine[i + 1] == '|'
-				|| inputLine[i + 1] == '\0'))
+		if (inputline[i] == '|' && (inputline[i + 1] == '|'
+				|| inputline[i + 1] == '\0'))
 		{
 			put_error("bash", NULL,
 				"syntax error near unexpected token `|'");
 			msh->error_value = 258;
 			return (-1);
 		}
-		else if (inputLine[i] == '|')
+		else if (inputline[i] == '|')
 			pipecount++;
 		i++;
 	}
 	return (pipecount);
 }
 
-int	count_pipes(const char *inputLine, t_msh *msh)
+int	count_pipes(const char *inputline, t_msh *msh)
 {
-	if (inputLine[0] == '|')
+	if (inputline[0] == '|')
 	{
 		put_error("bash", NULL, "syntax error near unexpected token `|'");
 		msh->error_value = 258;
 		return (-1);
 	}
-	return (count_valid_pipes(inputLine, msh));
+	return (count_valid_pipes(inputline, msh));
 }
 
-char	**split_pipes(char *inputLine, t_msh *msh)
+char	**split_pipes(char *inputline, t_msh *msh)
 {
 	char	**segments;
 	int		i;
 
-	segments = ft_calloc(count_pipes(inputLine, msh) + 2, sizeof(char *));
+	segments = ft_calloc(count_pipes(inputline, msh) + 2, sizeof(char *));
 	if (!segments)
 		exit_error("Error malloc", 54);
-	segments = extract_pipe_segments(inputLine, segments);
+	segments = extract_pipe_segments(inputline, segments);
 	i = 0;
 	while (segments[i])
 	{

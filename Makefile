@@ -46,7 +46,10 @@ SRCS		=	src/builtins/builtins_utils_export.c \
 				src/shell/init_shell.c \
 				src/shell/shell_level.c \
 				src/minishell.c \
+				src/shell_loop.c \
 				utils/utils_1.c \
+				utils/redir_utils2.c \
+				utils/exec_utils.c \
 				utils/redir_utils.c \
 				src/redirections/redirect_heredoc.c \
 				src/redirections/redirect.c \

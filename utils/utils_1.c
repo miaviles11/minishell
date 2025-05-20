@@ -60,6 +60,7 @@ char	*str_noquotes(char *str)
 	}
 	return (temp);
 }
+
 int	count_args(char **args)
 {
 	int	i;
@@ -81,23 +82,23 @@ void	init_here_doc(int p[2], int *tty_fd)
 
 void	read_here_doc(int write_fd, int tty_fd, char *delimiter)
 {
-	char	*inputLine;
+	char	*inputline;
 
 	while (1)
 	{
 		if (write(STDERR_FILENO, "> ", 2) == -1)
 			exit_error("Error de escritura en prompt", 48);
-		inputLine = get_next_line(tty_fd);
-		if (!inputLine)
+		inputline = get_next_line(tty_fd);
+		if (!inputline)
 			exit_error("EOF inesperado en here-document", 53);
-		if (!ft_strncmp(inputLine, delimiter, ft_strlen(delimiter))
-			&& inputLine[ft_strlen(delimiter)] == '\n')
+		if (!ft_strncmp(inputline, delimiter, ft_strlen(delimiter))
+			&& inputline[ft_strlen(delimiter)] == '\n')
 		{
-			free(inputLine);
-			break;
+			free(inputline);
+			break ;
 		}
-		if (write(write_fd, inputLine, ft_strlen(inputLine)) == -1)
+		if (write(write_fd, inputline, ft_strlen(inputline)) == -1)
 			exit_error("Error al escribir en pipe de here-document", 54);
-		free(inputLine);
+		free(inputline);
 	}
 }

@@ -89,8 +89,8 @@ char	**extract_pipe_segments(char *s, char **segments);
 int		validate_pipe_segment(char *segment);
 
 /*parse_pipes.c*/
-int		count_pipes(const char *inputLine, t_msh *msh);
-char	**split_pipes(char *inputLine, t_msh *msh);
+int		count_pipes(const char *inputline, t_msh *msh);
+char	**split_pipes(char *inputline, t_msh *msh);
 
 /*parse_quotes.c*/
 int		check_quotes_balance(const char *s, t_msh *shell);
@@ -105,8 +105,8 @@ void	perform_expansion(t_msh *msh, t_cmd **command);
 t_cmd	*get_last_command_node(t_cmd **cmd);
 
 /*parser.c*/
-int		validate_and_split_input(t_msh *shell, char *inputLine,
+int		validate_and_split_input(t_msh *shell, char *inputline,
 			char ***segments);
-int		parse_input_line(t_msh *shell, t_cmd **commandList, char *inputLine);
+int		parse_input_line(t_msh *shell, t_cmd **commandList, char *inputline);
 
 #endif

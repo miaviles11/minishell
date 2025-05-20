@@ -87,15 +87,11 @@ typedef struct s_msh
 
 # include "builtins.h"
 
+/* clean_minishell.c */
 void	free_command_node(t_cmd *cmd);
 void	free_command_list(t_cmd *cmd);
 void	cleanup_shell(t_msh *shell);
 char	*preprocess_redirections(const char *line);
-
-int		is_line_empty(const char *line);
-char	*str_noquotes(char *str);
-void	run_shell_loop(t_msh *shell);
-int		main(int argc, char **argv, char **envp);
 
 /* init_shell_utils.c */
 int		init_shell_struct(t_msh *shell);
@@ -119,8 +115,25 @@ int		update_existing_env(t_msh *shell, int i, const char *var_name,
 int		add_new_env(t_msh *shell, const char *var_name, const char *value);
 void	create_env_entry(char *entry, const char *var_name, const char *value);
 
-
+/* ft_error.c */
 void	put_error(char *bash, char *file, char *error);
 void	exit_error(char *str, int n);
+
+/* utils1.c */
+int	is_line_empty(const char *s);
+char	*str_noquotes(char *str);
+int	count_args(char **args);
+void	init_here_doc(int p[2], int *tty_fd);
+void	read_here_doc(int write_fd, int tty_fd, char *delimiter);
+
+/* minishell.c */
+int		main(int argc, char **argv, char **envp);
+
+/* shell_loop.c */
+void	run_shell_loop(t_msh *shell);
+char	*get_input_line(int interactive);
+int		process_raw_line(char **raw_line);
+void	process_command_line(t_msh *shell, char *line, t_cmd **old_cmd);
+void	execute_command(t_msh *shell);
 
 #endif
