@@ -13,7 +13,7 @@
 #ifndef REDIRECTIONS_H
 # define REDIRECTIONS_H
 
-# include	<fcntl.h>
+# include <fcntl.h>
 
 /*redirect_heredoc.c*/
 void	read_here_doc_loop(const char *delimiter, int write_fd, int tty_fd);
@@ -36,23 +36,22 @@ int		handle_single_redirection(size_t *i, size_t *j, char *out, const char *line
 
 /*redirect.c*/
 void	process_redirections(t_cmd *cmd);
-
 void	handle_output_redirection(int redirType, t_cmd *command, char *filename);
 void	handle_here_document(t_cmd *command, char *delimiter);
-int	redirect_input_from_file(t_cmd *command, char *fileName, int argIndex);
-char    **remove_argument_at_index(char **argumentList, int removalIndex);
+int		redirect_input_from_file(t_cmd *command, char *fileName, int argIndex);
+char	**remove_argument_at_index(char **argumentList, int removalIndex);
 char	**insert_argument_at_index(char **argList, char *newArg, int idx);
-char **keep_argument(char **arg, int j, char c);
-int	count_arguments_redirections(char **args);
-int	get_next_diff_op(int i, char *str);
-char *extract_redirect_token(char *s);
-int	count_args(char **args);
+char	**keep_argument(char **arg, int j, char c);
+int		count_arguments_redirections(char **args);
+int		get_next_diff_op(int i, char *str);
+char	*extract_redirect_token(char *s);
+int		count_args(char **args);
 void	read_here_doc(int write_fd, int tty_fd, char *delimiter);
 void	init_here_doc(int p[2], int *tty_fd);
-char    **get_filename(char **args, int index, char opChar, int offset);
+char	**get_filename(char **args, int index, char opChar, int offset);
 void	apply_redirections(t_cmd *cmd, int heredoc_pipe[2]);
 void	setup_heredocs_pre_scan(t_cmd *cmd, int heredoc_pipe[2], int *has_hd);
 void	process_single_redirection(t_cmd *cmd, int *i,
-		int heredoc_pipe[2]);
+			int heredoc_pipe[2]);
 
 #endif

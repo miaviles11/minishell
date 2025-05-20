@@ -18,12 +18,8 @@
 # include <unistd.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-#define CWD_SIZE 1024
-/*
-** t_pipe: Estructura para el manejo de pipes.
-** Se utiliza para almacenar dos conjuntos de descriptores (para alternar entre ellos),
-** además de las copias de los descriptores estándar (in, out) y flags de estado.
-*/
+# define CWD_SIZE 1024
+
 typedef struct s_pipe
 {
 	int	fd[2][2];
@@ -38,32 +34,20 @@ typedef struct s_flags
 	int	dollar_special;
 }	t_flags;
 
-/*
-** t_cmd: Nodo de comando.
-** Cada nodo contiene el nombre del comando, su arreglo de argumentos y
-** el número de argumentos. La información global (entorno, flags, pipes)
-** se encuentra en la estructura principal y se pasa como argumento a las funciones.
-*/
-
 typedef struct s_cmd
 {
-	char		*cmd;
-	char		**arg;
-	int			num_arg;
-	char		*input_file;
-	char		*output_file;
-	int			background;
-	t_flags		*flags; // Puntero a las banderas globales
-	char		**env;  // Puntero al entorno global
-	int			error_value;
-	struct		s_cmd *next;
-}	t_cmd;
+	char			*cmd;
+	char			**arg;
+	int				num_arg;
+	char			*input_file;
+	char			*output_file;
+	int				background;
+	t_flags			*flags;
+	char			**env;
+	int				error_value;
+	struct s_cmd	*next;
+}		t_cmd;
 
-/*
-** t_msh: Estructura principal del shell.
-** Se integran aquí tanto el entorno como las banderas globales, ya que estos
-** datos se usan en toda la ejecución y son comunes a todos los comandos.
-*/
 typedef struct s_msh
 {
 	int		bash_lvl;
@@ -73,10 +57,9 @@ typedef struct s_msh
 	char	*path;
 	int		num_env;
 	int		error_value;
-
-	int	quote;
-	int	pipe;
-	int	redic;
+	int		quote;
+	int		pipe;
+	int		redic;
 }				t_msh;
 
 # include "../libft/libft.h"
@@ -110,8 +93,8 @@ void	update_shlvl_env(t_msh *shell, int shlvl);
 /* env_setter.c */
 int		set_env_value(t_msh *shell, const char *var_name, const char *value);
 int		check_env_var(char *env_entry, const char *var_name, int len);
-int		update_existing_env(t_msh *shell, int i, const char *var_name, 
-						const char *value);
+int		update_existing_env(t_msh *shell, int i, const char *var_name,
+			const char *value);
 int		add_new_env(t_msh *shell, const char *var_name, const char *value);
 void	create_env_entry(char *entry, const char *var_name, const char *value);
 
@@ -120,9 +103,9 @@ void	put_error(char *bash, char *file, char *error);
 void	exit_error(char *str, int n);
 
 /* utils1.c */
-int	is_line_empty(const char *s);
+int		is_line_empty(const char *s);
 char	*str_noquotes(char *str);
-int	count_args(char **args);
+int		count_args(char **args);
 void	init_here_doc(int p[2], int *tty_fd);
 void	read_here_doc(int write_fd, int tty_fd, char *delimiter);
 

@@ -6,7 +6,7 @@
 /*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 18:48:54 by miaviles          #+#    #+#             */
-/*   Updated: 2025/05/20 19:43:25 by miaviles         ###   ########.fr       */
+/*   Updated: 2025/05/20 19:48:20 by miaviles         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,11 @@ void	run_shell_loop(t_msh *shell)
 	{
 		raw_line = get_input_line(interactive);
 		if (!raw_line)
-			break;
-
+			break ;
 		if (process_raw_line(&raw_line))
-			continue;
-
+			continue ;
 		if (interactive)
 			add_history(raw_line);
-
 		line = preprocess_redirections(raw_line);
 		free(raw_line);
 		process_command_line(shell, line, &old_cmd);
@@ -67,13 +64,12 @@ int	process_raw_line(char **raw_line)
 	len = ft_strlen(*raw_line);
 	if (len > 0 && (*raw_line)[len - 1] == '\n')
 		(*raw_line)[len - 1] = '\0';
-
 	if (is_line_empty(*raw_line))
 	{
 		free(*raw_line);
-		return 1;
+		return (1);
 	}
-	return 0;
+	return (0);
 }
 
 void	process_command_line(t_msh *shell, char *line, t_cmd **old_cmd)
@@ -83,7 +79,6 @@ void	process_command_line(t_msh *shell, char *line, t_cmd **old_cmd)
 	{
 		execute_command(shell);
 	}
-
 	if (*old_cmd != shell->cmd)
 		free_command_list(*old_cmd);
 }
