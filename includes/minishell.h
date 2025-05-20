@@ -33,10 +33,9 @@ typedef struct s_pipe
 	int	out_error;
 }				t_pipe;
 
-
 typedef struct s_flags
 {
-	int	dollar_special; // Indicador para casos especiales con $
+	int	dollar_special;
 }	t_flags;
 
 /*
@@ -48,16 +47,16 @@ typedef struct s_flags
 
 typedef struct s_cmd
 {
-    char 		*cmd;
-    char 		**arg;
-    int 		num_arg;
-    char 		*input_file;
-    char 		*output_file;
-    int 		background;
-    t_flags		*flags; // Puntero a las banderas globales
-    char		**env;  // Puntero al entorno global
-    int			error_value; // Valor del último error asociado al comando
-    struct 		s_cmd *next;
+	char		*cmd;
+	char		**arg;
+	int			num_arg;
+	char		*input_file;
+	char		*output_file;
+	int			background;
+	t_flags		*flags; // Puntero a las banderas globales
+	char		**env;  // Puntero al entorno global
+	int			error_value;
+	struct		s_cmd *next;
 }	t_cmd;
 
 /*
@@ -70,14 +69,14 @@ typedef struct s_msh
 	int		bash_lvl;
 	int		total_chars;
 	t_cmd	*cmd;
-	char	**env;      // Array de variables de entorno (cada cadena "VAR=VAL")
-	char	*path;      // Contenido de la variable PATH, extraído del env
-	int		num_env;    // Número de variables en env
-	int		error_value; // Valor del último error
+	char	**env;
+	char	*path;
+	int		num_env;
+	int		error_value;
 
-	int	quote;          // Indica si hay error en el balance de comillas
-	int	pipe;           // Número de pipes detectados en la línea
-	int	redic;          // Indicador de redirecciones
+	int	quote;
+	int	pipe;
+	int	redic;
 }				t_msh;
 
 # include "../libft/libft.h"
@@ -91,21 +90,37 @@ typedef struct s_msh
 void	free_command_node(t_cmd *cmd);
 void	free_command_list(t_cmd *cmd);
 void	cleanup_shell(t_msh *shell);
-char *preprocess_redirections(const char *line);
+char	*preprocess_redirections(const char *line);
 
 int		is_line_empty(const char *line);
 char	*str_noquotes(char *str);
-char	*str_noquotes_expand(char *str, t_msh *msh);
 void	run_shell_loop(t_msh *shell);
 int		main(int argc, char **argv, char **envp);
 
-t_msh 	*initialize_shell(char **envp);
-char 	*get_env_value(t_msh *shell, const char *var_name);
-void 	update_shell_level(t_msh *shell);
-int 	set_env_value(t_msh *shell, const char *var_name, const char *value);
+/* init_shell_utils.c */
+int		init_shell_struct(t_msh *shell);
+int		init_shell_env(t_msh *shell, char **envp);
+int		copy_env_values(t_msh *shell, char **envp);
+void	free_env_values(t_msh *shell, int index);
+t_msh	*initialize_shell(char **envp);
+
+/* env_utils.c */
+char	*get_env_value(t_msh *shell, const char *var_name);
+
+/* shell_level.c */
+void	update_shell_level(t_msh *shell);
+void	update_shlvl_env(t_msh *shell, int shlvl);
+
+/* env_setter.c */
+int		set_env_value(t_msh *shell, const char *var_name, const char *value);
+int		check_env_var(char *env_entry, const char *var_name, int len);
+int		update_existing_env(t_msh *shell, int i, const char *var_name, 
+						const char *value);
+int		add_new_env(t_msh *shell, const char *var_name, const char *value);
+void	create_env_entry(char *entry, const char *var_name, const char *value);
+
 
 void	put_error(char *bash, char *file, char *error);
 void	exit_error(char *str, int n);
-//int	main(int argc, char **argv, char **envp);
 
 #endif

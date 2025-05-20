@@ -41,7 +41,10 @@ SRCS		=	src/builtins/builtins_utils_export.c \
 				src/signals/signals.c \
 				src/shell/clean_minishell.c \
 				src/shell/ft_error.c \
-				src/shell/initialize_minishell.c \
+				src/shell/env_setter.c \
+				src/shell/env_utils.c \
+				src/shell/init_shell.c \
+				src/shell/shell_level.c \
 				src/minishell.c \
 				utils/utils_1.c \
 				utils/redir_utils.c \
