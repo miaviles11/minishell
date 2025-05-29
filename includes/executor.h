@@ -17,6 +17,7 @@
 
 typedef struct	s_cmd	t_cmd;
 typedef struct	s_msh	t_msh;
+
 /* exec_utils.c */
 int		is_exit_command(t_msh *shell);
 int		handle_exit_command(t_msh *shell, char **args, int code);
