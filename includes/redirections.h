@@ -15,6 +15,9 @@
 
 # include <fcntl.h>
 
+typedef struct	s_cmd	t_cmd;
+typedef struct	s_msh	t_msh;
+
 typedef struct s_idx
 {
 	size_t	*i;

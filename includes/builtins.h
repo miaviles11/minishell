@@ -15,6 +15,8 @@
 
 # include "minishell.h"
 
+typedef struct	s_cmd	t_cmd;
+typedef struct	s_msh	t_msh;
 /*builtins_utils_export.c*/
 char	**ft_duplicate_env(char **env, int *len);
 char	**ft_sort_env_array(char **sorted, int len);
