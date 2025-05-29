@@ -58,7 +58,7 @@ void	handle_command_execution(t_msh *msh, t_cmd *cmd, char *executable)
 
 void	execute_single_command(t_msh *msh, t_cmd *cmd)
 {
-	char	*executable;
+	char	*exe;
 
 	if (!cmd->cmd || cmd->cmd[0] == '\0')
 	{
@@ -67,14 +67,14 @@ void	execute_single_command(t_msh *msh, t_cmd *cmd)
 		return ;
 	}
 	perform_expansion(msh, &cmd);
-	executable = find_executable(cmd->cmd);
-	if (!executable)
+	exe = find_executable(cmd->cmd);
+	if (!exe)
 	{
 		ft_printf("Command not found: %s\n", cmd->cmd);
 		msh->error_value = 127;
 		return ;
 	}
-	handle_command_execution(msh, cmd, executable);
+	handle_command_execution(msh, cmd, exe);
 }
 
 void	execute_pipeline(t_msh *msh)
