@@ -12,6 +12,12 @@
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
+
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 # define CWD_SIZE 1024
 
 typedef struct s_pipe
@@ -54,13 +60,7 @@ typedef struct s_msh
 	int		quote;
 	int		pipe;
 	int		redic;
-}				;
-
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <readline/readline.h>
-# include <readline/history.h>
+}				t_msh;
 
 # include "../libft/libft.h"
 # include "parser.h"
