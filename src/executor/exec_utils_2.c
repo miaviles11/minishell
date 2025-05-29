@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-static void	redir_only_child(t_cmd *cmd)
+void	redir_only_child(t_cmd *cmd)
 {
 	pid_t	pid;
 	int		status;
