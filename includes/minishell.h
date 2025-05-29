@@ -13,11 +13,22 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+/* ────── includes del sistema ────── */
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+
+/* ────── includes del proyecto ────── */
+# include "../libft/libft.h"
+# include "parser.h"
+# include "redirections.h"
+# include "signals.h"
+# include "executor.h"
+# include "builtins.h"
+
+/* ────── defines ────── */
 # define CWD_SIZE 1024
 
 typedef struct s_pipe
@@ -61,14 +72,6 @@ typedef struct s_msh
 	int		pipe;
 	int		redic;
 }				t_msh;
-
-# include "../libft/libft.h"
-# include "parser.h"
-# include "redirections.h"
-# include "signals.h"
-# include "executor.h"
-
-# include "builtins.h"
 
 /* clean_minishell.c */
 void	free_command_node(t_cmd *cmd);
