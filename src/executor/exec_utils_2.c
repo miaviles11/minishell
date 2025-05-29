@@ -15,9 +15,9 @@
 void	redir_only_child(t_cmd *cmd)
 {
 	pid_t	pid;
-    ssize_t	n;
+	ssize_t	n;
 	int		status;
-    char	buf[4096];
+	char	buf[4096];
 
 	pid = fork();
 	if (pid == -1)
@@ -28,11 +28,14 @@ void	redir_only_child(t_cmd *cmd)
 			process_redirections(cmd);
 		if (!isatty(STDIN_FILENO))
 		{
-			while ((n = read(STDIN_FILENO, buf, sizeof buf)) > 0)
+			n = read(STDIN_FILENO, buf, sizeof buf);
+			while (n > 0)
+			{
 				write(STDOUT_FILENO, buf, n);
+				n = read(STDIN_FILENO, buf, sizeof buf);
+			}
 		}
 		_exit(0);
 	}
 	waitpid(pid, &status, 0);
 }
-
