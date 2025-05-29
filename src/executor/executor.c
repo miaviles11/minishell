@@ -62,7 +62,8 @@ void	execute_single_command(t_msh *msh, t_cmd *cmd)
 
 	if (!cmd->cmd || cmd->cmd[0] == '\0')
 	{
-		consume_here_docs(cmd->arg);
+		if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
+			process_redirections(cmd);
 		msh->error_value = 0;
 		return ;
 	}
