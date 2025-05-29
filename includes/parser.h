@@ -15,8 +15,8 @@
 
 # include "minishell.h"
 
-typedef	struct	s_cmd	t_cmd;
-typedef	struct	s_msh	t_msh;
+typedef struct s_cmd t_cmd;
+typedef struct s_msh t_msh;
 
 /*process_arguments_1.c*/
 char	*extract_command(t_msh *shell, char *segment);
