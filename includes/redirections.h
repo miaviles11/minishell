@@ -30,18 +30,18 @@ int		find_next_redirect_operator_index(int i, char *str);
 /* redir_utils2.c */
 char	*preprocess_redirections(const char *line);
 int		handle_quotes(size_t *i, size_t *j, char *out,
-		const char *line, char *quote);
+			const char *line, char *quote);
 int		handle_double_redirections(size_t *i, size_t *j,
-		char *out, const char *line);
+			char *out, const char *line);
 int		handle_stderr_redirection(size_t *i, size_t *j,
-		char *out, const char *line);
+			char *out, const char *line);
 int		handle_single_redirection(size_t *i, size_t *j,
-		char *out, const char *line);
+			char *out, const char *line);
 
 /*redirect.c*/
 void	process_redirections(t_cmd *cmd);
 void	handle_output_redirection(int redirType,
-		t_cmd *command, char *filename);
+			t_cmd *command, char *filename);
 void	handle_here_document(t_cmd *command, char *delimiter);
 int		redirect_input_from_file(t_cmd *command, char *fileName, int argIndex);
 char	**remove_argument_at_index(char **argumentList, int removalIndex);
