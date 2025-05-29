@@ -20,6 +20,9 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
+typedef struct s_cmd  t_cmd;
+typedef struct s_msh  t_msh;
+
 /* ────── includes del proyecto ────── */
 # include "../libft/libft.h"
 # include "parser.h"
