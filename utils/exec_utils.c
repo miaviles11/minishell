@@ -47,6 +47,7 @@ int	handle_exit_command(t_msh *shell, char **args, int code)
 	}
 	exit(code);
 }
+
 void	*xmalloc(size_t size)
 {
 	void	*ptr;
