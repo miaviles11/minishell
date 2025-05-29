@@ -35,10 +35,10 @@ int		find_next_redirect_operator_index(int i, char *str);
 
 /* redir_utils2.c */
 char	*preprocess_redirections(const char *line);
-int	handle_quotes(t_idx *idx, char *out, const char *line, char *quote);
-int	handle_double_redirections(t_idx *idx, char *out, const char *line);
-int	handle_stderr_redirection(t_idx *idx, char *out, const char *line);
-int	handle_single_redirection(t_idx *idx, char *out, const char *line);
+int		handle_quotes(t_idx *idx, char *out, const char *line, char *quote);
+int		handle_double_redirections(t_idx *idx, char *out, const char *line);
+int		handle_stderr_redirection(t_idx *idx, char *out, const char *line);
+int		handle_single_redirection(t_idx *idx, char *out, const char *line);
 
 /*redirect.c*/
 void	process_redirections(t_cmd *cmd);
