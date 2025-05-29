@@ -39,6 +39,7 @@ int		handle_quotes(t_idx *idx, char *out, const char *line, char *quote);
 int		handle_double_redirections(t_idx *idx, char *out, const char *line);
 int		handle_stderr_redirection(t_idx *idx, char *out, const char *line);
 int		handle_single_redirection(t_idx *idx, char *out, const char *line);
+void	*xmalloc(size_t size);
 
 /*redirect.c*/
 void	process_redirections(t_cmd *cmd);

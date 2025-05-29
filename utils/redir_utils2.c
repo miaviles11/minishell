@@ -25,20 +25,14 @@ char	*preprocess_redirections(const char *line)
 	quote = 0;
 	idx.i = &i;
 	idx.j = &j;
-	out = malloc(ft_strlen(line) * 2 + 1);
-	if (!out)
-		exit_error("Error malloc", 1);
+	out = xmalloc(ft_strlen(line) * 2 + 1);
 	while (line[i])
 	{
-		if (handle_quotes(&idx, out, line, &quote))
-			continue ;
-		if (handle_double_redirections(&idx, out, line))
-			continue ;
-		if (handle_stderr_redirection(&idx, out, line))
-			continue ;
-		if (handle_single_redirection(&idx, out, line))
-			continue ;
-		out[j++] = line[i++];
+		if (!(handle_quotes(&idx, out, line, &quote)
+				|| handle_double_redirections(&idx, out, line)
+				|| handle_stderr_redirection(&idx, out, line)
+				|| handle_single_redirection(&idx, out, line)))
+			out[j++] = line[i++];
 	}
 	out[j] = '\0';
 	return (out);
