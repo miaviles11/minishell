@@ -15,8 +15,8 @@
 
 # include <sys/wait.h>
 
-typedef struct s_cmd t_cmd;
-typedef struct s_msh t_msh;
+typedef struct s_cmd	t_cmd;
+typedef struct s_msh	t_msh;
 
 /* exec_utils.c */
 int		is_exit_command(t_msh *shell);
