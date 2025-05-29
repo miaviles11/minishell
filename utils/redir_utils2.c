@@ -16,24 +16,27 @@ char	*preprocess_redirections(const char *line)
 {
 	size_t	i;
 	size_t	j;
-	char	*out;
 	char	quote;
+	char	*out;
+	t_idx	idx;
 
 	i = 0;
 	j = 0;
 	quote = 0;
+	idx.i = &i;
+	idx.j = &j;
 	out = malloc(ft_strlen(line) * 2 + 1);
 	if (!out)
 		exit_error("Error malloc", 1);
 	while (line[i])
 	{
-		if (handle_quotes(&i, &j, out, line, &quote))
+		if (handle_quotes(&idx, out, line, &quote))
 			continue ;
-		if (handle_double_redirections(&i, &j, out, line))
+		if (handle_double_redirections(&idx, out, line))
 			continue ;
-		if (handle_stderr_redirection(&i, &j, out, line))
+		if (handle_stderr_redirection(&idx, out, line))
 			continue ;
-		if (handle_single_redirection(&i, &j, out, line))
+		if (handle_single_redirection(&idx, out, line))
 			continue ;
 		out[j++] = line[i++];
 	}
@@ -41,9 +44,13 @@ char	*preprocess_redirections(const char *line)
 	return (out);
 }
 
-int	handle_quotes(size_t *i, size_t *j, char *out, const char *line,
-	char *quote)
+int	handle_quotes(t_idx *idx, char *out, const char *line, char *quote)
 {
+	size_t *i;
+	size_t *j;
+	
+	i = idx->i;
+	j = idx->j;
 	if (!*quote && (line[*i] == '"' || line[*i] == '\''))
 	{
 		*quote = line[*i];
@@ -64,19 +71,28 @@ int	handle_quotes(size_t *i, size_t *j, char *out, const char *line,
 	return (0);
 }
 
-int	handle_double_redirections(size_t *i, size_t *j, char *out,
-	const char *line)
+
+int	handle_double_redirections(t_idx *idx, char *out, const char *line)
 {
-	if (line[*i] == '<' && line[*i+1] == '<')
+	size_t *i;
+	size_t *j;
+	
+	i = idx->i;
+	j = idx->j;
+	if (line[*i] == '<' && line[*i + 1] == '<')
 	{
-		out[(*j)++] = '<'; out[(*j)++] = '<'; (*i) += 2;
+		out[(*j)++] = '<';
+		out[(*j)++] = '<';
+		(*i) += 2;
 		if (line[*i] && line[*i] != ' ')
 			out[(*j)++] = ' ';
 		return (1);
 	}
-	if (line[*i] == '>' && line[*i+1] == '>')
+	if (line[*i] == '>' && line[*i + 1] == '>')
 	{
-		out[(*j)++] = '>'; out[(*j)++] = '>'; (*i) += 2;
+		out[(*j)++] = '>';
+		out[(*j)++] = '>';
+		(*i) += 2;
 		if (line[*i] && line[*i] != ' ')
 			out[(*j)++] = ' ';
 		return (1);
@@ -84,13 +100,17 @@ int	handle_double_redirections(size_t *i, size_t *j, char *out,
 	return (0);
 }
 
-int	handle_stderr_redirection(size_t *i, size_t *j, char *out,
-	const char *line)
+int	handle_stderr_redirection(t_idx *idx, char *out, const char *line)
 {
-	if (line[*i] == '2' && line[*i+1] == '>')
+	size_t *i;
+	size_t *j;
+	
+	i = idx->i;
+	j = idx->j;
+	if (line[*i] == '2' && line[*i + 1] == '>')
 	{
 		out[(*j)++] = '2';
-		if (line[*i+2] == '>')
+		if (line[*i + 2] == '>')
 		{
 			out[(*j)++] = '>';
 			out[(*j)++] = '>';
@@ -108,8 +128,13 @@ int	handle_stderr_redirection(size_t *i, size_t *j, char *out,
 	return (0);
 }
 
-int	handle_single_redirection(size_t *i, size_t *j, char *out, const char *line)
+int	handle_single_redirection(t_idx *idx, char *out, const char *line)
 {
+	size_t *i;
+	size_t *j;
+	
+	i = idx->i;
+	j = idx->j;
 	if (line[*i] == '<' || line[*i] == '>')
 	{
 		out[(*j)++] = line[(*i)++];

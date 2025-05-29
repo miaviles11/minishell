@@ -15,6 +15,12 @@
 
 # include <fcntl.h>
 
+typedef struct s_idx
+{
+	size_t	*i;
+	size_t	*j;
+}	t_idx;
+
 /*redirect_heredoc.c*/
 void	read_here_doc_loop(const char *delimiter, int write_fd, int tty_fd);
 void	read_here_doc_to_pipe(const char *delimiter, int write_fd);
@@ -29,14 +35,10 @@ int		find_next_redirect_operator_index(int i, char *str);
 
 /* redir_utils2.c */
 char	*preprocess_redirections(const char *line);
-int		handle_quotes(size_t *i, size_t *j, char *out,
-			const char *line, char *quote);
-int		handle_double_redirections(size_t *i, size_t *j,
-			char *out, const char *line);
-int		handle_stderr_redirection(size_t *i, size_t *j,
-			char *out, const char *line);
-int		handle_single_redirection(size_t *i, size_t *j,
-			char *out, const char *line);
+int	handle_quotes(t_idx *idx, char *out, const char *line, char *quote);
+int	handle_double_redirections(t_idx *idx, char *out, const char *line);
+int	handle_stderr_redirection(t_idx *idx, char *out, const char *line);
+int	handle_single_redirection(t_idx *idx, char *out, const char *line);
 
 /*redirect.c*/
 void	process_redirections(t_cmd *cmd);
