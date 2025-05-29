@@ -19,6 +19,7 @@ SRCS		=	src/builtins/builtins_utils_export.c \
 				src/executor/exec_builtin.c \
 				src/executor/exec_utils_builtin.c \
 				src/executor/exec_utils.c \
+				src/executor/exec_utils_2.c \
 				src/executor/executor_heredoc.c \
 				src/executor/executor_pipe.c \
 				src/executor/executor.c \
