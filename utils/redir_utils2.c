@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redir_utils2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
+/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/20 18:59:06 by miaviles          #+#    #+#             */
-/*   Updated: 2025/05/20 19:20:05 by miaviles         ###   ########.fr       */
+/*   Created: 2025/06/08 12:48:53 by carlsanc          #+#    #+#             */
+/*   Updated: 2025/06/08 12:48:53 by carlsanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

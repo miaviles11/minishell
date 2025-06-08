@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   variable_expansion.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
+/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/06 17:48:23 by miaviles          #+#    #+#             */
-/*   Updated: 2025/05/06 17:56:19 by miaviles         ###   ########.fr       */
+/*   Created: 2025/06/08 12:50:08 by carlsanc          #+#    #+#             */
+/*   Updated: 2025/06/08 12:50:08 by carlsanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

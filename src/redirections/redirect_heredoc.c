@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect_heredoc.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
+/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/10 12:10:14 by miaviles          #+#    #+#             */
-/*   Updated: 2025/05/10 12:23:08 by miaviles         ###   ########.fr       */
+/*   Created: 2025/06/08 12:47:59 by carlsanc          #+#    #+#             */
+/*   Updated: 2025/06/08 12:47:59 by carlsanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

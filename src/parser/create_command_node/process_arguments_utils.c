@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_arguments_utils.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
+/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/05 17:55:51 by miaviles          #+#    #+#             */
-/*   Updated: 2025/05/05 17:55:51 by miaviles         ###   ########.fr       */
+/*   Created: 2025/06/08 12:49:42 by carlsanc          #+#    #+#             */
+/*   Updated: 2025/06/08 12:49:42 by carlsanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

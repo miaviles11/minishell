@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   variable_env.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miaviles <miaviles@student.42madrid>       +#+  +:+       +#+        */
+/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/06 17:53:35 by miaviles          #+#    #+#             */
-/*   Updated: 2025/05/06 17:54:26 by miaviles         ###   ########.fr       */
+/*   Created: 2025/06/08 12:50:03 by carlsanc          #+#    #+#             */
+/*   Updated: 2025/06/08 12:50:03 by carlsanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
