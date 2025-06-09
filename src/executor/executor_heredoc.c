@@ -68,32 +68,49 @@ static char	*charjoin_and_free(char *s1, char c)
 	tmp[1] = '\0';
 	tmpstr = ft_strjoin(s1, tmp);
 	free(s1);
-	retur
-	n (tmpstr);
+	return (tmpstr);
 }
-char *expand_env(char *in)
+
+static char	*expand_variable(const char *in, size_t *i)
 {
-	int  i;
-	char *out;
+	size_t	start;
+	char	*var;
+	char	*val;
+	char	*ret;
+
+	start = ++(*i);
+	while (in[*i] && (ft_isalnum(in[*i]) || in[*i] == '_'))
+		(*i)++;
+	var = ft_substr(in, start, *i - start);
+	val = getenv(var);
+	if (val != NULL)
+		ret = ft_strdup(val);
+	else
+		ret = ft_strdup("");
+	free(var);
+	return (ret);
+}
+
+char	*expand_env(const char *in)
+{
+	size_t	i;
+	char	*out;
+	char	*tmp;
 
 	out = ft_calloc(1, 1);
+	if (!out)
+		exit_error("Error malloc", 1);
 	i = 0;
 	while (in[i])
 	{
-		if (in[i] == '$' && ft_isalnum(in[i + 1]))
+		if (in[i] == '$' && (ft_isalnum(in[i + 1]) || in[i + 1] == '_'))
 		{
-			int start = ++i;
-			while (ft_isalnum(in[i]) || in[i] == '_')
-				i++;
-			char *var  = ft_substr(in, start, i - start);
-			char *val  = getenv(var);
-			out = ft_strjoin_free(out, val ? val : "");
-			free(var);
+			tmp = expand_variable(in, &i);
+			out = join_and_free(out, tmp);
+			free(tmp);
 		}
 		else
-		{
-			out = ft_chrjoin_free(out, in[i++]);
-		}
+			out = charjoin_and_free(out, in[i++]);
 	}
 	return (out);
 }
