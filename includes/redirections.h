@@ -57,7 +57,6 @@ int		count_arguments_redirections(char **args);
 int		get_next_diff_op(int i, char *str);
 char	*extract_redirect_token(char *s);
 int		count_args(char **args);
-void	read_here_doc(int write_fd, int tty_fd, char *delimiter);
 void	init_here_doc(int p[2], int *tty_fd);
 char	**get_filename(char **args, int index, char opChar, int offset);
 void	apply_redirections(t_cmd *cmd, int heredoc_pipe[2]);
