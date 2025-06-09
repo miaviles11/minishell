@@ -72,6 +72,7 @@ typedef struct s_msh
 	int		redic;
 }				t_msh;
 
+extern volatile sig_atomic_t g_interactive;
 /* clean_minishell.c */
 void	free_command_node(t_cmd *cmd);
 void	free_command_list(t_cmd *cmd);
