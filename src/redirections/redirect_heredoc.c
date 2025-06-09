@@ -26,29 +26,61 @@ static void	heredoc_child(const char *delimiter, int write_fd)
 	_exit(0);
 }
 
-void	read_here_doc_loop(const char *delimiter, int write_fd, int tty_fd)
+static int	is_quoted_delim(const char *delim)
+{
+	if (delim[0] == '\'' || delim[0] == '\"')
+		return (1);
+	return (0);
+}
+
+static char	*clean_delim(const char *delim, int quoted)
+{
+	if (quoted)
+		return (str_noquotes((char *)delim));
+	return ((char *)delim);
+}
+
+static int	handle_here_doc_line(char *clean, int quoted,
+								int write_fd, int tty_fd)
 {
 	char	*line;
-	char	*expanded;
+	char	*tmp;
 
-	while (1)
+	if (write(STDERR_FILENO, "> ", 2) == -1)
+		exit_error("Error de escritura en prompt", 48);
+	line = get_next_line(tty_fd);
+	if (!line)
+		exit_error("EOF inesperado en here-doc", 53);
+	if (!ft_strncmp(line, clean, ft_strlen(clean))
+		&& line[ft_strlen(clean)] == '\n')
 	{
-		if (write(STDERR_FILENO, "> ", 2) == -1)
-			exit_error("Error de escritura en prompt", 48);
-		line = get_next_line(tty_fd);
-		if (!line)
-			exit_error("EOF inesperado en here-doc", 53);
-		if (!ft_strncmp(line, delimiter, ft_strlen(delimiter))
-			&& line[ft_strlen(delimiter)] == '\n')
-		{
-			free(line);
-			break ;
-		}
-		expanded = expand_env(line);
-		if (write(write_fd, expanded, ft_strlen(expanded)) == -1)
-			exit_error("Error al escribir en pipe de here-doc", 54);
-		free(expanded);
+		free(line);
+		return (0);
 	}
+	if (!quoted)
+	{
+		tmp = expand_env(line);
+		if (write(write_fd, tmp, ft_strlen(tmp)) == -1)
+			exit_error("Error al escribir en here-doc", 54);
+		free(tmp);
+	}
+	else if (write(write_fd, line, ft_strlen(line)) == -1)
+		exit_error("Error al escribir en here-doc", 54);
+	free(line);
+	return (1);
+}
+
+void	read_here_doc_loop(const char *delimiter, int write_fd, int tty_fd)
+{
+	int		quoted;
+	char	*clean;
+
+	quoted = is_quoted_delim(delimiter);
+	clean = clean_delim(delimiter, quoted);
+	while (handle_here_doc_line(clean, quoted, write_fd, tty_fd))
+		;
+	if (quoted)
+		free(clean);
 }
 
 void	read_here_doc_to_pipe(const char *delimiter, int write_fd)

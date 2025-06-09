@@ -81,8 +81,11 @@ void	process_single_redirection(t_cmd *cmd, int *i,
 				get_operator_for_type(
 					get_redirect_type(cmd->arg[*i + 1])),
 				1);
-	file = str_noquotes(cmd->arg[*i + 1]);
 	rtype = get_redirect_type(cmd->arg[*i]);
+	if (rtype == 4)
+		file = ft_strdup(cmd->arg[*i + 1]);
+	else
+		file = str_noquotes(cmd->arg[*i + 1]);
 	handle_redirection_by_type(cmd, rtype, file, heredoc_pipe);
 	cmd->arg = remove_argument_at_index(cmd->arg, *i);
 	cmd->arg = remove_argument_at_index(cmd->arg, *i);
