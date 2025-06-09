@@ -50,6 +50,27 @@ void	consume_here_docs(char **args)
 			i++;
 	}
 }
+static char	*join_and_free(char *s1, const char *s2)
+{
+	char	*tmp;
+
+	tmp = ft_strjoin(s1, s2);
+	free(s1);
+	return (tmp);
+}
+
+static char	*charjoin_and_free(char *s1, char c)
+{
+	char	tmp[2];
+	char	*tmpstr;
+
+	tmp[0] = c;
+	tmp[1] = '\0';
+	tmpstr = ft_strjoin(s1, tmp);
+	free(s1);
+	retur
+	n (tmpstr);
+}
 char *expand_env(char *in)
 {
 	int  i;
