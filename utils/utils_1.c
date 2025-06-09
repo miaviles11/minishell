@@ -80,27 +80,52 @@ void	init_here_doc(int p[2], int *tty_fd)
 		exit_error("Error al abrir /dev/tty para here-document", 52);
 }
 
-void	read_here_doc(int write_fd, int tty_fd, char *delimiter)
+static int	is_quoted_hd(const char *d)
 {
-	char	*inputline;
-	char	*expanded;
+	if (d[0] == '\'' || d[0] == '\"')
+		return (1);
+	return (0);
+}
 
+/* <= 18 líneas */
+static void	write_hd_line(char *line, int quoted, int wfd)
+{
+	char	*tmp;
+
+	if (!quoted)
+	{
+		tmp = expand_env(line);
+		if (write(wfd, tmp, ft_strlen(tmp)) == -1)
+			exit_error("write heredoc", 54);
+		free(tmp);
+	}
+	else if (write(wfd, line, ft_strlen(line)) == -1)
+		exit_error("write heredoc", 54);
+}
+
+/* --------------- función principal ≤ 25 líneas ---------------------- */
+void	read_here_doc(char *delimiter, int write_fd)
+{
+	int		quoted = is_quoted_hd(delimiter);
+	char	*clean = (char *)delimiter;
+	char	*line;
+
+	if (quoted)
+		clean = str_noquotes(delimiter);
 	while (1)
 	{
-		if (write(STDERR_FILENO, "> ", 2) == -1)
-			exit_error("Error de escritura en prompt", 48);
-		inputline = get_next_line(tty_fd);
-		if (!inputline)
-			exit_error("EOF inesperado en here-document", 53);
-		if (!ft_strncmp(inputline, delimiter, ft_strlen(delimiter))
-			&& inputline[ft_strlen(delimiter)] == '\n')
+		line = get_next_line(STDIN_FILENO);
+		if (!line)
+			exit_error("EOF heredoc", 53);
+		if (!ft_strncmp(line, clean, ft_strlen(clean)) &&
+			line[ft_strlen(clean)] == '\n')
 		{
-			free(inputline);
+			free(line);
 			break ;
 		}
-		expanded = expand_env(inputline);
-		if (write(write_fd, expanded, ft_strlen(expanded)) == -1)
-			exit_error("Error al escribir en pipe de here-document", 54);
-		free(expanded);
+		write_hd_line(line, quoted, write_fd);
+		free(line);
 	}
+	if (quoted)
+		free(clean);
 }
