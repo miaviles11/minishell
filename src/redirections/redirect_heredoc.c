@@ -29,6 +29,7 @@ static void	heredoc_child(const char *delimiter, int write_fd)
 void	read_here_doc_loop(const char *delimiter, int write_fd, int tty_fd)
 {
 	char	*line;
+	char	*expanded;
 
 	while (1)
 	{
@@ -43,9 +44,10 @@ void	read_here_doc_loop(const char *delimiter, int write_fd, int tty_fd)
 			free(line);
 			break ;
 		}
-		if (write(write_fd, line, ft_strlen(line)) == -1)
+		expanded = expand_env(line);
+		if (write(write_fd, expanded, ft_strlen(expanded)) == -1)
 			exit_error("Error al escribir en pipe de here-doc", 54);
-		free(line);
+		free(expanded);
 	}
 }
 

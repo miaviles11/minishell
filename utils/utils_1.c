@@ -83,6 +83,7 @@ void	init_here_doc(int p[2], int *tty_fd)
 void	read_here_doc(int write_fd, int tty_fd, char *delimiter)
 {
 	char	*inputline;
+	char	*expanded;
 
 	while (1)
 	{
@@ -97,8 +98,9 @@ void	read_here_doc(int write_fd, int tty_fd, char *delimiter)
 			free(inputline);
 			break ;
 		}
-		if (write(write_fd, inputline, ft_strlen(inputline)) == -1)
+		expanded = expand_env(inputline);
+		if (write(write_fd, expanded, ft_strlen(expanded)) == -1)
 			exit_error("Error al escribir en pipe de here-document", 54);
-		free(inputline);
+		free(expanded);
 	}
 }

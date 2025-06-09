@@ -50,3 +50,29 @@ void	consume_here_docs(char **args)
 			i++;
 	}
 }
+char *expand_env(char *in)
+{
+	int  i;
+	char *out;
+
+	out = ft_calloc(1, 1);
+	i = 0;
+	while (in[i])
+	{
+		if (in[i] == '$' && ft_isalnum(in[i + 1]))
+		{
+			int start = ++i;
+			while (ft_isalnum(in[i]) || in[i] == '_')
+				i++;
+			char *var  = ft_substr(in, start, i - start);
+			char *val  = getenv(var);
+			out = ft_strjoin_free(out, val ? val : "");
+			free(var);
+		}
+		else
+		{
+			out = ft_chrjoin_free(out, in[i++]);
+		}
+	}
+	return (out);
+}
