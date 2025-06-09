@@ -62,40 +62,30 @@ static void	handle_redirection_by_type(t_cmd *cmd, int rtype, char *file,
 		handle_output_redirection(rtype, cmd, file);
 }
 
-static void	remove_two_tokens(t_cmd *cmd, int idx)
+void	process_single_redirection(t_cmd *cmd, int *i,
+		int heredoc_pipe[2])
 {
-	cmd->arg = remove_argument_at_index(cmd->arg, idx);
-	cmd->arg = remove_argument_at_index(cmd->arg, idx);
-}
-
-static void	handle_single_rtype(t_cmd *cmd, int pos, int pipefd[2])
-{
+	int		idx;
 	int		rtype;
 	char	*file;
-
-	rtype = get_redirect_type(cmd->arg[pos]);
-	if (rtype == 4)
-		file = ft_strdup(cmd->arg[pos + 1]);
-	else
-		file = str_noquotes(cmd->arg[pos + 1]);
-	handle_redirection_by_type(cmd, rtype, file, pipefd);
-	remove_two_tokens(cmd, pos);
-}
-
-void	process_single_redirection(t_cmd *cmd, int *i, int heredoc_pipe[2])
-{
-	int	idx;
 
 	idx = find_first_redirect_index(cmd->arg + *i);
 	*i += idx;
 	cmd->arg = extract_filename_from_arg(cmd->arg, *i,
-			get_operator_for_type(get_redirect_type(cmd->arg[*i])), 1);
+			get_operator_for_type(get_redirect_type(cmd->arg[*i])),
+			1);
 	if (!get_redirect_type(cmd->arg[*i]))
 		(*i)++;
 	if (get_redirect_type(cmd->arg[*i + 1]))
 		cmd->arg = extract_filename_from_arg(cmd->arg, *i + 1,
-				get_operator_for_type(get_redirect_type(cmd->arg[*i + 1])), 1);
-	handle_single_rtype(cmd, *i, heredoc_pipe);
+				get_operator_for_type(
+					get_redirect_type(cmd->arg[*i + 1])),
+				1);
+	file = str_noquotes(cmd->arg[*i + 1]);
+	rtype = get_redirect_type(cmd->arg[*i]);
+	handle_redirection_by_type(cmd, rtype, file, heredoc_pipe);
+	cmd->arg = remove_argument_at_index(cmd->arg, *i);
+	cmd->arg = remove_argument_at_index(cmd->arg, *i);
 }
 
 void	process_redirections(t_cmd *cmd)

@@ -110,8 +110,8 @@ int		is_line_empty(const char *s);
 char	*str_noquotes(char *str);
 int		count_args(char **args);
 void	init_here_doc(int p[2], int *tty_fd);
-void	read_here_doc(int write_fd, int tty_fd, const char *delimiter);
-char	*expand_env(const char *in);
+void	read_here_doc(int write_fd, int tty_fd, char *delimiter);
+
 /* minishell.c */
 int		main(int argc, char **argv, char **envp);
 

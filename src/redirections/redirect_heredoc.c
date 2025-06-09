@@ -25,63 +25,30 @@ static void	heredoc_child(const char *delimiter, int write_fd)
 	close(write_fd);
 	_exit(0);
 }
-static int	is_quoted_delim(const char *d)
-{
-	if (d[0] == '\'' || d[0] == '\"')
-		return (1);
-	return (0);
-}
 
-static char	*strip_quotes_if_needed(const char *d, int quoted)
-{
-	if (quoted)
-		return (str_noquotes((char *)d));
-	return ((char *)d);
-}
-
-static void	write_hd_line(char *line, int quoted, int wfd)
-{
-	char	*tmp;
-
-	if (!quoted)
-	{
-		tmp = expand_env(line);
-		if (write(wfd, tmp, ft_strlen(tmp)) == -1)
-			exit_error("write heredoc", 54);
-		free(tmp);
-	}
-	else if (write(wfd, line, ft_strlen(line)) == -1)
-		exit_error("write heredoc", 54);
-}
-
-/* ------------- función principal, 25 líneas justas ---------------------- */
 void	read_here_doc_loop(const char *delimiter, int write_fd, int tty_fd)
 {
-	int		quoted;
-	char	*clean;
 	char	*line;
 
-	quoted = is_quoted_delim(delimiter);
-	clean = strip_quotes_if_needed(delimiter, quoted);
 	while (1)
 	{
 		if (write(STDERR_FILENO, "> ", 2) == -1)
-			exit_error("write prompt", 48);
+			exit_error("Error de escritura en prompt", 48);
 		line = get_next_line(tty_fd);
 		if (!line)
-			exit_error("EOF here-doc", 53);
-		if (!ft_strncmp(line, clean, ft_strlen(clean)) &&
-			line[ft_strlen(clean)] == '\n')
+			exit_error("EOF inesperado en here-doc", 53);
+		if (!ft_strncmp(line, delimiter, ft_strlen(delimiter))
+			&& line[ft_strlen(delimiter)] == '\n')
 		{
 			free(line);
 			break ;
 		}
-		write_hd_line(line, quoted, write_fd);
+		if (write(write_fd, line, ft_strlen(line)) == -1)
+			exit_error("Error al escribir en pipe de here-doc", 54);
 		free(line);
 	}
-	if (quoted)
-		free(clean);
 }
+
 void	read_here_doc_to_pipe(const char *delimiter, int write_fd)
 {
 	pid_t	pid;
