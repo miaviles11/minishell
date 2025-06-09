@@ -12,6 +12,20 @@
 
 #include "../../includes/minishell.h"
 
+static void	heredoc_child(const char *delimiter, int write_fd)
+{
+	int	tty_fd;
+
+	setup_child_signals();
+	tty_fd = open("/dev/tty", O_RDONLY);
+	if (tty_fd < 0)
+		exit_error("Error al abrir /dev/tty para here-doc", 47);
+	read_here_doc_loop(delimiter, write_fd, tty_fd);
+	close(tty_fd);
+	close(write_fd);
+	_exit(0);
+}
+
 void	read_here_doc_loop(const char *delimiter, int write_fd, int tty_fd)
 {
 	char	*line;
@@ -39,28 +53,20 @@ void	read_here_doc_to_pipe(const char *delimiter, int write_fd)
 {
 	pid_t	pid;
 	int		status;
-	int		tty_fd;
 
 	pid = fork();
 	if (pid == -1)
 		exit_error("fork heredoc", 60);
 	if (pid == 0)
-	{
-		setup_child_signals();
-		tty_fd = open("/dev/tty", O_RDONLY);
-		if (tty_fd < 0)
-			exit_error("Error al abrir /dev/tty para here-doc", 47);
-		read_here_doc_loop(delimiter, write_fd, tty_fd);
-		close(tty_fd);
-		close(write_fd);
-		_exit(0);
-	}
+		heredoc_child(delimiter, write_fd);
 	signal(SIGINT, SIG_IGN);
 	waitpid(pid, &status, 0);
 	signal(SIGINT, handle_parent_signal);
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+	{
 		close(write_fd);
 		g_interactive = 1;
+	}
 	free((char *)delimiter);
 }
 
