@@ -58,7 +58,7 @@ static void	write_hd_line(char *line, int quoted, int wfd)
 void	read_here_doc_loop(const char *delimiter, int write_fd, int tty_fd)
 {
 	int		quoted;
-	char	*clean
+	char	*clean;
 	char	*line;
 
 	quoted = is_quoted_delim(delimiter);
