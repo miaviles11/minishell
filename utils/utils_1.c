@@ -80,21 +80,23 @@ void	init_here_doc(int p[2], int *tty_fd)
 		exit_error("Error al abrir /dev/tty para here-document", 52);
 }
 
+/* ---------- helpers (≤ 25 líneas cada uno) ------------------------------ */
 static int	is_quoted_hd(const char *d)
+/* Devuelve 1 si el delimitador empieza por ' o "                           */
 {
 	if (d[0] == '\'' || d[0] == '\"')
 		return (1);
 	return (0);
 }
 
-/* <= 18 líneas */
 static void	write_hd_line(char *line, int quoted, int wfd)
+/* Escribe una línea en el pipe, expandiendo solo cuando quoted == 0        */
 {
 	char	*tmp;
 
 	if (!quoted)
 	{
-		tmp = expand_env(line);
+		tmp = expand_env(line);                       /* ya existente       */
 		if (write(wfd, tmp, ft_strlen(tmp)) == -1)
 			exit_error("write heredoc", 54);
 		free(tmp);
@@ -103,18 +105,22 @@ static void	write_hd_line(char *line, int quoted, int wfd)
 		exit_error("write heredoc", 54);
 }
 
-/* --------------- función principal ≤ 25 líneas ---------------------- */
-void	read_here_doc(char *delimiter, int write_fd)
+/* ---------- función principal (24 líneas) ------------------------------- */
+void	read_here_doc(int write_fd, int tty_fd, const char *delimiter)
+/* Mantiene la firma original: (pipe_write, tty_fd, delimiter)              */
 {
-	int		quoted = is_quoted_hd(delimiter);
-	char	*clean = (char *)delimiter;
+	int		quoted;
+	char	*clean;
 	char	*line;
 
+	quoted = is_quoted_hd(delimiter);
 	if (quoted)
-		clean = str_noquotes(delimiter);
+		clean = str_noquotes((char *)delimiter);      /* reserva memoria    */
+	else
+		clean = (char *)delimiter;                   /* puntero externo    */
 	while (1)
 	{
-		line = get_next_line(STDIN_FILENO);
+		line = get_next_line(tty_fd);                /* lee de /dev/tty    */
 		if (!line)
 			exit_error("EOF heredoc", 53);
 		if (!ft_strncmp(line, clean, ft_strlen(clean)) &&
@@ -126,6 +132,6 @@ void	read_here_doc(char *delimiter, int write_fd)
 		write_hd_line(line, quoted, write_fd);
 		free(line);
 	}
-	if (quoted)
+	if (quoted)                                      /* solo si hicimos malloc */
 		free(clean);
 }
