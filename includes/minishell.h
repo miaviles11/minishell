@@ -111,7 +111,7 @@ char	*str_noquotes(char *str);
 int		count_args(char **args);
 void	init_here_doc(int p[2], int *tty_fd);
 void	read_here_doc(int write_fd, int tty_fd, char *delimiter);
-char *expand_env(char *in);
+char	*expand_env(const char *in);
 /* minishell.c */
 int		main(int argc, char **argv, char **envp);
 
