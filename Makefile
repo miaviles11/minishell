@@ -49,6 +49,7 @@ SRCS		=	src/builtins/builtins_utils_export.c \
 				src/minishell.c \
 				src/shell_loop.c \
 				utils/utils_1.c \
+				utils/utils_2.c \
 				utils/redir_utils2.c \
 				utils/exec_utils.c \
 				utils/redir_utils.c \

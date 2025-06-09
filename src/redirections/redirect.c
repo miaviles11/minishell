@@ -49,10 +49,10 @@ static char	**extract_filename_from_arg(char **args, int index, char opChar,
 }
 
 static void	handle_redirection_by_type(t_cmd *cmd, int rtype, char *file,
-		int heredoc_pipe[2])
+		int heredoc_pipe[2], int expand)
 {
 	if (rtype == 4)
-		read_here_doc_to_pipe(file, heredoc_pipe[1]);
+		read_here_doc_to_pipe(file, heredoc_pipe[1], expand);
 	else if (rtype == 3)
 	{
 		if (redirect_input_from_file(cmd, file, 0))
@@ -68,6 +68,7 @@ void	process_single_redirection(t_cmd *cmd, int *i,
 	int		idx;
 	int		rtype;
 	char	*file;
+	int		expand;
 
 	idx = find_first_redirect_index(cmd->arg + *i);
 	*i += idx;
@@ -81,9 +82,10 @@ void	process_single_redirection(t_cmd *cmd, int *i,
 				get_operator_for_type(
 					get_redirect_type(cmd->arg[*i + 1])),
 				1);
+	expand = !is_quoted_token(cmd->arg[*i + 1]);
 	file = str_noquotes(cmd->arg[*i + 1]);
 	rtype = get_redirect_type(cmd->arg[*i]);
-	handle_redirection_by_type(cmd, rtype, file, heredoc_pipe);
+	handle_redirection_by_type(cmd, rtype, file, heredoc_pipe, expand);
 	cmd->arg = remove_argument_at_index(cmd->arg, *i);
 	cmd->arg = remove_argument_at_index(cmd->arg, *i);
 }

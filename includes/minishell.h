@@ -121,5 +121,6 @@ char	*get_input_line(int interactive);
 int		process_raw_line(char **raw_line);
 void	process_command_line(t_msh *shell, char *line, t_cmd **old_cmd);
 void	execute_command(t_msh *shell);
+int	is_quoted_token(const char *s);
 
 #endif
