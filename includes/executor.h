@@ -58,6 +58,8 @@ void	setup_pipe_redirections(int prev_pipe, int *pipe_fd);
 void	process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe);
 void	setup_last_cmd_redirections(int prev_pipe);
 void	execute_cmd_in_pipe(t_msh *msh, t_cmd *cmd);
+void	wait_fg(t_msh *msh, pid_t pid, int background);
+void	wait_fg(t_msh *msh, pid_t pid, int background);
 
 /*executor.c - Funciones principales del ejecutor de comandos*/
 void	exec_child(t_msh *msh, t_cmd *cmd, char *executable);

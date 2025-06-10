@@ -1,58 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_utils_2.c                                     :+:      :+:    :+:   */
+/*   executor_pipe_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: carlsanc <carlsanc@student.42madrid>       +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/05 16:51:04 by carlsanc          #+#    #+#             */
-/*   Updated: 2025/05/05 16:51:04 by carlsanc         ###   ########.fr       */
+/*   Created: 2025/06/10 23:27:06 by marvin            #+#    #+#             */
+/*   Updated: 2025/06/10 23:27:06 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static void	copy_stdin_to_stdout(void)
+void	last_cmd_child(t_msh *msh, t_cmd *cmd, int prev_pipe)
 {
-	char	buf[4096];
-	ssize_t	n;
-
-	n = read(STDIN_FILENO, buf, sizeof(buf));
-	while (n > 0)
-	{
-		write(STDOUT_FILENO, buf, n);
-		n = read(STDIN_FILENO, buf, sizeof(buf));
-	}
-}
-
-static void	redir_child(t_cmd *cmd)
-{
+	setup_last_cmd_redirections(prev_pipe);
 	if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
 		process_redirections(cmd);
-	if (!isatty(STDIN_FILENO))
-		copy_stdin_to_stdout();
-	_exit(0);
+	perform_expansion(msh, &cmd);
+	execute_last_cmd(msh, cmd);
 }
 
-static void	wait_and_set_status(t_msh *msh, pid_t pid)
+void	wait_fg(t_msh *msh, pid_t pid, int background)
 {
 	int	status;
 
+	if (background)
+		return ;
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
 		msh->error_value = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 		msh->error_value = 128 + WTERMSIG(status);
-}
-
-void	redir_only_child(t_msh *msh, t_cmd *cmd)
-{
-	pid_t	pid;
-
-	pid = fork();
-	if (pid == -1)
-		return (perror("fork"));
-	if (pid == 0)
-		redir_child(cmd);
-	wait_and_set_status(msh, pid);
 }

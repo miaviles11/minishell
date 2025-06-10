@@ -22,6 +22,7 @@ SRCS		=	src/builtins/builtins_utils_export.c \
 				src/executor/exec_utils_2.c \
 				src/executor/executor_heredoc.c \
 				src/executor/executor_pipe.c \
+				src/executor/executor_pipe_utils.c \
 				src/executor/executor.c \
 				src/parser/create_command_node/process_arguments_1.c \
 				src/parser/create_command_node/process_arguments_2.c \

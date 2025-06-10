@@ -57,30 +57,15 @@ void	setup_pipe_redirections(int prev_pipe, int *pipe_fd)
 void	process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
 {
 	pid_t	pid;
-	int		status;
 
 	pid = fork();
 	if (pid == -1)
-		perror("fork");
-		return ;
+		return ((void)perror("fork"));
 	if (pid == 0)
-	{
-		setup_last_cmd_redirections(prev_pipe);
-		if (cmd->arg && find_first_redirect_index(cmd->arg) != -1)
-			process_redirections(cmd);
-		perform_expansion(msh, &cmd);
-		execute_last_cmd(msh, cmd);
-	}
+		last_cmd_child(msh, cmd, prev_pipe);
 	if (prev_pipe != STDIN_FILENO)
 		close(prev_pipe);
-	if (!cmd->background)
-	{
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			msh->error_value = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
-			msh->error_value = 128 + WTERMSIG(status);
-	}
+	wait_fg(msh, pid, cmd->background);
 }
 
 void	setup_last_cmd_redirections(int prev_pipe)
