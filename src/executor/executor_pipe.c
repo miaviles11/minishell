@@ -38,6 +38,8 @@ void	process_cmd_with_pipe(t_msh *msh, t_cmd *cmd, int prev_pipe,
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
 		msh->error_value = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		msh->error_value = 128 + WTERMSIG(status);
 }
 
 void	setup_pipe_redirections(int prev_pipe, int *pipe_fd)
@@ -59,10 +61,8 @@ void	process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
 
 	pid = fork();
 	if (pid == -1)
-	{
 		perror("fork");
 		return ;
-	}
 	if (pid == 0)
 	{
 		setup_last_cmd_redirections(prev_pipe);
@@ -78,6 +78,8 @@ void	process_last_cmd(t_msh *msh, t_cmd *cmd, int prev_pipe)
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
 			msh->error_value = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+			msh->error_value = 128 + WTERMSIG(status);
 	}
 }
 

@@ -45,7 +45,7 @@ void	wait_for_children(void);
 char	*check_command_path(char *cmd);
 char	*search_in_path(char *cmd);
 void	execute_last_cmd(t_msh *msh, t_cmd *cmd);
-void	redir_only_child(t_cmd *cmd);
+void	redir_only_child(t_msh *msh, t_cmd *cmd);
 
 /*executor_heredoc.c - Manejo de redirecciones heredoc (<<)*/
 void	read_here_doc_lines(char *delimiter);

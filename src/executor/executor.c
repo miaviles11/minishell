@@ -53,6 +53,8 @@ void	handle_command_execution(t_msh *msh, t_cmd *cmd, char *executable)
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
 		msh->error_value = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		msh->error_value = 128 + WTERMSIG(status);
 	free(executable);
 }
 
@@ -62,7 +64,7 @@ void	execute_single_command(t_msh *msh, t_cmd *cmd)
 
 	if (!cmd->cmd || cmd->cmd[0] == '\0')
 	{
-		redir_only_child(cmd);
+		redir_only_child(msh, cmd);
 		msh->error_value = 0;
 		return ;
 	}

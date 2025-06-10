@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-void	redir_only_child(t_cmd *cmd)
+void	redir_only_child(t_msh *msh, t_cmd *cmd)
 {
 	pid_t	pid;
 	ssize_t	n;
@@ -30,12 +30,14 @@ void	redir_only_child(t_cmd *cmd)
 		{
 			n = read(STDIN_FILENO, buf, sizeof buf);
 			while (n > 0)
-			{
 				write(STDOUT_FILENO, buf, n);
 				n = read(STDIN_FILENO, buf, sizeof buf);
-			}
 		}
 		_exit(0);
 	}
 	waitpid(pid, &status, 0);
+	if (WIFEXITED(status))
+		msh->error_value = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		msh->error_value = 128 + WTERMSIG(status);
 }
